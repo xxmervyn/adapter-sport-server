@@ -2,6 +2,7 @@ import { ApiException, fromHono } from "chanfana";
 import { Hono } from "hono";
 import { ContentfulStatusCode } from "hono/utils/http-status";
 import { GamesEnterEndpoint } from "./games/gamesEnter";
+import { FbV1Router } from "./fb/v1/router";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
@@ -46,7 +47,11 @@ const openapi = fromHono(app, {
 // // Register other endpoints
 // openapi.post("/dummy/:slug", DummyEndpoint);
 
+//跳转
 openapi.get("/games/enter", GamesEnterEndpoint);
+
+
+openapi.route("/v1", FbV1Router);
 
 // Export the Hono app
 export default app;

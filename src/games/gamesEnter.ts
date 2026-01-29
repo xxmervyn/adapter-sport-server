@@ -29,6 +29,5 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		const urlReq = URL.parse(c.req.url);
 		const apiHostName = urlReq?.hostname.replace(".","-api.");
 		return c.redirect(`https://${urlReq?.hostname}/index.html?token=${data.query.playerGameToken}&nickname=${"nickname"}&apiSrc=https://${apiHostName}`);
-
 	}
 }
