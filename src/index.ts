@@ -1,8 +1,7 @@
 import { ApiException, fromHono } from "chanfana";
 import { Hono } from "hono";
-import { tasksRouter } from "./endpoints/tasks/router";
 import { ContentfulStatusCode } from "hono/utils/http-status";
-import { DummyEndpoint } from "./endpoints/dummyEndpoint";
+import { GamesEnterEndpoint } from "./games/gamesEnter";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
@@ -30,7 +29,7 @@ app.onError((err, c) => {
 
 // Setup OpenAPI registry
 const openapi = fromHono(app, {
-	docs_url: "/",
+	docs_url: "/doc",
 	schema: {
 		info: {
 			title: "My Awesome API",
@@ -40,11 +39,14 @@ const openapi = fromHono(app, {
 	},
 });
 
-// Register Tasks Sub router
-openapi.route("/tasks", tasksRouter);
 
-// Register other endpoints
-openapi.post("/dummy/:slug", DummyEndpoint);
+// // Register Tasks Sub router
+// openapi.route("/tasks", tasksRouter);
+
+// // Register other endpoints
+// openapi.post("/dummy/:slug", DummyEndpoint);
+
+openapi.get("/games/enter", GamesEnterEndpoint);
 
 // Export the Hono app
 export default app;
