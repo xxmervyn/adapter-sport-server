@@ -1,0 +1,16 @@
+{
+	"compatibility_date": "2025-10-08",
+	"main": "src/index.ts",
+	"name": "adapter-sport-server",
+	"upload_source_maps": true,
+	"observability": {
+		"enabled": true
+	},
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "adapter-sport-server",
+			"database_id": "b1883c84-5718-45d7-bc6a-31dde0eb6b86"
+		}
+	]
+}
