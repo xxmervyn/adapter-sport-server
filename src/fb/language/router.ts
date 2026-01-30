@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { fromHono } from "chanfana";
-// import { AccessCheck } from "./accessCheck";
-export const FbUserRouter = fromHono(new Hono());
+import { LanguageStaticList } from "./staticList";
+export const FbLanguageRouter = fromHono(new Hono());
 
 
-// FbUserRouter.post("/accessCheck",AccessCheck)
+FbLanguageRouter.post("/static/list",LanguageStaticList)
