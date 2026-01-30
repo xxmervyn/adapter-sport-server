@@ -28,6 +28,10 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 	
 		const urlReq = URL.parse(c.req.url);
 		const apiHostName = urlReq?.hostname.replace(".","-api.");
-		return c.redirect(`https://${urlReq?.hostname}/index.html?token=${data.query.playerGameToken}&nickname=${"nickname"}&apiSrc=https://${apiHostName}`);
+		
+		return c.redirect(`https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=t013&`+
+			`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://v.${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=wss://push.${apiHostName}&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&`+
+			`handicap=1&themeBg=4C6FFF&themeText={&quot;h5FgColor&quot;:&quot;#4C6FFF&quot;,&quot;pcFgColor&quot;:&quot;#4C6FFF&quot;,&quot;pcThemeCustomFgColor&quot;:&quot;#4C6FFF&quot;}`+
+			`&controlMenu=2&language=ZHO`)
 	}
 }
