@@ -46,7 +46,7 @@ const openapi = fromHono(app, {
 openapi.use("/*", cors({
 	origin: '*', // 指定允许的来源
   	allowMethods: ['GET', 'POST', 'PUT', 'DELETE'], // 允许的方法
-  	allowHeaders: ['Content-Type', 'Authorization'], // 允许的请求头
+  	allowHeaders: ['Content-Type', 'Authorization', 'X-Front-Page'], // 允许的请求头
   	credentials: true, // 如果需要发送 Cookie
 }));
 
