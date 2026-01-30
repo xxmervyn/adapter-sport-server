@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { fromHono } from "chanfana";
 import { AccessCheck } from "./accessCheck";
-export const FbUserRouter = fromHono(new Hono());
+export const FbV1UserRouter = fromHono(new Hono());
 
 
-FbUserRouter.post("/accessCheck",AccessCheck)
+FbV1UserRouter.post("/accessCheck",AccessCheck)

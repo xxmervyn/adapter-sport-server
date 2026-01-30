@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { fromHono } from "chanfana";
 import { MerchantDetail } from "./detail";
-export const FbMerchantRouter = fromHono(new Hono());
+export const FbV1MerchantRouter = fromHono(new Hono());
 
 
-FbMerchantRouter.post("/detail",MerchantDetail)
+FbV1MerchantRouter.post("/detail",MerchantDetail)
