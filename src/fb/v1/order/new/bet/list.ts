@@ -9,11 +9,11 @@ export class V1OrderNewBetList extends OpenAPIRoute {
         request: {
             body: contentJson(
                 z.object({
-      languageType: z.string(),
-      isSettled: z.boolean(),
-      current: z.number(),
-      size: z.number(),
-    })
+                    languageType: z.string(),
+                    isSettled: z.boolean(),
+                    current: z.number(),
+                    size: z.number(),
+                })
             ),
         },
         responses: {

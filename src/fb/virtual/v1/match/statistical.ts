@@ -9,8 +9,8 @@ export class VirtualV1MatchStatistical extends OpenAPIRoute {
         request: {
             body: contentJson(
                 z.object({
-      languageType: z.string(),
-    })
+                    languageType: z.string(),
+                })
             ),
         },
         responses: {
@@ -26,6 +26,6 @@ export class VirtualV1MatchStatistical extends OpenAPIRoute {
     };
 
     async handle() {
-        return {};
+        return { "success": true, "message": null, "data": { "ssl": [{ "sid": "1001", "ls": [{ "id": "19089", "na": "歐洲錦標賽", "lurl": "https://ns-static.s3.ap-northeast-1.amazonaws.com/data/dc3dde700eb3cd55cb58940a7bad3577.png" }, { "id": "21895", "na": "西班牙聯賽", "lurl": "" }, { "id": "21255", "na": "意大利聯賽", "lurl": "https://ns-static.s3.ap-northeast-1.amazonaws.com/data/dc3dde700eb3cd55cb58940a7bad3577.png" }, { "id": "21257", "na": "英格蘭聯賽", "lurl": "https://ns-static.s3.ap-northeast-1.amazonaws.com/data/dc3dde700eb3cd55cb58940a7bad3577.png" }] }, { "sid": "1020", "ls": [] }, { "sid": "1021", "ls": [] }, { "sid": "1022", "ls": [] }, { "sid": "1023", "ls": [] }] }, "code": 0 };
     }
 }
