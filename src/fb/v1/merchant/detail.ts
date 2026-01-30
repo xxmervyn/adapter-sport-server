@@ -124,8 +124,8 @@ export class MerchantDetail extends OpenAPIRoute {
                     1205,
                     200
                 ],
-                "tdl": "/merchant/banner/1322238919152365569/4b52bc4d1a6e835af0266fe2cc447603.png",
-                "tnl": "/merchant/banner/1322238919152365569/c7653dd77c919decb994f7cae247ed7f.png",
+                "tdl": "https://fbsports.appplaygasdsd.org/merchant/banner/1322238919152365569/4b52bc4d1a6e835af0266fe2cc447603.png",
+                "tnl": "https://fbsports.appplaygasdsd.org/merchant/banner/1322238919152365569/c7653dd77c919decb994f7cae247ed7f.png",
                 "otp": [
                     1,
                     2,
