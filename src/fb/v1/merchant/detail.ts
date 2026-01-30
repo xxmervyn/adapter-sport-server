@@ -33,6 +33,7 @@ export class MerchantDetail extends OpenAPIRoute {
 	
 		return {
             code: 0,
+            success: true,
             data: {
                 "st": 1,
                 "tmz": "Etc/GMT+4",
