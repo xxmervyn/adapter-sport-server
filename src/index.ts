@@ -5,6 +5,7 @@ import { ContentfulStatusCode } from "hono/utils/http-status";
 import { GamesEnterEndpoint } from "./games/gamesEnter";
 import { FbV1Router } from "./fb/v1/router";
 import { FbLanguageRouter } from "./fb/language/router";
+import { FbVirtualV1Router } from "./fb/virtual/v1/router";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
@@ -62,6 +63,8 @@ openapi.get("/games/enter", GamesEnterEndpoint);
 openapi.route("/v1", FbV1Router);
 
 openapi.route("/language", FbLanguageRouter);
+
+openapi.route("/virtual", FbVirtualV1Router);
 
 // Export the Hono app
 export default app;

@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { fromHono } from "chanfana";
-import { LanguageStaticList } from "./staticList";
+import { FbLanguageStaticRouter } from "./static/router";
+
 export const FbLanguageRouter = fromHono(new Hono());
 
-
-FbLanguageRouter.post("/static/list",LanguageStaticList)
+FbLanguageRouter.route("/static", FbLanguageStaticRouter);
