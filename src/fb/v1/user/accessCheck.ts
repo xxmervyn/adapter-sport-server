@@ -19,12 +19,9 @@ export class AccessCheck extends OpenAPIRoute {
                 "200": {
                     description: "Returns the log details",
                     ...contentJson({
-                        success: Boolean,
-                        result: z.object({
-                            code: z.string(),
-                            data: z.boolean(),
-                            success: z.boolean(),
-                        }),
+                        code: z.string(),
+                        data: z.boolean(),
+                        success: z.boolean(),
                     }),
                 },
             },
@@ -35,12 +32,9 @@ export class AccessCheck extends OpenAPIRoute {
 		const data = await this.getValidatedData<typeof this.schema>();
 	
 		return {
-			success: true,
-			result: {
-				code: 0,
-				data: false,
-				success: true,
-			},
+            code: 0,
+            data: false,
+            success: true,
 		};
 	}
 }
