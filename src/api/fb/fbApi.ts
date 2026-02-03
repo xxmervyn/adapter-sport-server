@@ -8,6 +8,7 @@ import { V1OrderApi } from "./v1/OrderApi"
 import { V1UserApi } from "./v1/UserApi"
 import { LanguageStaticApi } from "./language/StaticApi"
 import { VirtualV1MatchApi } from "./virtual/V1MatchApi"
+import { VirtualV1StatApi } from "./virtual/V1StatApi"
 
 const FbApi = {
     V1BulletinApi,
@@ -18,6 +19,7 @@ const FbApi = {
     V1UserApi,
     LanguageStaticApi,
     VirtualV1MatchApi,
+    VirtualV1StatApi,
 }
 
 export {
