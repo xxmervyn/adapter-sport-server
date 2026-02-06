@@ -11,15 +11,15 @@ import { VirtualV1MatchApi } from "./virtual/V1MatchApi"
 import { VirtualV1StatApi } from "./virtual/V1StatApi"
 
 const FbApi = {
-    V1BulletinApi,
-    V1MatchApi,
-    V1MerchantApi,
-    V1SportRuleApi,
-    V1OrderApi,
-    V1UserApi,
-    LanguageStaticApi,
-    VirtualV1MatchApi,
-    VirtualV1StatApi,
+    V1BulletinApi: new V1BulletinApi(),
+    V1MatchApi: new V1MatchApi(),
+    V1MerchantApi: new V1MerchantApi(),
+    V1SportRuleApi: new V1SportRuleApi(),
+    V1OrderApi: new V1OrderApi(),
+    V1UserApi: new V1UserApi(),
+    LanguageStaticApi: new LanguageStaticApi(),
+    VirtualV1MatchApi: new VirtualV1MatchApi(),
+    VirtualV1StatApi: new VirtualV1StatApi(),
 }
 
 export {

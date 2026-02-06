@@ -30,7 +30,7 @@ export class AccessCheck extends OpenAPIRoute {
 
 	public async handle(c: AppContext) {
 		const data = await this.getValidatedData<typeof this.schema>();
-	
+		
 		return {
             code: 0,
             data: false,

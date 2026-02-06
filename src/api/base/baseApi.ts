@@ -1,14 +1,7 @@
 import { API_BASE_URL_ENUMS } from "../../enums/apiBaseUrlEnum";
+import { FbApiError } from "../../model/comm/Error";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS";
-
-export interface ApiResponse<T = any> {
-    data: T;
-    status: number;
-    statusText: string;
-    headers: Record<string, string>;
-    url: string;
-}
 
 export interface BaseApiOptions {
     baseURL?: API_BASE_URL_ENUMS;
@@ -19,7 +12,7 @@ export interface BaseApiOptions {
     validateStatus?: (status: number) => boolean;
 }
 
-export interface RequestOptions extends Omit<RequestInit, 'headers' | 'method' | 'body'> {
+export interface ApiRequestOptions extends Omit<RequestInit, 'headers' | 'method' | 'body'> {
     baseURL?: API_BASE_URL_ENUMS;
     headers?: HeadersInit;
     retry?: number;
@@ -28,19 +21,6 @@ export interface RequestOptions extends Omit<RequestInit, 'headers' | 'method' |
 }
 
 export type AuthorizationHeaderFn = (headers: HeadersInit) => HeadersInit | Promise<HeadersInit>;
-
-export class ApiError extends Error {
-    constructor(
-        message: string,
-        public status?: number,
-        public url?: string,
-        public data?: any,
-        public headers?: Record<string, string>
-    ) {
-        super(message);
-        this.name = 'ApiError';
-    }
-}
 
 export class BaseApi {
     protected baseURL: string;
@@ -169,12 +149,7 @@ export class BaseApi {
         return result;
     }
 
-    protected async parseResponse<T>(response: Response, url: string): Promise<ApiResponse<T>> {
-        // 收集响应头
-        const headers: Record<string, string> = {};
-        response.headers.forEach((value, key) => {
-            headers[key] = value;
-        });
+    protected async parseResponse<T>(response: Response): Promise<T> {
 
         // 根据 Content-Type 解析响应体
         const contentType = response.headers.get("content-type") || "";
@@ -194,18 +169,12 @@ export class BaseApi {
             data = await response.text();
         }
 
-        return {
-            data: data as T,
-            status: response.status,
-            statusText: response.statusText,
-            headers,
-            url,
-        };
+        return data as T
     }
 
     /* ================= 核心请求方法 ================= */
 
-    protected async request<T>(method: HttpMethod, url: string, data?: any, options?: RequestOptions): Promise<ApiResponse<T>> {
+    protected async request<T>(method: HttpMethod, url: string, data?: any, options?: ApiRequestOptions): Promise<T> {
         const maxRetry = options?.retry ?? this.retry;
         const retryDelay = options?.retryDelay ?? this.retryDelay;
         let attempt = 0;
@@ -245,43 +214,42 @@ export class BaseApi {
                 delete (fetchOptions as any).retryDelay;
                 delete (fetchOptions as any).params;
 
+                console.log("请求:", fullUrl, "   data:", data, "   ", fetchOptions);
+
+
+
                 const fetchPromise = fetch(fullUrl, fetchOptions);
                 const response = await this.withTimeout(fetchPromise, this.timeout);
 
-                const apiResponse = await this.parseResponse<T>(response, fullUrl);
 
                 // 验证状态码
-                if (!this.validateStatus(apiResponse.status)) {
-                    throw new ApiError(
-                        `Request failed with status ${apiResponse.status}`,
-                        apiResponse.status,
+                if (!this.validateStatus(response.status)) {
+                    throw new FbApiError(
+                        `Request failed with status ${response.status}`,
+                        response.status,
                         fullUrl,
-                        apiResponse.data,
-                        apiResponse.headers
+                        this.parseResponse(response),
                     );
                 }
 
-                return apiResponse;
+                return this.parseResponse(response);
 
             } catch (error) {
                 lastError = error;
 
-                // 如果是 ApiError 且是客户端错误（4xx），不再重试
-                if (error instanceof ApiError && error.status && error.status >= 400 && error.status < 500) {
+                if (error instanceof FbApiError && error.status && error.status >= 400 && error.status < 500) {
                     throw error;
                 }
 
                 // 如果是网络错误或其他非客户端错误，继续重试
                 if (attempt >= maxRetry) {
-                    if (error instanceof ApiError) {
+                    if (error instanceof FbApiError) {
                         throw error;
                     }
-                    throw new ApiError(
+                    throw new FbApiError(
                         (error as any)?.message || 'Request failed',
                         (error as any).status,
                         (error as any).url,
-                        undefined,
-                        (error as any).headers
                     );
                 }
 
@@ -296,27 +264,43 @@ export class BaseApi {
 
     /* ================= 便捷方法 ================= */
 
-    public get<T>(url: string, params?: Record<string, any>, options?: RequestOptions): Promise<ApiResponse<T>> {
+    public get<T>(url: string, params?: Record<string, any>, options?: ApiRequestOptions): Promise<T> {
         return this.request<T>("GET", url, params, options);
     }
 
-    public post<T>(url: string, data?: any, options?: RequestOptions): Promise<ApiResponse<T>> {
+    public post<T>(url: string, data?: any, options?: ApiRequestOptions): Promise<T> {
         return this.request<T>("POST", url, data, options);
     }
 
-    public put<T>(url: string, data?: any, options?: RequestOptions): Promise<ApiResponse<T>> {
+    public put<T>(url: string, data?: any, options?: ApiRequestOptions): Promise<T> {
         return this.request<T>("PUT", url, data, options);
     }
 
-    public delete<T>(url: string, params?: Record<string, any>, options?: RequestOptions): Promise<ApiResponse<T>> {
+    public delete<T>(url: string, params?: Record<string, any>, options?: ApiRequestOptions): Promise<T> {
         return this.request<T>("DELETE", url, params, options);
     }
 
-    public patch<T>(url: string, data?: any, options?: RequestOptions): Promise<ApiResponse<T>> {
+    public patch<T>(url: string, data?: any, options?: ApiRequestOptions): Promise<T> {
         return this.request<T>("PATCH", url, data, options);
     }
 
-    public formPost<T>(url: string, form: Record<string, any> | URLSearchParams | FormData, options?: RequestOptions): Promise<ApiResponse<T>> {
+    public head<T = void>(
+        url: string,
+        params?: Record<string, any>,
+        options?: ApiRequestOptions
+    ): Promise<T> {
+        return this.request<T>("HEAD", url, params, options);
+    }
+
+    public options<T>(
+        url: string,
+        params?: Record<string, any>,
+        options?: ApiRequestOptions
+    ): Promise<T> {
+        return this.request<T>("OPTIONS", url, params, options);
+    }
+
+    public formPost<T>(url: string, form: Record<string, any> | URLSearchParams | FormData, options?: ApiRequestOptions): Promise<T> {
         let body: FormData | URLSearchParams;
 
         if (form instanceof FormData || form instanceof URLSearchParams) {
@@ -336,53 +320,6 @@ export class BaseApi {
                 ...options?.headers,
             },
         });
-    }
-
-    public upload<T>(
-        url: string,
-        file: File | Blob,
-        fieldName = "file",
-        additionalData?: Record<string, any>,
-        options?: RequestOptions
-    ): Promise<ApiResponse<T>> {
-        const formData = new FormData();
-        formData.append(fieldName, file);
-
-        if (additionalData) {
-            Object.entries(additionalData).forEach(([key, value]) => {
-                if (value !== undefined && value !== null) {
-                    if (value instanceof Blob || value instanceof File) {
-                        formData.append(key, value);
-                    } else if (Array.isArray(value)) {
-                        value.forEach(item => {
-                            if (item !== undefined && item !== null) {
-                                formData.append(key, String(item));
-                            }
-                        });
-                    } else {
-                        formData.append(key, String(value));
-                    }
-                }
-            });
-        }
-
-        return this.post<T>(url, formData, options);
-    }
-
-    public head<T = void>(
-        url: string,
-        params?: Record<string, any>,
-        options?: RequestOptions
-    ): Promise<ApiResponse<T>> {
-        return this.request<T>("HEAD", url, params, options);
-    }
-
-    public options<T>(
-        url: string,
-        params?: Record<string, any>,
-        options?: RequestOptions
-    ): Promise<ApiResponse<T>> {
-        return this.request<T>("OPTIONS", url, params, options);
     }
 }
 
@@ -411,7 +348,7 @@ export const FBNotAuthBaseApi = createApi(
             'sec-ch-ua-mobile': '?0',
             'sec-ch-ua-platform': '"Windows"',
             'Host': 'api.a233z1.com',
-            'Origin': 'https://c.e70cz.com',
+            'Origin': API_BASE_URL_ENUMS.HTTPS_API_A233Z1_COM,
             'Sec-Fetch-Dest': 'empty',
             'Sec-Fetch-Mode': 'cors',
             'Sec-Fetch-Site': 'cross-site',

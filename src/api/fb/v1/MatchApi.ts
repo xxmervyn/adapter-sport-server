@@ -1,5 +1,5 @@
 import { FBNotAuthBaseApi } from "../../base/baseApi"
-import { FbCommApiResponse } from "../../../model/fbModel"
+import { FbCommApiResponse } from "../../../model/response/fbModel"
 import { API_BASE_URL_ENUMS } from "../../../enums/apiBaseUrlEnum"
 
 export class V1MatchApi {

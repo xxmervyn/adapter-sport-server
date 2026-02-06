@@ -1,5 +1,5 @@
 import { FBNotAuthBaseApi } from "../../base/baseApi"
-import { FbCommApiResponse } from "../../../model/fbModel"
+import { FbCommApiResponse } from "../../../model/response/fbModel"
 
 export class V1BulletinApi {
     async listTop(params: { languageType: string } | any) {
