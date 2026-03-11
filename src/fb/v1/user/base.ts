@@ -3,8 +3,8 @@ import { z } from "zod";
 
 export class V1UserBase extends OpenAPIRoute {
     public schema = {
-        tags: ["V1UserBase"],
-        summary: "V1UserBase",
+        tags: ["用户"],
+        summary: "V1UserBase 用户基本信息",
         operationId: "V1UserBase",
         request: {
             body: contentJson(

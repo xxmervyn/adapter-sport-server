@@ -1,4 +1,4 @@
-import { FBNotAuthBaseApi } from "../../base/baseApi"
+import { FBNotAuthBaseApi, FBForwardBaseApi } from "../../base/baseApi"
 import { FbCommApiResponse } from "../../../model/response/fbModel"
 import { API_BASE_URL_ENUMS } from "../../../enums/apiBaseUrlEnum"
 
@@ -66,5 +66,9 @@ export class V1MatchApi {
         matchId: number,
     } | any) {
         return await FBNotAuthBaseApi.post<FbCommApiResponse>('/v1/match/matchResultInfo', params)
+    }
+
+    async recommendMatchList(params: {languageType: string} | any) {
+        return await FBForwardBaseApi.post<FbCommApiResponse>('/v1/match/recommendMatchList', params)
     }
 }

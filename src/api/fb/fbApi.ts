@@ -20,6 +20,7 @@ const FbApi = {
     LanguageStaticApi: new LanguageStaticApi(),
     VirtualV1MatchApi: new VirtualV1MatchApi(),
     VirtualV1StatApi: new VirtualV1StatApi(),
+
 }
 
 export {

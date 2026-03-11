@@ -234,3 +234,12 @@ export const FbNotAuthService = createService({
     },
     localCache: new FBLocalCache()
 });
+
+export const FbUserService = createService({
+    localCacheDefConf: {
+        isCache: true,
+        cacheTime: 1_000 // 1 秒（毫秒）
+    },
+    localCache: new FBLocalCache()
+});
+

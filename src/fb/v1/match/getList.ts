@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export class V1MatchGetList extends OpenAPIRoute {
     public schema = {
-        tags: ["V1MatchGetList"],
+        tags: ["我的关注"],
         summary: "V1MatchGetList",
         operationId: "V1MatchGetList",
         request: {
