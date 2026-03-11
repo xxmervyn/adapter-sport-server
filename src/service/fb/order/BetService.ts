@@ -3,19 +3,19 @@ import { FbCommApiResponse } from "../../../model/response/fbModel"
 import { HonoRequest } from "hono"
 import { FbApi } from "../../../api/fb/fbApi"
 
-export class MatchService {
-    async recommendMatchList(req: HonoRequest, data:any) {
+export class BetService {
+    async betList(req: HonoRequest, data:any) {
         return await FbUserService.api<FbCommApiResponse>(
             req,
-            () => { return FbApi.V1MatchApi.recommendMatchList(data) },
+            () => { return FbApi.V1OrderApi.newBetList(data) },
             { cache: { isCache: true, cacheTime: 1000 } }
         )
     }
 
-    async getLiveList(req: HonoRequest, data:any) {
+    async betchBetList(req: HonoRequest, data:any) {
         return await FbUserService.api<FbCommApiResponse>(
             req,
-            () => { return FbApi.V1MatchApi.getLiveList(data) },
+            () => { return FbApi.V1OrderApi.batchBetList(data) },
             { cache: { isCache: true, cacheTime: 1000 } }
         )
     }

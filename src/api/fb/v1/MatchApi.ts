@@ -71,4 +71,16 @@ export class V1MatchApi {
     async recommendMatchList(params: {languageType: string} | any) {
         return await FBForwardBaseApi.post<FbCommApiResponse>('/v1/match/recommendMatchList', params)
     }
+
+    async getLiveList(params: {
+        current: number,
+        isPC: boolean,
+        languageType: string,
+        oddsType: number,
+        orderBy: number,
+        sportTypes: Array<number>,
+        type: number
+    } | any) {
+        return await FBNotAuthBaseApi.post<FbCommApiResponse>('/v1/match/getList', params)
+    }
 }

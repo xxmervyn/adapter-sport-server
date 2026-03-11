@@ -1,10 +1,12 @@
 import { OpenAPIRoute, contentJson } from "chanfana";
+import { AppContext } from "../../../types";
 import { z } from "zod";
+import { FbService } from "../../../service/fb/fbService";
 
 export class V1UserBase extends OpenAPIRoute {
     public schema = {
-        tags: ["用户"],
-        summary: "V1UserBase 用户基本信息",
+        tags: ["用户基本信息"],
+        summary: "V1UserBase",
         operationId: "V1UserBase",
         request: {
             body: contentJson(
@@ -25,21 +27,8 @@ export class V1UserBase extends OpenAPIRoute {
         },
     };
 
-    async handle() {
-        return {
-            "success": true,
-            "data": {
-                "currencyId": 1,
-                "uid": "3254482",
-                "bl": "3069.44",
-                "cbs": [
-                    {
-                        "bl": "3069.44",
-                        "cid": 1
-                    }
-                ]
-            },
-            "code": 0
-        };
+    async handle(c: AppContext) {
+        const data = await this.getValidatedData<typeof this.schema>();
+		return await FbService.UserService.getUsertInfo(c.req, data.body);
     }
 }
