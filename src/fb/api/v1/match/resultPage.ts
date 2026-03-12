@@ -12,7 +12,7 @@ export class V1MatchResultPage extends OpenAPIRoute {
                 z.object({
                     languageType: z.string(),
                     oddsType: z.number(),
-                    matchId: z.number(),
+                    matchId: z.string(),
                 })
             ),
         },
