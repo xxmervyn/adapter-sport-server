@@ -1,0 +1,33 @@
+import { OpenAPIRoute, contentJson } from "chanfana";
+import { z } from "zod";
+import { FbService } from "../../../../service/fbService";
+
+export class VirtualV1StatGetByMatchId extends OpenAPIRoute {
+    public schema = {
+        tags: ["VirtualV1StatGetByMatchId"],
+        summary: "VirtualV1StatGetByMatchId",
+        operationId: "VirtualV1StatGetByMatchId",
+        request: {
+            body: contentJson(
+                z.object({
+                    languageType: z.string(),
+                })
+            ),
+        },
+        responses: {
+            "200": {
+                description: "VirtualV1StatGetByMatchId",
+                ...contentJson({
+                    code: z.any(),
+                    data: z.any(),
+                    success: z.boolean(),
+                }),
+            },
+        },
+    };
+
+    async handle() {
+        const data = await this.getValidatedData<typeof this.schema>();
+        return FbService.VirtualV1Match.statistical(data.body)    
+    }
+}

@@ -3,9 +3,9 @@ import { Hono } from "hono";
 import {cors} from "hono/cors"
 import { ContentfulStatusCode } from "hono/utils/http-status";
 import { GamesEnterEndpoint } from "./games/gamesEnter";
-import { FbV1Router } from "./fb/v1/router";
-import { FbLanguageRouter } from "./fb/language/router";
-import { FbVirtualV1Router } from "./fb/virtual/v1/router";
+import { FbV1Router } from "./fb/api/v1/router";
+import { FbLanguageRouter } from "./fb/api/language/router";
+import { FbVirtualV1Router } from "./fb/api/virtual/v1/router";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
