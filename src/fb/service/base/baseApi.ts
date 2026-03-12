@@ -179,16 +179,16 @@ export class BaseApi {
         const retryDelay = options?.retryDelay ?? this.retryDelay;
         let attempt = 0;
         let lastError: any;
-
+    
         while (attempt < maxRetry) {
             attempt++;
             try {
                 const baseURL = options?.baseURL ?? this.baseURL;
                 const headers = await this.getMergedHeaders(baseURL, options?.headers);
                 const fullUrl = this.buildUrl(url, baseURL, method === "GET" ? data : options?.params);
-
+    
                 let body: BodyInit | null | undefined = undefined;
-
+    
                 // 处理请求体
                 if (method !== "GET" && data !== undefined) {
                     if (data instanceof FormData || data instanceof URLSearchParams || data instanceof Blob || typeof data === 'string') {
@@ -200,66 +200,67 @@ export class BaseApi {
                         }
                     }
                 }
-
+    
                 const fetchOptions: RequestInit = {
                     method,
                     headers,
                     body,
                     ...options,
                 };
-
-                // 移除重复的 options
+    
                 delete (fetchOptions as any).baseURL;
                 delete (fetchOptions as any).retry;
                 delete (fetchOptions as any).retryDelay;
                 delete (fetchOptions as any).params;
-
-                // console.log("请求:", fullUrl, "   data:", data, "   ", fetchOptions);
-
-
-
+    
                 const fetchPromise = fetch(fullUrl, fetchOptions);
                 const response = await this.withTimeout(fetchPromise, this.timeout);
-
-
-                // 验证状态码
+    
+                // 状态码验证
                 if (!this.validateStatus(response.status)) {
-                    throw new FbApiError(
+    
+                    const err = new FbApiError(
                         `Request failed with status ${response.status}`,
                         response.status,
                         fullUrl,
                         this.parseResponse(response),
                     );
+    
+                    console.error("API ERROR:", err);
+                    return {} as T;
                 }
-
+    
                 return this.parseResponse(response);
-
+    
             } catch (error) {
                 lastError = error;
-
+    
+                // 客户端错误直接返回
                 if (error instanceof FbApiError && error.status && error.status >= 400 && error.status < 500) {
-                    throw error;
+                    console.error("Client Error:", error);
+                    return {} as T;
                 }
-
-                // 如果是网络错误或其他非客户端错误，继续重试
+    
+                // retry结束
                 if (attempt >= maxRetry) {
-                    if (error instanceof FbApiError) {
-                        throw error;
-                    }
-                    throw new FbApiError(
-                        (error as any)?.message || 'Request failed',
-                        (error as any).status,
-                        (error as any).url,
-                    );
+                    console.error("Request failed after retries:", {
+                        url,
+                        method,
+                        data,
+                        error
+                    });
+    
+                    return {} as T;
                 }
-
+    
                 // 指数退避
                 const delay = retryDelay * Math.pow(2, attempt - 1);
                 await this.sleep(delay);
             }
         }
-
-        throw lastError;
+    
+        console.error("Unexpected request failure:", lastError);
+        return {} as T;
     }
 
     /* ================= 便捷方法 ================= */

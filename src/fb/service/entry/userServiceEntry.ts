@@ -1,6 +1,6 @@
 import { sha256 } from "hono/utils/crypto";
 import { FbCommApiResponse } from "../../model/response/fbModel";
-import { FBNotAuthBaseApi } from "../base/baseApi";
+import { FBForwardBaseApi, FBNotAuthBaseApi } from "../base/baseApi";
 import { BaseService, ServiceLocalCacheInterface } from "../base/baseService";
 import { HonoRequest } from "hono";
 
@@ -61,13 +61,13 @@ class FBLocalCache implements ServiceLocalCacheInterface {
 }
 
 class FbUserServiceClass extends BaseService {
-    public async request(url: string, params: any, req: HonoRequest, api = FBNotAuthBaseApi) {
-        // var xFrontPage = req.header("x-front-page")
-        // const headers: HeadersInit = {}
-        // if (xFrontPage) {
-        //     headers["x-front-page"] = xFrontPage
-        // }
-        const headers = req.raw.headers
+    public async request(url: string, params: any, req: HonoRequest, api = FBForwardBaseApi) {
+        var xFrontPage = req.header("x-front-page")
+        const headers: HeadersInit = {}
+        if (xFrontPage) {
+            headers["x-front-page"] = xFrontPage
+        }
+        // const headers = req.raw.headers
         return await this.api<FbCommApiResponse>(url, params, () => api.post(url, params, { headers }))
     }
 }
