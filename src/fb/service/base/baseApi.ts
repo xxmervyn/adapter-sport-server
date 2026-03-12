@@ -450,24 +450,7 @@ export const FBForwardBaseApi = createApi(
         timeout: 5000,
         retry: 1,
         retryDelay: 1000,
-        headers: {
-            'Accept': 'application/json, text/plain, */*',
-            'Accept-Language': 'zh-CN,zh;q=0.9',
-            'Authorization': 'tt_E1oH1ZfpdNB26TO7hgqlCVeKztt5jm10.a6dc66a5efe2f81b969674dbc18ed50e',
-            'Cache-Control': 'no-cache',
-            'Connection': 'keep-alive',
-            'Content-Type': 'application/json;charset=UTF-8',
-            'Origin': 'https://c.e70cz.com',
-            'Pragma': 'no-cache',
-            'Referer': 'https://c.e70cz.com/',
-            'Sec-Fetch-Dest': 'empty',
-            'Sec-Fetch-Mode': 'cors',
-            'Sec-Fetch-Site': 'cross-site',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36',
-            'sec-ch-ua': '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"Windows"'
-        }
+        headers: {}
     }, () => {
         return {}
     });
