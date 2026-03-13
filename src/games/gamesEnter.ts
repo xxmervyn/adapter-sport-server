@@ -3,6 +3,7 @@ import { AppContext } from "../types";
 import { z } from "zod";
 import { MD5 } from "crypto-js";
 import { HonoRequest } from "hono";
+import { tr } from "zod/v4/locales";
 
 export class GamesEnterEndpoint extends OpenAPIRoute {
 	public schema = {
@@ -37,9 +38,9 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			pcThemeCustomFgColor: "#4C6FFF"
 		}))
 		var url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=t013&` +
-			`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://v.${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=wss://push.${apiHostName}&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
+			`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=wss://push.${apiHostName}&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
 			`handicap=1&themeBg=4C6FFF&themeText=${themeText}&controlMenu=2&language=ZHO`
-		url = genGameUrlSignWithKeys(data.query, url, ["token", "pcAddress", "virtualSrc", "apiSrc"], false)
+		url = genGameUrlSignWithKeys(data.query, url, ["token", "pcAddress", "virtualSrc", "apiSrc"], tr)
 
 		return c.redirect(url)
 	}

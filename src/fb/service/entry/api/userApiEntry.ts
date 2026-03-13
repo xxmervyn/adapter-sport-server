@@ -10,10 +10,10 @@ class FBForwardBaseApiClass extends BaseApi {
         }
 
         refererStr = decodeURIComponent(refererStr);
-        refererStr = refererStr.replaceAll(`"#`, `"%23`);
         // if (config.NeedChangeJinhao == true) {
         //     refererStr = refererStr.replaceAll("#", "&");
         // }
+        refererStr = refererStr.replaceAll("#", "&");
 
         // console.log("CheckRefrenceEsign", refererStr);
         let refererUrl = new URL(refererStr);
