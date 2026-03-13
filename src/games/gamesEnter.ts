@@ -2,6 +2,7 @@ import { contentJson, OpenAPIRoute } from "chanfana";
 import { AppContext } from "../types";
 import { z } from "zod";
 import { MD5 } from "crypto-js";
+import { HonoRequest } from "hono";
 
 export class GamesEnterEndpoint extends OpenAPIRoute {
 	public schema = {
@@ -27,23 +28,26 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 	public async handle(c: AppContext) {
 		const data = await this.getValidatedData<typeof this.schema>();
 
-		const urlReq = URL.parse(c.req.url);
+		const urlReq = new URL(c.req.url);
 		const apiHostName = urlReq?.hostname.replace(".", "-api.");
 
+		const themeText = encodeURIComponent(JSON.stringify({
+			h5FgColor: "#4C6FFF",
+			pcFgColor: "#4C6FFF",
+			pcThemeCustomFgColor: "#4C6FFF"
+		}))
 		var url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=t013&` +
 			`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://v.${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=wss://push.${apiHostName}&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
-			`handicap=1&themeBg=4C6FFF&themeText={&quot;h5FgColor&quot;:&quot;#4C6FFF&quot;,&quot;pcFgColor&quot;:&quot;#4C6FFF&quot;,&quot;pcThemeCustomFgColor&quot;:&quot;#4C6FFF&quot;}` +
-			`&controlMenu=2&language=ZHO`
-		url = genGameUrlSignWithKeys(url, ["token", "pcAddress", "virtualSrc", "apiSrc"], false)
+			`handicap=1&themeBg=4C6FFF&themeText=${themeText}&controlMenu=2&language=ZHO`
+		url = genGameUrlSignWithKeys(data.query, url, ["token", "pcAddress", "virtualSrc", "apiSrc"], false)
 
 		return c.redirect(url)
 	}
 }
 
 
-function genGameUrlSignWithKeys(url: string, keys: string[] | null, changeJinhan: boolean): string {
-
-	const reqTime = Math.floor(Date.now() / 1000).toString();
+function genGameUrlSignWithKeys(reqParams: any, url: string, keys: string[] | null, changeJinhan: boolean): string {
+	const reqTime = reqParams["reqt"] ?? Math.floor(Date.now() / 1000).toString();
 
 	url = `${url}&reqt=${reqTime}`;
 
@@ -65,7 +69,7 @@ function genGameUrlSignWithKeys(url: string, keys: string[] | null, changeJinhan
 		const urlDetail = new URL(urlQuery);
 		const query = urlDetail.searchParams;
 
-		fullHref = urlDetail.host + "&" + reqTime;
+		fullHref = urlDetail.hostname + "&" + (query.get("reqt") ?? "");
 
 		resTag = "k_";
 

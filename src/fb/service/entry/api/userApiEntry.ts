@@ -10,7 +10,7 @@ class FBForwardBaseApiClass extends BaseApi {
         }
 
         refererStr = decodeURIComponent(refererStr);
-
+        refererStr = refererStr.replaceAll(`"#`, `"%23`);
         // if (config.NeedChangeJinhao == true) {
         //     refererStr = refererStr.replaceAll("#", "&");
         // }
