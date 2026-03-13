@@ -273,10 +273,12 @@ export class BaseApi {
                     return {} as T;
                 }
 
+                const baseURL = options?.baseURL ?? this.baseURL;
+                const fullUrl = this.buildUrl(url, baseURL, method === "GET" ? data : options?.params);
                 // retry结束
                 if (attempt >= maxRetry) {
                     console.error("Request failed after retries:", {
-                        url,
+                        fullUrl,
                         method,
                         data,
                         error

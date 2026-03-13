@@ -20,7 +20,7 @@ class FBForwardBaseApiClass extends BaseApi {
         let esign = refererUrl.searchParams.get("esign") ?? "";
         let reqt = refererUrl.searchParams.get("reqt") ?? "";
         if (esign == "" || reqt == "") {
-            console.warn("主链接未签名", refererStr);
+            // console.warn("主链接未签名", refererStr);
             return false
         }
 
@@ -31,13 +31,13 @@ class FBForwardBaseApiClass extends BaseApi {
 
         // console.log("esign:", esign, "regt:", reqt);
         if (Math.abs(parseInt(reqt) - (new Date()).getTime() / 1000) > 86400) {
-            console.warn("主链接已过有效期", refererStr);
+            // console.warn("主链接已过有效期", refererStr);
             return false;
         }
 
         let signStrVec = refererStr.split("&esign=");
         if (signStrVec.length != 2) {
-            console.warn("主链接没有签名:", refererStr);
+            // console.warn("主链接没有签名:", refererStr);
             return false;
         }
 
@@ -61,7 +61,7 @@ class FBForwardBaseApiClass extends BaseApi {
         }
 
         if (signStr != esign) {
-            console.warn("主链接签名错误:", refererStr);
+            // console.warn("主链接签名错误:", refererStr);
             return false;
         }
 
