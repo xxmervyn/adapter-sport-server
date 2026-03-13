@@ -74,8 +74,9 @@ export class BaseService {
 
         if (isExist) {
             //缓存中
-            return { code: 4003 } as T
+            return item ? item.data : {} as T
         }
+
         this.cacheStatusMap.set(cacheKey, true)
 
         const cacheTime = option?.cache?.cacheTime ?? this.localCacheDefConf.cacheTime ?? 0;

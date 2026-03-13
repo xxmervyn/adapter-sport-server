@@ -268,7 +268,7 @@ export class BaseApi {
                     );
 
                     console.error("API ERROR:", err);
-                    return {} as T;
+                    return { code: 4004 } as T;
                 }
 
                 return this.parseResponse(response);
