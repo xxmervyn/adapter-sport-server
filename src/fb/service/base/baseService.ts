@@ -61,12 +61,7 @@ export class BaseService {
     }
 
 
-    public async api<T>(
-        url: string,
-        params: any,
-        api: () => Promise<T>,
-        option?: ServiceRequestOptions
-    ): Promise<T> {
+    public async api<T>(path: string, params: any, api: () => Promise<T>, option?: ServiceRequestOptions): Promise<T> {
         const isCache =
             option?.cache?.isCache ??
             this.localCacheDefConf.isCache;
@@ -77,7 +72,7 @@ export class BaseService {
 
         const cacheKey =
             option?.cache?.cacheKey ??
-            await this.localCache.getRequestKey(url, params);
+            await this.localCache.getRequestKey(path, params);
 
         const item = this.localCache.getItem<T>(cacheKey);
         if (item && item.expireAt > Date.now()) {

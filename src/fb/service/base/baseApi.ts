@@ -109,8 +109,8 @@ export class BaseApi {
         return result;
     }
 
-    protected buildUrl(url: string, baseURL?: string, params?: Record<string, any>): string {
-        let fullUrl = (baseURL ?? this.baseURL) + url;
+    protected buildUrl(path: string, baseURL?: string, params?: Record<string, any>): string {
+        let fullUrl = (baseURL ?? this.baseURL) + path;
 
         if (params && Object.keys(params).length > 0) {
             const searchParams = new URLSearchParams();
@@ -200,7 +200,7 @@ export class BaseApi {
 
     /* ================= 核心请求方法 ================= */
 
-    protected async request<T>(method: HttpMethod, url: string, data?: any, options?: ApiRequestOptions): Promise<T> {
+    protected async request<T>(method: HttpMethod, path: string, data?: any, options?: ApiRequestOptions): Promise<T> {
         const maxRetry = options?.retry ?? this.retry;
         const retryDelay = options?.retryDelay ?? this.retryDelay;
         let attempt = 0;
@@ -211,7 +211,7 @@ export class BaseApi {
             try {
                 const baseURL = options?.baseURL ?? this.baseURL;
                 const headers = await this.getMergedHeaders(baseURL, options?.headers);
-                const fullUrl = this.buildUrl(url, baseURL, method === "GET" ? data : options?.params);
+                const fullUrl = this.buildUrl(path, baseURL, method === "GET" ? data : options?.params);
 
                 let body: BodyInit | null | undefined = undefined;
 
@@ -274,15 +274,10 @@ export class BaseApi {
                 }
 
                 const baseURL = options?.baseURL ?? this.baseURL;
-                const fullUrl = this.buildUrl(url, baseURL, method === "GET" ? data : options?.params);
+                const fullUrl = this.buildUrl(path, baseURL, method === "GET" ? data : options?.params);
                 // retry结束
                 if (attempt >= maxRetry) {
-                    console.error("Request failed after retries:", {
-                        fullUrl,
-                        method,
-                        data,
-                        error
-                    });
+                    console.error("Request failed after retries:" + fullUrl, error);
 
                     return {} as T;
                 }
@@ -299,24 +294,24 @@ export class BaseApi {
 
     /* ================= 便捷方法 ================= */
 
-    public get<T>(url: string, params?: Record<string, any>, options?: ApiRequestOptions): Promise<T> {
-        return this.request<T>("GET", url, params, options);
+    public get<T>(path: string, params?: Record<string, any>, options?: ApiRequestOptions): Promise<T> {
+        return this.request<T>("GET", path, params, options);
     }
 
-    public post<T>(url: string, data?: any, options?: ApiRequestOptions): Promise<T> {
-        return this.request<T>("POST", url, data, options);
+    public post<T>(path: string, data?: any, options?: ApiRequestOptions): Promise<T> {
+        return this.request<T>("POST", path, data, options);
     }
 
-    public put<T>(url: string, data?: any, options?: ApiRequestOptions): Promise<T> {
-        return this.request<T>("PUT", url, data, options);
+    public put<T>(path: string, data?: any, options?: ApiRequestOptions): Promise<T> {
+        return this.request<T>("PUT", path, data, options);
     }
 
-    public delete<T>(url: string, params?: Record<string, any>, options?: ApiRequestOptions): Promise<T> {
-        return this.request<T>("DELETE", url, params, options);
+    public delete<T>(path: string, params?: Record<string, any>, options?: ApiRequestOptions): Promise<T> {
+        return this.request<T>("DELETE", path, params, options);
     }
 
-    public patch<T>(url: string, data?: any, options?: ApiRequestOptions): Promise<T> {
-        return this.request<T>("PATCH", url, data, options);
+    public patch<T>(path: string, data?: any, options?: ApiRequestOptions): Promise<T> {
+        return this.request<T>("PATCH", path, data, options);
     }
 
     public head<T = void>(

@@ -61,14 +61,14 @@ class FBLocalCache implements ServiceLocalCacheInterface {
 }
 
 class FbUserServiceClass extends BaseService {
-    public async request(url: string, params: any, req: HonoRequest, api = FBForwardBaseApi) {
+    public async request(path: string, params: any, req: HonoRequest, api = FBForwardBaseApi) {
         var xFrontPage = req.header("x-front-page")
         const headers: HeadersInit = {}
         if (xFrontPage) {
             headers["x-front-page"] = xFrontPage
         }
         // const headers = req.raw.headers
-        return await this.api<FbCommApiResponse>(url, params, () => api.post(url, params, { headers }))
+        return await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, { headers }))
     }
 }
 
