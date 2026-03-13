@@ -34,7 +34,7 @@ export class V1MatchApi {
     }
 
     public getLiveList(params: any) {
-        return FbServiceEntry.request('/v1/match/getList', params)
+        return FbServiceEntry.request('/v1/match/getLiveList', params)
     }
 
 

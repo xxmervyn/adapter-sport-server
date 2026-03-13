@@ -160,6 +160,21 @@ class FBHeaderGenerator {
         info.token = resp.data.token
         info.serverInfo = resp.data.serverInfo
 
+
+        resp = await fetch(
+            "https://api.u7f3z.com/v1/user/accessCheck",
+            {
+                method: "POST",
+                headers: {
+                    "authorization": info.token
+                },
+                body: new URLSearchParams({
+                    "languageType": "ZHO",
+                    "version": "1"
+                })
+            }
+        ).then(r => r.json())
+
         return info
     }
 
