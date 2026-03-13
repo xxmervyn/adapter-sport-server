@@ -1,7 +1,8 @@
 import { sha256 } from "hono/utils/crypto";
-import { FbCommApiResponse } from "../../model/response/fbModel";
-import { FBNotAuthBaseApi } from "../base/baseApi";
-import { BaseService, ServiceLocalCacheInterface } from "../base/baseService";
+import { FbCommApiResponse } from "../../../model/response/fbModel";
+import { BaseService, ServiceLocalCacheInterface } from "../../base/baseService";
+import { HonoRequest } from "hono";
+import { FBForwardBaseApi } from "../api/userApiEntry";
 
 class FBLocalCache implements ServiceLocalCacheInterface {
     private store = new Map<string, { value: any; expireAt: number }>();
@@ -59,16 +60,22 @@ class FBLocalCache implements ServiceLocalCacheInterface {
 
 }
 
-class FbServiceClass extends BaseService {
-    public async request(url: string, params: any, api = FBNotAuthBaseApi) {
-        return await this.api<FbCommApiResponse>(url, params, () => api.post(url, params))
+class FbUserServiceClass extends BaseService {
+    public async request(url: string, params: any, req: HonoRequest, api = FBForwardBaseApi) {
+        var xFrontPage = req.header("x-front-page")
+        const headers: HeadersInit = {}
+        if (xFrontPage) {
+            headers["x-front-page"] = xFrontPage
+        }
+        // const headers = req.raw.headers
+        return await this.api<FbCommApiResponse>(url, params, () => api.post(url, params, { headers }))
     }
 }
 
-export const FbServiceEntry = new FbServiceClass({
+export const UserServiceEntry = new FbUserServiceClass({
     localCacheDefConf: {
-        isCache: true,
-        cacheTime: 1_000 // 1 秒（毫秒）
+        isCache: false,
+        cacheTime: 1_000
     },
-    localCache: new FBLocalCache()
+    localCache: new FBLocalCache(),
 });

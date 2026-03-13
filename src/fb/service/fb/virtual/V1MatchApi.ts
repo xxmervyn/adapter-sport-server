@@ -1,4 +1,4 @@
-import { FbServiceEntry } from "../../entry/fbServiceEntry"
+import { FbServiceEntry } from "../../entry/service/fbServiceEntry"
 
 export class VirtualV1MatchApi {
     public getMatchListWithResults(params: any) {

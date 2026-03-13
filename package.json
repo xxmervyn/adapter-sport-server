@@ -17,11 +17,13 @@
 	},
 	"dependencies": {
 		"chanfana": "2.8.3",
+		"crypto-js": "^4.2.0",
 		"hono": "4.11.1",
 		"zod": "3.25.67"
 	},
 	"devDependencies": {
 		"@cloudflare/vitest-pool-workers": "0.10.11",
+		"@types/crypto-js": "^4.2.2",
 		"@types/node": "24.10.1",
 		"typescript": "5.9.3",
 		"vitest": "3.2.4",

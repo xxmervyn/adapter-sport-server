@@ -1,4 +1,4 @@
-import { FbServiceEntry } from "../../entry/fbServiceEntry";
+import { FbServiceEntry } from "../../entry/service/fbServiceEntry";
 
 export class V1BulletinApi {
     public listTop(params: any) {

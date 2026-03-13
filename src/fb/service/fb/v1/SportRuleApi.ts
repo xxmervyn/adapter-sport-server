@@ -1,6 +1,4 @@
-import { FBNotAuthBaseApi } from "../../base/baseApi"
-import { FbCommApiResponse } from "../../../model/response/fbModel"
-import { FbServiceEntry } from "../../entry/fbServiceEntry"
+import { FbServiceEntry } from "../../entry/service/fbServiceEntry"
 
 export class V1SportRuleApi {
     public list(params: any) {

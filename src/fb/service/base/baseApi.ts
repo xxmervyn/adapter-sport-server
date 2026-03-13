@@ -9,7 +9,6 @@ export interface BaseApiOptions {
     headers?: HeadersInit;
     retry?: number;
     retryDelay?: number;
-    validateStatus?: (status: number) => boolean;
 }
 
 export interface ApiRequestOptions extends Omit<RequestInit, 'headers' | 'method' | 'body'> {
@@ -21,6 +20,8 @@ export interface ApiRequestOptions extends Omit<RequestInit, 'headers' | 'method
 }
 
 export type AuthorizationHeaderFn = (headers: HeadersInit) => HeadersInit | Promise<HeadersInit>;
+export type FetchFn = (req: Request) => Promise<Response>;
+export type IsValidatedRequestFn = (req: Request) => Promise<boolean>;
 
 export class BaseApi {
     protected baseURL: string;
@@ -28,17 +29,32 @@ export class BaseApi {
     protected defaultHeaders: Record<string, string>;
     protected retry: number;
     protected retryDelay: number;
-    protected validateStatus: (status: number) => boolean;
-    protected getAuthorizationHeader: AuthorizationHeaderFn;
 
-    constructor(options: BaseApiOptions = {}, getAuthorizationHeader?: AuthorizationHeaderFn) {
+    constructor(options: BaseApiOptions = {}) {
         this.baseURL = options.baseURL ?? "";
         this.timeout = options.timeout;
         this.retry = options.retry ?? 1;
         this.retryDelay = options.retryDelay ?? 0;
         this.defaultHeaders = this.normalizeHeaders(options.headers) as Record<string, string>;
-        this.validateStatus = options.validateStatus ?? ((status) => status >= 200 && status < 300);
-        this.getAuthorizationHeader = getAuthorizationHeader ?? (() => ({}));
+    }
+
+    /* ================= 可覆盖方法 ================= */
+
+    protected validateStatus(status: number): boolean {
+        return status >= 200 && status < 300;
+    }
+
+    protected fetch(req: Request): Promise<Response> {
+        return fetch(req)
+    }
+
+
+    protected async getAuthorizationHeader(): Promise<HeadersInit> {
+        return {}
+    }
+
+    protected async isValidatedRequest(req: Request): Promise<boolean> {
+        return true
     }
 
     /* ================= 工具方法 ================= */
@@ -129,7 +145,7 @@ export class BaseApi {
         Object.assign(result, this.defaultHeaders);
 
         // 合并授权 headers
-        const authHeaders = await this.getAuthorizationHeader(result);
+        const authHeaders = await this.getAuthorizationHeader();
         Object.assign(result, this.normalizeHeaders(authHeaders));
 
         // 合并其他 headers
@@ -145,6 +161,16 @@ export class BaseApi {
 
         if (result["Origin"] && result["Origin"] != "") {
             result["Origin"] = baseURL;
+        }
+
+        if (result["Referer"] && result["Referer"] !== "") {
+            let referer = baseURL;
+
+            if (!referer.endsWith("/")) {
+                referer += "/";
+            }
+
+            result["Referer"] = referer;
         }
         return result;
     }
@@ -179,16 +205,16 @@ export class BaseApi {
         const retryDelay = options?.retryDelay ?? this.retryDelay;
         let attempt = 0;
         let lastError: any;
-    
+
         while (attempt < maxRetry) {
             attempt++;
             try {
                 const baseURL = options?.baseURL ?? this.baseURL;
                 const headers = await this.getMergedHeaders(baseURL, options?.headers);
                 const fullUrl = this.buildUrl(url, baseURL, method === "GET" ? data : options?.params);
-    
+
                 let body: BodyInit | null | undefined = undefined;
-    
+
                 // 处理请求体
                 if (method !== "GET" && data !== undefined) {
                     if (data instanceof FormData || data instanceof URLSearchParams || data instanceof Blob || typeof data === 'string') {
@@ -200,47 +226,53 @@ export class BaseApi {
                         }
                     }
                 }
-    
+
                 const fetchOptions: RequestInit = {
                     method,
                     headers,
                     body,
                     ...options,
                 };
-    
+
                 delete (fetchOptions as any).baseURL;
                 delete (fetchOptions as any).retry;
                 delete (fetchOptions as any).retryDelay;
                 delete (fetchOptions as any).params;
-    
-                const fetchPromise = fetch(fullUrl, fetchOptions);
+
+                const request = new Request(fullUrl, fetchOptions);
+                const isValidatedRequest = await this.isValidatedRequest(request);
+                if (isValidatedRequest == false) {
+                    return {} as T;
+                }
+
+                const fetchPromise = this.fetch(request);
                 const response = await this.withTimeout(fetchPromise, this.timeout);
-    
+
                 // 状态码验证
                 if (!this.validateStatus(response.status)) {
-    
+
                     const err = new FbApiError(
                         `Request failed with status ${response.status}`,
                         response.status,
                         fullUrl,
                         this.parseResponse(response),
                     );
-    
+
                     console.error("API ERROR:", err);
                     return {} as T;
                 }
-    
+
                 return this.parseResponse(response);
-    
+
             } catch (error) {
                 lastError = error;
-    
+
                 // 客户端错误直接返回
                 if (error instanceof FbApiError && error.status && error.status >= 400 && error.status < 500) {
                     console.error("Client Error:", error);
                     return {} as T;
                 }
-    
+
                 // retry结束
                 if (attempt >= maxRetry) {
                     console.error("Request failed after retries:", {
@@ -249,16 +281,16 @@ export class BaseApi {
                         data,
                         error
                     });
-    
+
                     return {} as T;
                 }
-    
+
                 // 指数退避
                 const delay = retryDelay * Math.pow(2, attempt - 1);
                 await this.sleep(delay);
             }
         }
-    
+
         console.error("Unexpected request failure:", lastError);
         return {} as T;
     }
@@ -324,136 +356,6 @@ export class BaseApi {
     }
 }
 
-
-
-/* ================= FBtoken生成器 ================= */
-
-class FBTokenGenerator {
-    private token: string = ""
-    private expire = 0
-    private refreshing?: Promise<string>
-
-    public async getToken(): Promise<string> {
-
-        if (this.token && Date.now() < this.expire) {
-            return this.token
-        }
-
-        if (this.refreshing) {
-            return this.refreshing
-        }
-
-        this.refreshing = this.refreshToken()
-        const token = await this.refreshing
-        this.refreshing = undefined
-
-        return token
-    }
-
-    private async refreshToken(): Promise<string> {
-
-        const headers = {
-            "content-type": "application/x-www-form-urlencoded",
-        }
-
-        let resp: any = await fetch(
-            "https://client.server.newsportspro.com/clientServer/user/log",
-            {
-                method: "POST",
-                headers,
-                body: new URLSearchParams({
-                    userName: "t012",
-                    userPassword: "441896"
-                })
-            }
-        ).then(res => res.json())
-
-        if (!resp?.success || !resp?.data?.token) {
-            return ""
-        }
-
-        const token = resp.data.token
-        const userId = resp.data.userId
-
-        resp = await fetch(
-            "https://client.server.newsportspro.com/clientServer/user/jump/newSports",
-            {
-                method: "POST",
-                headers: {
-                    "content-type": "application/x-www-form-urlencoded",
-                    token,
-                    userid: userId
-                },
-                body: new URLSearchParams({
-                    userId,
-                    platForm: "pc"
-                })
-            }
-        ).then(r => r.json())
-
-        if (!resp?.success || !resp?.data?.token) {
-            return ""
-        }
-
-        this.token = resp.data.token
-        this.expire = Date.now() + 5 * 60 * 1000 // 5分钟
-
-        return this.token
-    }
-
-}
-
-export const FBTokenGeneratorInstance = new FBTokenGenerator()
-
-
-
-/* ================= 便捷函数和实例 ================= */
-
-// 创建 API 实例的工厂函数
-export function createApi(options: BaseApiOptions = {}, getAuthorizationHeader?: AuthorizationHeaderFn): BaseApi {
-    return new BaseApi(options, getAuthorizationHeader);
-}
-
-
-export const FBNotAuthBaseApi = createApi(
-    {
-        baseURL: API_BASE_URL_ENUMS.HTTPS_API_A233Z1_COM,
-        timeout: 5000,
-        retry: 1,
-        retryDelay: 1000,
-        headers: {
-            'Content-Type': 'application/json;charset=UTF-8',
-            'Accept': 'application/json, text/plain, */*',
-            'Accept-Language': 'zh-CN,zh;q=0.9',
-            'Cache-Control': 'no-cache',
-            'Pragma': 'no-cache',
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36',
-            'sec-ch-ua': '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"',
-            'sec-ch-ua-mobile': '?0',
-            'sec-ch-ua-platform': '"Windows"',
-            'Host': 'api.a233z1.com',
-            'Origin': API_BASE_URL_ENUMS.HTTPS_API_A233Z1_COM,
-            'Sec-Fetch-Dest': 'empty',
-            'Sec-Fetch-Mode': 'cors',
-            'Sec-Fetch-Site': 'cross-site',
-        }
-    }, async () => {
-        const token: string = await FBTokenGeneratorInstance.getToken()
-        return {
-            Authorization: token
-        }
-    });
-
-export const FBForwardBaseApi = createApi(
-    {
-        baseURL: API_BASE_URL_ENUMS.FORWARD_COM,
-        timeout: 5000,
-        retry: 1,
-        retryDelay: 1000,
-        headers: {}
-    }, () => {
-        return {}
-    });
 
 
 /**

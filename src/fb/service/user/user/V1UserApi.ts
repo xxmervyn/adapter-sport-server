@@ -1,5 +1,5 @@
 import { HonoRequest } from "hono"
-import { UserServiceEntry } from "../../entry/userServiceEntry"
+import { UserServiceEntry } from "../../entry/service/userServiceEntry"
 
 export class V1UserApi {
     public base(params: any, req: HonoRequest) {
