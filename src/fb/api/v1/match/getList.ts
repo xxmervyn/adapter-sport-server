@@ -12,7 +12,9 @@ export class V1MatchGetList extends OpenAPIRoute {
                 z.object({
                     languageType: z.string(),
                     oddsType: z.number(),
-                    sportTypes: z.array(z.any()),
+                    sportTypes: z.array(z.number()),
+                    markets: z.array(z.any()),
+                    sportId: z.number(),
                     current: z.number(),
                     isPC: z.boolean(),
                     orderBy: z.number(),
