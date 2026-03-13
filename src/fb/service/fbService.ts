@@ -6,6 +6,7 @@ import { V1MerchantApi } from "./fb/v1/MerchantApi"
 import { V1SportRuleApi } from "./fb/v1/SportRuleApi"
 import { V1OrderApi } from "./fb/v1/OrderApi"
 import { V1OrderReserveApi } from "./fb/v1/OrderReserveApi"
+import { V1OrderNewBetApi } from "./fb/v1/OrderNewBetApi"
 import { V1UserApi } from "./fb/v1/UserApi"
 import { LanguageStaticApi } from "./fb/language/StaticApi"
 import { VirtualV1MatchApi } from "./fb/virtual/V1MatchApi"
@@ -18,6 +19,7 @@ const FbService = {
     V1SportRule: new V1SportRuleApi(),
     V1Order: new V1OrderApi(),
     V1OrderReserveApi: new V1OrderReserveApi(),
+    V1OrderNewBetApi: new V1OrderNewBetApi(),
     V1User: new V1UserApi(),
     LanguageStatic: new LanguageStaticApi(),
     VirtualV1Match: new VirtualV1MatchApi(),
