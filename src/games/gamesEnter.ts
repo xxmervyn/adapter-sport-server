@@ -40,7 +40,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		var url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=t013&` +
 			`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=wss://push.${apiHostName}&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
 			`handicap=1&themeBg=4C6FFF&themeText=${themeText}&controlMenu=2&language=ZHO`
-		url = genGameUrlSignWithKeys(data.query, url, ["token", "pcAddress", "virtualSrc", "apiSrc"], tr)
+		url = genGameUrlSignWithKeys(data.query, url, ["token", "pcAddress", "virtualSrc", "apiSrc"], true)
 
 		return c.redirect(url)
 	}
