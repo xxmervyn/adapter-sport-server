@@ -29,6 +29,10 @@ export class V1MatchApi {
         return FbServiceEntry.request('/v1/match/recommendMatchList', params)
     }
 
+    public queryMatchByRecommend(params: any) {
+        return FbServiceEntry.request('/v1/match/queryMatchByRecommend', params)
+    }
+
     public getLiveList(params: any) {
         return FbServiceEntry.request('/v1/match/getList', params)
     }

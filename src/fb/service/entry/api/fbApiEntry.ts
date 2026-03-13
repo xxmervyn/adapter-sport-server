@@ -29,13 +29,10 @@ class FBHeaderGenerator {
                 'sec-ch-ua': '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"',
                 'sec-ch-ua-mobile': '?0',
                 'sec-ch-ua-platform': '"Windows"',
-                'Origin': "",
-                'Referer': "",
                 'Sec-Fetch-Dest': 'empty',
                 'Sec-Fetch-Mode': 'cors',
                 'Sec-Fetch-Site': 'cross-site',
                 'Connection': 'keep-alive',
-                'Host': ""
             },
 
             {
@@ -47,13 +44,10 @@ class FBHeaderGenerator {
                 'sec-ch-ua': '"Not(A:Brand";v="8", "Chromium";v="143", "Google Chrome";v="143"',
                 'sec-ch-ua-mobile': '?0',
                 'sec-ch-ua-platform': '"Windows"',
-                'Origin': "",
-                'Referer': 'https://www.bing.com/',
                 'Sec-Fetch-Dest': 'empty',
                 'Sec-Fetch-Mode': 'cors',
                 'Sec-Fetch-Site': 'cross-site',
                 'Connection': 'keep-alive',
-                'Host': ""
             },
 
             {
@@ -65,13 +59,10 @@ class FBHeaderGenerator {
                 'sec-ch-ua': '"Not(A:Brand";v="8", "Chromium";v="142", "Google Chrome";v="142"',
                 'sec-ch-ua-mobile': '?0',
                 'sec-ch-ua-platform': '"Windows"',
-                'Origin': "",
-                'Referer': 'https://duckduckgo.com/',
                 'Sec-Fetch-Dest': 'empty',
                 'Sec-Fetch-Mode': 'cors',
                 'Sec-Fetch-Site': 'cross-site',
                 'Connection': 'keep-alive',
-                'Host': ""
             },
 
             /* ================= Edge ================= */
@@ -85,13 +76,10 @@ class FBHeaderGenerator {
                 'sec-ch-ua': '"Not(A:Brand";v="8", "Chromium";v="144", "Microsoft Edge";v="144"',
                 'sec-ch-ua-mobile': '?0',
                 'sec-ch-ua-platform': '"Windows"',
-                'Origin': "",
-                'Referer': 'https://www.microsoft.com/',
                 'Sec-Fetch-Dest': 'empty',
                 'Sec-Fetch-Mode': 'cors',
                 'Sec-Fetch-Site': 'cross-site',
                 'Connection': 'keep-alive',
-                'Host': ""
             },
 
             /* ================= Firefox ================= */
@@ -102,10 +90,7 @@ class FBHeaderGenerator {
                 'Accept-Encoding': 'gzip, deflate, br',
                 'Content-Type': 'application/json',
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0',
-                'Origin': "",
-                'Referer': "",
                 'Connection': 'keep-alive',
-                'Host': ""
             },
 
             /* ================= Chrome Mac ================= */
@@ -119,13 +104,10 @@ class FBHeaderGenerator {
                 'sec-ch-ua': '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"',
                 'sec-ch-ua-mobile': '?0',
                 'sec-ch-ua-platform': '"macOS"',
-                'Origin': "",
-                'Referer': "",
                 'Sec-Fetch-Dest': 'empty',
                 'Sec-Fetch-Mode': 'cors',
                 'Sec-Fetch-Site': 'cross-site',
                 'Connection': 'keep-alive',
-                'Host': ""
             },
 
             /* ================= Chrome Linux ================= */
@@ -139,13 +121,10 @@ class FBHeaderGenerator {
                 'sec-ch-ua': '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"',
                 'sec-ch-ua-mobile': '?0',
                 'sec-ch-ua-platform': '"Linux"',
-                'Origin': "",
-                'Referer': "",
                 'Sec-Fetch-Dest': 'empty',
                 'Sec-Fetch-Mode': 'cors',
                 'Sec-Fetch-Site': 'cross-site',
                 'Connection': 'keep-alive',
-                'Host': ""
             },
 
             /* ================= Android Chrome ================= */
@@ -159,13 +138,10 @@ class FBHeaderGenerator {
                 'sec-ch-ua': '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"',
                 'sec-ch-ua-mobile': '?1',
                 'sec-ch-ua-platform': '"Android"',
-                'Origin': "",
-                'Referer': "",
                 'Sec-Fetch-Dest': 'empty',
                 'Sec-Fetch-Mode': 'cors',
                 'Sec-Fetch-Site': 'cross-site',
                 'Connection': 'keep-alive',
-                'Host': ""
             }
 
         ]
@@ -175,9 +151,9 @@ class FBHeaderGenerator {
 
     public async getHeaders(): Promise<HeadersInit> {
 
-        const token = await this.getToken()
-
-        const header = this.randomHeaders[Math.floor(Math.random() * this.randomHeaders.length)]
+        const token = await this.getToken();
+        const index = this.expire % this.randomHeaders.length;
+        const header = this.randomHeaders[index]
 
         return {
             ...header,

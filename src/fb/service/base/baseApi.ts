@@ -155,15 +155,15 @@ export class BaseApi {
             }
         }
 
-        if (result["Host"] && result["Host"] != "" && baseURL.split("//").length > 1) {
+        if (!result["Host"] || result["Host"] == "" ) {
             result["Host"] = baseURL.split("//")[1].split("/")[0];
         }
 
-        if (result["Origin"] && result["Origin"] != "") {
+        if (!result["Origin"] || result["Origin"] == "") {
             result["Origin"] = baseURL;
         }
 
-        if (result["Referer"] && result["Referer"] !== "") {
+        if (!result["Referer"] || result["Referer"] == "") {
             let referer = baseURL;
 
             if (!referer.endsWith("/")) {
