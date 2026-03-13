@@ -1,15 +1,33 @@
+import { any } from "zod/v4";
 import { API_BASE_URL_ENUMS } from "../../../enums/apiBaseUrlEnum";
-import { BaseApi } from "../../base/baseApi";
+import { ApiRequestOptions, BaseApi } from "../../base/baseApi";
 
+interface LoginInfo {
+    userName: string,
+    userPassword: string,
+    token: string,
+    serverInfo: {
+        apiServerAddress: string
+        apiEmbeddedServerAddress: string
+        pushServerAddress: string
+        pcAddress: string
+        h5Address: string
+        virtualAddress: string
+        virtualMatchVideoAddress: string
+        ouH5Address: string
+        ouPcAddress: string
+    },
+    expire: number,
+    status: number,
+}
 
 class FBHeaderGenerator {
-    private token: string = ""
-    private expire = 0
-    private refreshing?: Promise<string>
     private randomHeaders: HeadersInit[] = []
+    private accountList: LoginInfo[] = []
 
     constructor() {
         this.initRandomHeaders()
+        this.initAccountList()
     }
 
     /* ================= 初始化 Header 池 ================= */
@@ -32,155 +50,68 @@ class FBHeaderGenerator {
                 'Sec-Fetch-Dest': 'empty',
                 'Sec-Fetch-Mode': 'cors',
                 'Sec-Fetch-Site': 'cross-site',
-                'Connection': 'keep-alive',
             },
-
-            {
-                'Accept': 'application/json, text/plain, */*',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Content-Type': 'application/json;charset=UTF-8',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36',
-                'sec-ch-ua': '"Not(A:Brand";v="8", "Chromium";v="143", "Google Chrome";v="143"',
-                'sec-ch-ua-mobile': '?0',
-                'sec-ch-ua-platform': '"Windows"',
-                'Sec-Fetch-Dest': 'empty',
-                'Sec-Fetch-Mode': 'cors',
-                'Sec-Fetch-Site': 'cross-site',
-                'Connection': 'keep-alive',
-            },
-
-            {
-                'Accept': 'application/json, text/plain, */*',
-                'Accept-Language': 'zh-CN,zh;q=0.8,en;q=0.7',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Content-Type': 'application/json;charset=UTF-8',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
-                'sec-ch-ua': '"Not(A:Brand";v="8", "Chromium";v="142", "Google Chrome";v="142"',
-                'sec-ch-ua-mobile': '?0',
-                'sec-ch-ua-platform': '"Windows"',
-                'Sec-Fetch-Dest': 'empty',
-                'Sec-Fetch-Mode': 'cors',
-                'Sec-Fetch-Site': 'cross-site',
-                'Connection': 'keep-alive',
-            },
-
-            /* ================= Edge ================= */
-
-            {
-                'Accept': 'application/json, text/plain, */*',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Content-Type': 'application/json;charset=UTF-8',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36 Edg/144.0.0.0',
-                'sec-ch-ua': '"Not(A:Brand";v="8", "Chromium";v="144", "Microsoft Edge";v="144"',
-                'sec-ch-ua-mobile': '?0',
-                'sec-ch-ua-platform': '"Windows"',
-                'Sec-Fetch-Dest': 'empty',
-                'Sec-Fetch-Mode': 'cors',
-                'Sec-Fetch-Site': 'cross-site',
-                'Connection': 'keep-alive',
-            },
-
-            /* ================= Firefox ================= */
-
-            {
-                'Accept': 'application/json, text/plain, */*',
-                'Accept-Language': 'en-US,en;q=0.5',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Content-Type': 'application/json',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:139.0) Gecko/20100101 Firefox/139.0',
-                'Connection': 'keep-alive',
-            },
-
-            /* ================= Chrome Mac ================= */
-
-            {
-                'Accept': 'application/json, text/plain, */*',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Content-Type': 'application/json;charset=UTF-8',
-                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36',
-                'sec-ch-ua': '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"',
-                'sec-ch-ua-mobile': '?0',
-                'sec-ch-ua-platform': '"macOS"',
-                'Sec-Fetch-Dest': 'empty',
-                'Sec-Fetch-Mode': 'cors',
-                'Sec-Fetch-Site': 'cross-site',
-                'Connection': 'keep-alive',
-            },
-
-            /* ================= Chrome Linux ================= */
-
-            {
-                'Accept': 'application/json, text/plain, */*',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Content-Type': 'application/json;charset=UTF-8',
-                'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36',
-                'sec-ch-ua': '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"',
-                'sec-ch-ua-mobile': '?0',
-                'sec-ch-ua-platform': '"Linux"',
-                'Sec-Fetch-Dest': 'empty',
-                'Sec-Fetch-Mode': 'cors',
-                'Sec-Fetch-Site': 'cross-site',
-                'Connection': 'keep-alive',
-            },
-
-            /* ================= Android Chrome ================= */
-
-            {
-                'Accept': 'application/json, text/plain, */*',
-                'Accept-Language': 'en-US,en;q=0.9',
-                'Accept-Encoding': 'gzip, deflate, br',
-                'Content-Type': 'application/json;charset=UTF-8',
-                'User-Agent': 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Mobile Safari/537.36',
-                'sec-ch-ua': '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"',
-                'sec-ch-ua-mobile': '?1',
-                'sec-ch-ua-platform': '"Android"',
-                'Sec-Fetch-Dest': 'empty',
-                'Sec-Fetch-Mode': 'cors',
-                'Sec-Fetch-Site': 'cross-site',
-                'Connection': 'keep-alive',
-            }
-
         ]
+    }
+
+    public initAccountList() {
+        this.accountList = [{
+            userName: "t013",
+            userPassword: "546071",
+            token: "",
+            serverInfo: {
+                apiServerAddress: "",
+                apiEmbeddedServerAddress: "",
+                pushServerAddress: "",
+                pcAddress: "",
+                h5Address: "",
+                virtualAddress: "",
+                virtualMatchVideoAddress: "",
+                ouH5Address: "",
+                ouPcAddress: "",
+            },
+            expire: 0,
+            status: 0,
+        }]
     }
 
     /* ================= 获取随机 Header ================= */
 
-    public async getHeaders(): Promise<HeadersInit> {
-
-        const token = await this.getToken();
-        const index = this.expire % this.randomHeaders.length;
+    public async getHeaders(path: string): Promise<HeadersInit> {
+        const info = await this.getInfo(path);
+        const index = info.expire % this.randomHeaders.length;
         const header = this.randomHeaders[index]
 
         return {
             ...header,
-            'Authorization': `Bearer ${token}`
+            'Authorization': `${info.token}`
         }
     }
 
-
-
-    public async getToken(): Promise<string> {
-
-        if (this.token && Date.now() < this.expire) {
-            return this.token
-        }
-
-        if (this.refreshing) {
-            return this.refreshing
-        }
-
-        this.refreshing = this.refreshToken()
-        const token = await this.refreshing
-        this.refreshing = undefined
-
-        return token
+    public async getToken(path: string): Promise<string> {
+        return (await this.getInfo(path))?.token ?? ""
     }
 
-    private async refreshToken(): Promise<string> {
+    public async getInfo(path: string): Promise<LoginInfo> {
+        const i = path.length % this.accountList.length
+        const info = this.accountList[i]
+        if (info.status == 1 && info.token != "" && Date.now() < info.expire) {
+            return info
+        }
+        if (info.status == 2) {
+            return {} as LoginInfo
+        }
+        info.status = 2
+        this.accountList[i] = await this.refreshInfo(path)
+        info.status = 1
+
+        return this.accountList[i]
+    }
+
+
+    public async refreshInfo(path: string): Promise<LoginInfo> {
+        const i = path.length % this.accountList.length
+        const info = this.accountList[i]
 
         const headers = {
             "content-type": "application/x-www-form-urlencoded",
@@ -199,7 +130,7 @@ class FBHeaderGenerator {
         ).then(res => res.json())
 
         if (!resp?.success || !resp?.data?.token) {
-            return ""
+            return {} as LoginInfo
         }
 
         const token = resp.data.token
@@ -215,30 +146,49 @@ class FBHeaderGenerator {
                     userid: userId
                 },
                 body: new URLSearchParams({
-                    userId,
+                    userId: userId,
                     platForm: "pc"
                 })
             }
         ).then(r => r.json())
 
         if (!resp?.success || !resp?.data?.token) {
-            return ""
+            return {} as LoginInfo
         }
 
-        this.token = resp.data.token
-        this.expire = Date.now() + 5 * 60 * 1000 // 5分钟
+        info.expire = Date.now() + 5 * 60 * 1000 // 5分钟
+        info.token = resp.data.token
+        info.serverInfo = resp.data.serverInfo
 
-        return this.token
+        return info
     }
 
+    public async clearToken(path: string) {
+        const i = path.length % this.accountList.length
+        const info = this.accountList[i]
+        info.expire = 0
+    }
 }
 
 class FBNotAuthBaseApiClass extends BaseApi {
-    private fBHeaderGeneratorInstance = new FBHeaderGenerator()
+    public fBHeaderGeneratorInstance = new FBHeaderGenerator()
 
-    protected override async getAuthorizationHeader(): Promise<HeadersInit> {
-        return this.fBHeaderGeneratorInstance.getHeaders()
+    protected override async isValidatedRequest(req: Request): Promise<{ success: boolean, resp: any }> {
+        if (req.headers.get("Authorization") == "undefined") {
+            return { success: false, resp: { success: false, msg: "request later" } }
+        }
+        return { success: true, resp: {} }
     }
+
+    // protected override async onGenAuthHeader(path: string): Promise<HeadersInit> {
+    //     return this.fBHeaderGeneratorInstance.getHeaders(path)
+    // }
+
+    public async clearToken(path: string) {
+        this.fBHeaderGeneratorInstance.clearToken(path)
+    }
+
+
 }
 
 export const FBNotAuthBaseApi = new FBNotAuthBaseApiClass(

@@ -2,7 +2,7 @@ import { API_BASE_URL_ENUMS } from "../../../enums/apiBaseUrlEnum";
 import { BaseApi } from "../../base/baseApi";
 
 class FBForwardBaseApiClass extends BaseApi {
-    protected override async isValidatedRequest(req: Request): Promise<boolean> {
+    protected override async isValidatedRequest(req: Request): Promise<{ success: boolean, resp: any }> {
         let refererStr = req.headers.get("x-front-page");
 
         if (refererStr == null || refererStr == "" || refererStr.indexOf("&esign=") < 0) {
@@ -21,7 +21,7 @@ class FBForwardBaseApiClass extends BaseApi {
         let reqt = refererUrl.searchParams.get("reqt") ?? "";
         if (esign == "" || reqt == "") {
             // console.warn("主链接未签名", refererStr);
-            return false
+            return { success: false, resp: {} }
         }
 
         let reqtBase = reqt;
@@ -32,13 +32,13 @@ class FBForwardBaseApiClass extends BaseApi {
         // console.log("esign:", esign, "regt:", reqt);
         if (Math.abs(parseInt(reqt) - (new Date()).getTime() / 1000) > 86400) {
             // console.warn("主链接已过有效期", refererStr);
-            return false;
+            return { success: false, resp: {} };
         }
 
         let signStrVec = refererStr.split("&esign=");
         if (signStrVec.length != 2) {
             // console.warn("主链接没有签名:", refererStr);
-            return false;
+            return { success: false, resp: {} };
         }
 
         let signStr = "";
@@ -62,10 +62,10 @@ class FBForwardBaseApiClass extends BaseApi {
 
         if (signStr != esign) {
             // console.warn("主链接签名错误:", refererStr);
-            return false;
+            return { success: false, resp: {} };
         }
 
-        return true;
+        return { success: true, resp: {} };
     }
 
     protected override fetch(req: Request): Promise<Response> {

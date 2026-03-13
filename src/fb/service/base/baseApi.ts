@@ -12,7 +12,7 @@ export interface BaseApiOptions {
 }
 
 export interface ApiRequestOptions extends Omit<RequestInit, 'headers' | 'method' | 'body'> {
-    baseURL?: API_BASE_URL_ENUMS;
+    baseURL?: API_BASE_URL_ENUMS | string;
     headers?: HeadersInit;
     retry?: number;
     retryDelay?: number;
@@ -49,13 +49,21 @@ export class BaseApi {
     }
 
 
-    protected async getAuthorizationHeader(): Promise<HeadersInit> {
+    protected async isValidatedRequest(req: Request): Promise<{ success: boolean, resp: any }> {
+        return { success: true, resp: {} }
+    }
+
+
+    /* ================= 生命周期 ================= */
+
+    protected async onGenAuthHeader(path: string): Promise<HeadersInit> {
         return {}
     }
 
-    protected async isValidatedRequest(req: Request): Promise<boolean> {
-        return true
+    protected onFetchBefore(req: Request): Request {
+        return req
     }
+
 
     /* ================= 工具方法 ================= */
 
@@ -138,14 +146,14 @@ export class BaseApi {
         return fullUrl;
     }
 
-    protected async getMergedHeaders(baseURL: string, ...headersList: (HeadersInit | undefined)[]): Promise<Record<string, string>> {
+    protected async getMergedHeaders(path: string, baseURL: string, ...headersList: (HeadersInit | undefined)[]): Promise<Record<string, string>> {
         const result: Record<string, string> = {};
 
         // 合并默认 headers
         Object.assign(result, this.defaultHeaders);
 
         // 合并授权 headers
-        const authHeaders = await this.getAuthorizationHeader();
+        const authHeaders = await this.onGenAuthHeader(path);
         Object.assign(result, this.normalizeHeaders(authHeaders));
 
         // 合并其他 headers
@@ -155,7 +163,7 @@ export class BaseApi {
             }
         }
 
-        if (!result["Host"] || result["Host"] == "" ) {
+        if (!result["Host"] || result["Host"] == "") {
             result["Host"] = baseURL.split("//")[1].split("/")[0];
         }
 
@@ -210,7 +218,7 @@ export class BaseApi {
             attempt++;
             try {
                 const baseURL = options?.baseURL ?? this.baseURL;
-                const headers = await this.getMergedHeaders(baseURL, options?.headers);
+                const headers = await this.getMergedHeaders(path, baseURL, options?.headers);
                 const fullUrl = this.buildUrl(path, baseURL, method === "GET" ? data : options?.params);
 
                 let body: BodyInit | null | undefined = undefined;
@@ -241,11 +249,12 @@ export class BaseApi {
 
                 const request = new Request(fullUrl, fetchOptions);
                 const isValidatedRequest = await this.isValidatedRequest(request);
-                if (isValidatedRequest == false) {
+                if (isValidatedRequest.success == false) {
                     return { code: 4004 } as T;
                 }
 
-                const fetchPromise = this.fetch(request);
+                const newRequest = this.onFetchBefore(request)
+                const fetchPromise = this.fetch(newRequest);
                 const response = await this.withTimeout(fetchPromise, this.timeout);
 
                 // 状态码验证

@@ -31,27 +31,24 @@ export interface ServiceRequestOptions {
 /* ==================== BaseService ==================== */
 
 export class BaseService {
-    protected localCache?: ServiceLocalCacheInterface;
+    protected localCacheEntry?: ServiceLocalCacheInterface;
     protected localCacheDefConf: {
         isCache?: boolean;
         cacheTime?: number;
     };
+    protected cacheStatusMap: Map<string, boolean> = new Map()
 
-    constructor(
-        options: BaseServiceOptions = {
-            localCacheDefConf: { isCache: false, cacheTime: 0 }
-        }
-    ) {
+    constructor(options: BaseServiceOptions = { localCacheDefConf: { isCache: false, cacheTime: 0 } }) {
         this.localCacheDefConf = options.localCacheDefConf;
-        this.localCache = options.localCache;
+        this.localCacheEntry = options.localCache;
 
-        if (!this.localCache) {
+        if (!this.localCacheEntry) {
             this.localCacheDefConf.isCache = false;
         }
     }
 
 
-    isSuccess(data: unknown): data is { code: number } {
+    protected isSuccess(data: any): data is { code: number } {
         return (
             typeof data === "object" &&
             data !== null &&
@@ -60,34 +57,33 @@ export class BaseService {
         );
     }
 
-
     public async api<T>(path: string, params: any, api: () => Promise<T>, option?: ServiceRequestOptions): Promise<T> {
-        const isCache =
-            option?.cache?.isCache ??
-            this.localCacheDefConf.isCache;
+        const isCache = option?.cache?.isCache ?? this.localCacheDefConf.isCache;
 
-        if (!isCache || !this.localCache) {
+        if (!isCache || !this.localCacheEntry) {
             return api();
         }
 
-        const cacheKey =
-            option?.cache?.cacheKey ??
-            await this.localCache.getRequestKey(path, params);
+        const cacheKey = option?.cache?.cacheKey ?? await this.localCacheEntry.getRequestKey(path, params);
 
-        const item = this.localCache.getItem<T>(cacheKey);
-        if (item && item.expireAt > Date.now()) {
+        const item = this.localCacheEntry.getItem<T>(cacheKey);
+        const isExist = this.cacheStatusMap.has(cacheKey)
+        if (item && item.expireAt > Date.now() && isExist == false) {
             return item.data;
         }
 
-        const cacheTime =
-            option?.cache?.cacheTime ??
-            this.localCacheDefConf.cacheTime ??
-            0;
+        if (isExist) {
+            //缓存中
+            return { code: 4003 } as T
+        }
+        this.cacheStatusMap.set(cacheKey, true)
 
+        const cacheTime = option?.cache?.cacheTime ?? this.localCacheDefConf.cacheTime ?? 0;
         const data = await api();
         if (this.isSuccess(data)) {
-            this.localCache.setItem(cacheKey, data, cacheTime);
+            this.localCacheEntry.setItem(cacheKey, data, cacheTime);
         }
+        this.cacheStatusMap.delete(cacheKey)
 
         return data;
     }
