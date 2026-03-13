@@ -242,7 +242,7 @@ export class BaseApi {
                 const request = new Request(fullUrl, fetchOptions);
                 const isValidatedRequest = await this.isValidatedRequest(request);
                 if (isValidatedRequest == false) {
-                    return {} as T;
+                    return { code: 4004 } as T;
                 }
 
                 const fetchPromise = this.fetch(request);
