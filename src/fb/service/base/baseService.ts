@@ -38,7 +38,10 @@ export class BaseService {
         isCache?: boolean;
         cacheTime?: number;
     };
-    protected cacheStatusMap: Map<string, boolean> = new Map()
+    protected cacheStatusMap: Map<string, number> = new Map()
+
+    private cleaning = false;
+    private lastCleanTime = 0;
 
     constructor(options: BaseServiceOptions = { localCacheDefConf: { isCache: false, cacheTime: 0 } }) {
         this.localCacheDefConf = options.localCacheDefConf;
@@ -76,10 +79,12 @@ export class BaseService {
 
         if (isExist) {
             //缓存中
-            return item ? item.data : {code: SERVER_ERR_CODE_ENUMS.REQUEST_CACHING} as T
+            const data = item ? item.data : {code: SERVER_ERR_CODE_ENUMS.REQUEST_CACHING} as T
+            this.tryCleanCacheAsync()
+            return data
         }
 
-        this.cacheStatusMap.set(cacheKey, true)
+        this.cacheStatusMap.set(cacheKey, Date.now())
 
         const cacheTime = option?.cache?.cacheTime ?? this.localCacheDefConf.cacheTime ?? 0;
         const data = await api();
@@ -89,6 +94,34 @@ export class BaseService {
         this.cacheStatusMap.delete(cacheKey)
 
         return data;
+    }
+
+    //清除异常缓存状态
+    private tryCleanCacheAsync() {
+        const now = Date.now();
+        if (now - this.lastCleanTime < 10000) {
+            return;
+        }
+
+        if (this.cleaning) {
+            return;
+        }
+
+        this.cleaning = true;
+        this.lastCleanTime = Date.now();
+
+        queueMicrotask(() => {
+            const now = Date.now();
+            var c = 0;
+            for (const [k, v] of this.cacheStatusMap) {
+                if (now - v > 3000) {
+                    this.cacheStatusMap.delete(k);
+                    c++;
+                }
+            }
+            this.cleaning = false;
+        });
+
     }
 }
 
