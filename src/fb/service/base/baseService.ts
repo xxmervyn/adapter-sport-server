@@ -79,7 +79,7 @@ export class BaseService {
 
         if (isExist) {
             //缓存中
-            const data = item ? item.data : {code: SERVER_ERR_CODE_ENUMS.REQUEST_CACHING} as T
+            const data = item?.data ? item.data : { code: SERVER_ERR_CODE_ENUMS.REQUEST_CACHING, data: item } as T
             this.tryCleanCacheAsync()
             return data
         }
