@@ -56,27 +56,9 @@ class FBHeaderGenerator {
 
     public initAccountList() {
         this.accountList = [
-            {
-                userName: "t013",
-                userPassword: "546071",
-                token: "",
-                serverInfo: {
-                    apiServerAddress: "",
-                    apiEmbeddedServerAddress: "",
-                    pushServerAddress: "",
-                    pcAddress: "",
-                    h5Address: "",
-                    virtualAddress: "",
-                    virtualMatchVideoAddress: "",
-                    ouH5Address: "",
-                    ouPcAddress: "",
-                },
-                expire: 0,
-                status: 0,
-            },
             // {
-            //     userName: "t012",
-            //     userPassword: "441896",
+            //     userName: "t013",
+            //     userPassword: "546071",
             //     token: "",
             //     serverInfo: {
             //         apiServerAddress: "",
@@ -91,7 +73,25 @@ class FBHeaderGenerator {
             //     },
             //     expire: 0,
             //     status: 0,
-            // }
+            // },
+            {
+                userName: "t012",
+                userPassword: "441896",
+                token: "",
+                serverInfo: {
+                    apiServerAddress: "",
+                    apiEmbeddedServerAddress: "",
+                    pushServerAddress: "",
+                    pcAddress: "",
+                    h5Address: "",
+                    virtualAddress: "",
+                    virtualMatchVideoAddress: "",
+                    ouH5Address: "",
+                    ouPcAddress: "",
+                },
+                expire: 0,
+                status: 0,
+            }
         ]
     }
 
@@ -181,19 +181,19 @@ class FBHeaderGenerator {
         info.serverInfo = resp.data.serverInfo
 
 
-        // resp = await fetch(
-        //     "https://api.u7f3z.com/v1/user/accessCheck",
-        //     {
-        //         method: "POST",
-        //         headers: {
-        //             "authorization": info.token
-        //         },
-        //         body: new URLSearchParams({
-        //             "languageType": "ZHO",
-        //             "version": "1"
-        //         })
-        //     }
-        // ).then(r => r.json())
+        resp = await fetch(
+            "https://api.u7f3z.com/v1/user/accessCheck",
+            {
+                method: "POST",
+                headers: {
+                    "authorization": info.token
+                },
+                body: new URLSearchParams({
+                    "languageType": "ZHO",
+                    "version": "1"
+                })
+            }
+        ).then(r => r.json())
 
         return info
     }

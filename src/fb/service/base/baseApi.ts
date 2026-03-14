@@ -251,7 +251,7 @@ export class BaseApi {
                 const request = new Request(fullUrl, fetchOptions);
                 const isValidatedRequest = await this.isValidatedRequest(request);
                 if (isValidatedRequest.success == false) {
-                    return { code: SERVER_ERR_CODE_ENUMS.INVALID_REQUEST } as T;
+                    return { code: SERVER_ERR_CODE_ENUMS.INVALID_REQUEST, data: isValidatedRequest.resp } as T;
                 }
 
                 const newRequest = this.onFetchBefore(request)
@@ -280,7 +280,7 @@ export class BaseApi {
                 // 客户端错误直接返回
                 if (error instanceof FbApiError && error.status && error.status >= 400 && error.status < 500) {
                     // console.error("Client Error:", error);
-                    return {code: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR} as T;
+                    return { code: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR } as T;
                 }
 
                 const baseURL = options?.baseURL ?? this.baseURL;
@@ -288,7 +288,7 @@ export class BaseApi {
                 // retry结束
                 if (attempt >= maxRetry) {
                     // console.error("Request failed after retries:" + fullUrl, error);
-                    return {code: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR} as T;
+                    return { code: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR } as T;
                 }
 
                 // 指数退避
@@ -298,7 +298,7 @@ export class BaseApi {
         }
 
         // console.error("Unexpected request failure:", lastError);
-        return {code: SERVER_ERR_CODE_ENUMS.FAIL_REQUEST} as T;
+        return { code: SERVER_ERR_CODE_ENUMS.FAIL_REQUEST } as T;
     }
 
     /* ================= 便捷方法 ================= */
