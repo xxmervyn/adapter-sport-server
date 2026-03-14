@@ -1,6 +1,8 @@
 
 /* ==================== 本地缓存接口 ==================== */
 
+import { SERVER_ERR_CODE_ENUMS } from "../../enums/serverErrCodeEnum";
+
 export interface ServiceLocalCacheInterface {
     getItem<T>(key: string): { expireAt: number; data: T } | null;
     hasItem(key: string): boolean;
@@ -74,7 +76,7 @@ export class BaseService {
 
         if (isExist) {
             //缓存中
-            return item ? item.data : {} as T
+            return item ? item.data : {code: SERVER_ERR_CODE_ENUMS.REQUEST_CACHING} as T
         }
 
         this.cacheStatusMap.set(cacheKey, true)

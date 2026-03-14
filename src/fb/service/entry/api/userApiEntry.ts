@@ -1,4 +1,5 @@
 import { API_BASE_URL_ENUMS } from "../../../enums/apiBaseUrlEnum";
+import { SERVER_ERR_CODE_ENUMS } from "../../../enums/serverErrCodeEnum";
 import { BaseApi } from "../../base/baseApi";
 
 class FBForwardBaseApiClass extends BaseApi {
@@ -21,7 +22,7 @@ class FBForwardBaseApiClass extends BaseApi {
         let reqt = refererUrl.searchParams.get("reqt") ?? "";
         if (esign == "" || reqt == "") {
             // console.warn("主链接未签名", refererStr);
-            return { success: false, resp: {} }
+            return { success: false, resp: { code: SERVER_ERR_CODE_ENUMS.INVALID_SIGN } }
         }
 
         let reqtBase = reqt;
@@ -32,13 +33,13 @@ class FBForwardBaseApiClass extends BaseApi {
         // console.log("esign:", esign, "regt:", reqt);
         if (Math.abs(parseInt(reqt) - (new Date()).getTime() / 1000) > 86400) {
             // console.warn("主链接已过有效期", refererStr);
-            return { success: false, resp: {} };
+            return { success: false, resp: { code: SERVER_ERR_CODE_ENUMS.INVALID_SIGN } };
         }
 
         let signStrVec = refererStr.split("&esign=");
         if (signStrVec.length != 2) {
             // console.warn("主链接没有签名:", refererStr);
-            return { success: false, resp: {} };
+            return { success: false, resp: { code: SERVER_ERR_CODE_ENUMS.INVALID_SIGN } };
         }
 
         let signStr = "";
@@ -62,7 +63,7 @@ class FBForwardBaseApiClass extends BaseApi {
 
         if (signStr != esign) {
             // console.warn("主链接签名错误:", refererStr);
-            return { success: false, resp: {} };
+            return { success: false, resp: { code: SERVER_ERR_CODE_ENUMS.INVALID_SIGN } };
         }
 
         return { success: true, resp: {} };

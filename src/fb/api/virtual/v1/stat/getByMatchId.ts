@@ -28,6 +28,6 @@ export class VirtualV1StatGetByMatchId extends OpenAPIRoute {
 
     async handle() {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.VirtualV1Match.statistical(data.body)    
+        return FbService.VirtualV1Match.getMatchDetail(data.body)    
     }
 }

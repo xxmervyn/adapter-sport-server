@@ -5,6 +5,7 @@ import { V1MatchGetList } from "./getList";
 import { V1MatchGetBannerMatchList } from "./getBannerMatchList";
 import { V1MatchGetMatchDetail } from "./getMatchDetail";
 import { V1MatchRecommendMatchList } from "./recommendMatchList";
+import { V1MatchGetOnSaleLeagues } from "./getOnSaleLeagues";
 import { V1MatchResultPage } from "./resultPage";
 
 export const FbV1MatchRouter = fromHono(new Hono());
@@ -12,5 +13,6 @@ FbV1MatchRouter.post("/statistical", V1MatchStatistical);
 FbV1MatchRouter.post("/getList", V1MatchGetList);
 FbV1MatchRouter.post("/getBannerMatchList", V1MatchGetBannerMatchList);
 FbV1MatchRouter.post("/getMatchDetail", V1MatchGetMatchDetail);
+FbV1MatchRouter.post("/getOnSaleLeagues", V1MatchGetOnSaleLeagues);
 FbV1MatchRouter.post("/recommendMatchList", V1MatchRecommendMatchList);
 FbV1MatchRouter.post("/matchResultPage", V1MatchResultPage);

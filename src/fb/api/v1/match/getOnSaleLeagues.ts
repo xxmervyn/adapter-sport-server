@@ -2,11 +2,11 @@ import { OpenAPIRoute, contentJson } from "chanfana";
 import { z } from "zod";
 import { FbService } from "../../../service/fbService";
 
-export class V1MatchGetList extends OpenAPIRoute {
+export class V1MatchGetOnSaleLeagues extends OpenAPIRoute {
     public schema = {
         tags: ["我的关注", "LIVE滚球盘"],
-        summary: "V1MatchGetList",
-        operationId: "V1MatchGetList",
+        summary: "V1MatchGetOnSaleLeagues",
+        operationId: "V1MatchGetOnSaleLeagues",
         request: {
             body: contentJson(
                 z.object({
@@ -19,14 +19,12 @@ export class V1MatchGetList extends OpenAPIRoute {
                     isPC: z.boolean(),
                     orderBy: z.number(),
                     type: z.number(),
-                    leagueIds: z.array(z.number()).optional(),
-                    leaguePhases: z.array(z.any()).optional(),
                 })
             ),
         },
         responses: {
             "200": {
-                description: "V1MatchGetList",
+                description: "V1MatchGetOnSaleLeagues",
                 ...contentJson({
                     code: z.any(),
                     data: z.any(),
@@ -38,6 +36,6 @@ export class V1MatchGetList extends OpenAPIRoute {
 
     async handle() {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1Match.getList(data.body)
+		return FbService.V1Match.getOnSaleLeagues(data.body)
     }
 }

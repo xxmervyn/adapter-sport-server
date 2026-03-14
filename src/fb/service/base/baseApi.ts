@@ -1,4 +1,5 @@
 import { API_BASE_URL_ENUMS } from "../../enums/apiBaseUrlEnum";
+import { SERVER_ERR_CODE_ENUMS } from "../../enums/serverErrCodeEnum";
 import { FbApiError } from "../../model/comm/Error";
 
 export type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS";
@@ -212,7 +213,7 @@ export class BaseApi {
         const maxRetry = options?.retry ?? this.retry;
         const retryDelay = options?.retryDelay ?? this.retryDelay;
         let attempt = 0;
-        let lastError: any;
+        // let lastError: any;
 
         while (attempt < maxRetry) {
             attempt++;
@@ -250,7 +251,7 @@ export class BaseApi {
                 const request = new Request(fullUrl, fetchOptions);
                 const isValidatedRequest = await this.isValidatedRequest(request);
                 if (isValidatedRequest.success == false) {
-                    return { code: 4004 } as T;
+                    return { code: SERVER_ERR_CODE_ENUMS.INVALID_REQUEST } as T;
                 }
 
                 const newRequest = this.onFetchBefore(request)
@@ -268,27 +269,26 @@ export class BaseApi {
                     );
 
                     console.error("API ERROR:", err);
-                    return { code: 4004 } as T;
+                    return { code: SERVER_ERR_CODE_ENUMS.INVALID_RESPONSE_STATUS } as T;
                 }
 
                 return this.parseResponse(response);
 
             } catch (error) {
-                lastError = error;
+                // lastError = error;
 
                 // 客户端错误直接返回
                 if (error instanceof FbApiError && error.status && error.status >= 400 && error.status < 500) {
-                    console.error("Client Error:", error);
-                    return {} as T;
+                    // console.error("Client Error:", error);
+                    return {code: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR} as T;
                 }
 
                 const baseURL = options?.baseURL ?? this.baseURL;
-                const fullUrl = this.buildUrl(path, baseURL, method === "GET" ? data : options?.params);
+                // const fullUrl = this.buildUrl(path, baseURL, method === "GET" ? data : options?.params);
                 // retry结束
                 if (attempt >= maxRetry) {
-                    console.error("Request failed after retries:" + fullUrl, error);
-
-                    return {} as T;
+                    // console.error("Request failed after retries:" + fullUrl, error);
+                    return {code: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR} as T;
                 }
 
                 // 指数退避
@@ -297,8 +297,8 @@ export class BaseApi {
             }
         }
 
-        console.error("Unexpected request failure:", lastError);
-        return {} as T;
+        // console.error("Unexpected request failure:", lastError);
+        return {code: SERVER_ERR_CODE_ENUMS.FAIL_REQUEST} as T;
     }
 
     /* ================= 便捷方法 ================= */

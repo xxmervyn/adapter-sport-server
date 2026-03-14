@@ -4,6 +4,14 @@ export class V1MatchApi {
     public getList(params: any) {
         return FbServiceEntry.request('/v1/match/getList', params)
     }
+    
+    public tips(params: any) {
+        return FbServiceEntry.request('/v1/match/tips', params)
+    }
+
+    public getOnSaleLeagues(params: any) {
+        return FbServiceEntry.request('/v1/match/getOnSaleLeagues', params)
+    }
 
     public getMatchDetail(params: any) {
         return FbServiceEntry.request('/v1/match/getMatchDetail', params)

@@ -12,10 +12,11 @@ export class V1MatchQueryMatchByRecommend extends OpenAPIRoute {
                 z.object({
                     languageType: z.string(),
                     oddsType: z.number(),
-                    size: z.number(),
-                    random: z.boolean(),
-                    isPC: z.boolean(),
-                    sortType: z.number(),
+                    size: z.number().optional(),
+                    recommend: z.string().optional(),
+                    random: z.boolean().optional(),
+                    isPC: z.boolean().optional(),
+                    sortType: z.number().optional(),
                 })
             ),
         },
