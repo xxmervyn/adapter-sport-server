@@ -260,34 +260,21 @@ export class BaseApi {
 
                 // 状态码验证
                 if (!this.validateStatus(response.status)) {
+                    if (attempt == maxRetry) {
+                        return { code: SERVER_ERR_CODE_ENUMS.FB_SERVER_ERR, ecode: SERVER_ERR_CODE_ENUMS.INVALID_RESPONSE_STATUS, message: `${response.status}` } as T;
+                    } else {
+                        // 指数退避
+                        const delay = retryDelay * Math.pow(2, attempt - 1);
+                        await this.sleep(delay);
+                        continue
+                    }
 
-                    const err = new FbApiError(
-                        `Request failed with status ${response.status}`,
-                        response.status,
-                        fullUrl,
-                        this.parseResponse(response),
-                    );
-
-                    // console.error("API ERROR:", err);
-                    return { code: SERVER_ERR_CODE_ENUMS.FB_SERVER_ERR, ecode: SERVER_ERR_CODE_ENUMS.INVALID_RESPONSE_STATUS } as T;
                 }
 
                 return this.parseResponse(response);
 
             } catch (error) {
-
-                if (error instanceof FbApiError && error.status && error.status >= 400 && error.status < 500) {
-                    // console.error("Client Error:", error);
-                    return { code: SERVER_ERR_CODE_ENUMS.FB_SERVER_ERR, ecode: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR, data: error } as T;
-                }
-
-                if (attempt >= maxRetry) {
-                    return { code: SERVER_ERR_CODE_ENUMS.FB_SERVER_ERR, ecode: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR, data: error } as T;
-                }
-
-                // 指数退避
-                const delay = retryDelay * Math.pow(2, attempt - 1);
-                await this.sleep(delay);
+                return { code: SERVER_ERR_CODE_ENUMS.FB_SERVER_ERR, ecode: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR, data: error } as T;
             }
         }
 
