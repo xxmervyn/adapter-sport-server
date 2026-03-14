@@ -110,7 +110,7 @@ class FbServiceClass extends BaseService {
 
         const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, option))
         if (data.code == 14010) {
-            // FBNotAuthBaseApi.clearToken(path)
+            FBNotAuthBaseApi.clearToken(path)
             data.success = true
             data.code = 0
         }
@@ -127,11 +127,11 @@ class FbServiceClass extends BaseService {
         const option = { headers: headers, baseURL: info.serverInfo?.virtualAddress }
 
         if (path == "/virtual/v1/match/statistical") {
-            console.warn(`!!!!!!!!!!!!!   ${JSON.stringify(info)}`);
+            console.warn(`!!!!!!!!!!!!!222222222222   ${JSON.stringify(info)}`);
         }
         const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, option))
         if (data.code == 14010) {
-            // FBNotAuthBaseApi.clearToken(path)
+            FBNotAuthBaseApi.clearToken(path)
             data.success = true
             data.code = 0
         }
