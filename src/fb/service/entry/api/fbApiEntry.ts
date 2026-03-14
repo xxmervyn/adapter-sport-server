@@ -212,6 +212,7 @@ class FBNotAuthBaseApiClass extends BaseApi {
         if (req.headers.get("Authorization") == "undefined") {
             return { success: false, resp: { success: false, msg: "request later" } }
         }
+
         return { success: true, resp: {} }
     }
 
