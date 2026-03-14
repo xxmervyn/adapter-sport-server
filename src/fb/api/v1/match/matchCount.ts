@@ -10,11 +10,11 @@ export class V1MatchMatchCount extends OpenAPIRoute {
         request: {
             body: contentJson(
                 z.object({
-                    languageType: z.string(),
-                    oddsType: z.number(),
-                    matchIds: z.array(z.number()).optional(),
-                    onlyOneMarket: z.boolean()
-                  })
+                    sportId: z.number(),
+                    days: z.number().optional(),
+                    timeZone: z.string().optional(),
+                    markets: z.array(z.any()).optional()
+                })
             ),
         },
         responses: {
