@@ -2,6 +2,8 @@ import { sha256 } from "hono/utils/crypto";
 import { FbCommApiResponse } from "../../../model/response/fbModel";
 import { FBNotAuthBaseApi } from "../../entry/api/fbApiEntry";
 import { BaseService, ServiceLocalCacheInterface } from "../../base/baseService";
+import { any } from "zod/v4";
+import { SERVER_ERR_CODE_ENUMS } from "../../../enums/serverErrCodeEnum";
 
 class FBLocalCache implements ServiceLocalCacheInterface {
     private store = new Map<string, { value: any; expireAt: number; cacheTime: number }>();
@@ -100,7 +102,7 @@ class FBLocalCache implements ServiceLocalCacheInterface {
 }
 
 class FbServiceClass extends BaseService {
-    public async request(path: string, params: any) {
+    public async request(path: string, params: any, defCache?: any) {
         const api = FBNotAuthBaseApi
         const headers = await api.fBHeaderGeneratorInstance.getHeaders(path)
         const info = await api.fBHeaderGeneratorInstance.getInfo(path)
@@ -108,6 +110,9 @@ class FbServiceClass extends BaseService {
         const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, { headers, baseURL: info.serverInfo.apiServerAddress }))
         if (data.code == 14010) {
             FBNotAuthBaseApi.clearToken(path)
+        }
+        if (data.code == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
+            return defCache
         }
         return data
     }

@@ -11,23 +11,27 @@ export class AccessCheck extends OpenAPIRoute {
 			query: z.object({
 			}),
 			body: contentJson(
-				z.any(),
+				z.object({
+					languageType: z.string(),
+					version: z.string().optional(),
+				})
 			),
-            responses: {
-                "200": {
-                    description: "Returns the log details",
-                    ...contentJson({
-                        code: z.string(),
-                        data: z.boolean(),
-                        success: z.boolean(),
-                    }),
-                },
-            },
+			responses: {
+				"200": {
+					description: "Returns the log details",
+					...contentJson({
+						code: z.string(),
+						data: z.boolean(),
+						success: z.boolean(),
+					}),
+				},
+			},
 		}
 	};
 
 	public async handle() {
-        const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1User.accessCheck(data.body)   
+		const data = await this.getValidatedData<typeof this.schema>();
+		data.body.version = "1"
+		return FbService.V1User.accessCheck(data.body)
 	}
 }
