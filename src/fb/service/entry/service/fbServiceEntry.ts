@@ -107,7 +107,7 @@ class FbServiceClass extends BaseService {
         const headers = await api.fBHeaderGeneratorInstance.getHeaders(path)
         const info = await api.fBHeaderGeneratorInstance.getInfo(path)
 
-        const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, { headers, baseURL: info.serverInfo?.apiServerAddress }))
+        const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, { headers: headers, baseURL: info.serverInfo?.apiServerAddress }))
         if (data.code == 14010) {
             FBNotAuthBaseApi.clearToken(path)
         }
@@ -122,7 +122,7 @@ class FbServiceClass extends BaseService {
         const headers = await api.fBHeaderGeneratorInstance.getHeaders(path)
         const info = await api.fBHeaderGeneratorInstance.getInfo(path)
 
-        const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, { headers, baseURL: info.serverInfo?.virtualAddress }))
+        const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, { headers: headers, baseURL: info.serverInfo?.virtualAddress }))
         // if (data.code == 14010) {
         //     FBNotAuthBaseApi.clearToken(path)
         // }

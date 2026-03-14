@@ -230,9 +230,6 @@ export class BaseApi {
                         body = data;
                     } else {
                         body = JSON.stringify(data);
-                        if (!headers['Content-Type']) {
-                            headers['Content-Type'] = 'application/json';
-                        }
                     }
                 }
 
@@ -278,7 +275,7 @@ export class BaseApi {
                 return this.parseResponse(response);
 
             } catch (error) {
-                
+
                 if (error instanceof FbApiError && error.status && error.status >= 400 && error.status < 500) {
                     // console.error("Client Error:", error);
                     return { code: SERVER_ERR_CODE_ENUMS.FB_SERVER_ERR, ecode: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR, data: error } as T;

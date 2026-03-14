@@ -43,7 +43,7 @@ class FBHeaderGenerator {
                 'Accept': 'application/json, text/plain, */*',
                 'Accept-Language': 'zh-CN,zh;q=0.9',
                 'Accept-Encoding': 'gzip, deflate, br, zstd',
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36',
                 'Sec-Ch-Ua': '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"',
                 'Sec-Ch-Ua-mobile': '?0',
@@ -56,7 +56,7 @@ class FBHeaderGenerator {
                 'Accept': 'application/json, text/plain, */*',
                 'Accept-Language': 'zh-CN,zh;q=0.9',
                 'Accept-Encoding': 'gzip, deflate, br',
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
                 'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
                 'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
                 'Sec-Ch-Ua-mobile': '?1',
@@ -69,7 +69,7 @@ class FBHeaderGenerator {
                 'Accept': 'application/json, text/plain, */*',
                 'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
                 'Accept-Encoding': 'gzip, deflate, br, zstd',
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
                 'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
                 'Sec-Ch-Ua-mobile': '?0',
@@ -83,14 +83,14 @@ class FBHeaderGenerator {
                 'Accept': 'application/json, text/plain, */*',
                 'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
                 'Accept-Encoding': 'gzip, deflate, br',
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
                 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3.1 Safari/605.1.15',
             },
             {
                 'Accept': 'application/json, text/plain, */*',
                 'Accept-Language': 'zh-CN,zh;q=0.9',
                 'Accept-Encoding': 'gzip, deflate, br',
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
                 'User-Agent': 'Mozilla/5.0 (Linux; Android 14; SM-S928B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.119 Mobile Safari/537.36',
                 'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
                 'Sec-Ch-Ua-mobile': '?1',
@@ -103,7 +103,7 @@ class FBHeaderGenerator {
                 'Accept': 'application/json, text/plain, */*',
                 'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
                 'Accept-Encoding': 'gzip, deflate, br, zstd',
-                'Content-Type': 'application/json',
+                'Content-Type': 'application/json;charset=UTF-8',
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0',
                 'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Microsoft Edge";v="122"',
                 'Sec-Ch-Ua-mobile': '?0',
@@ -280,9 +280,11 @@ class FBNotAuthBaseApiClass extends BaseApi {
         return { ecode: SERVER_ERR_CODE_ENUMS.SUCCESS, message: "" }
     }
 
-    // protected override async onGenAuthHeader(path: string): Promise<HeadersInit> {
-    //     return this.fBHeaderGeneratorInstance.getHeaders(path)
-    // }
+    protected override onFetchBefore(req: Request): Request {
+        req.headers.set('Content-Type', 'application/json;charset=UTF-8')
+        return req
+    }
+
 
     public async clearToken(path: string) {
         this.fBHeaderGeneratorInstance.clearToken(path)
