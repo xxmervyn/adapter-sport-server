@@ -165,7 +165,8 @@ class FBHeaderGenerator {
 
         return {
             ...header,
-            'Authorization': `${info.token}`
+            'Authorization': `${info.token}`,
+            'Referer': `${info.serverInfo.pcAddress}/`,
         }
     }
 
