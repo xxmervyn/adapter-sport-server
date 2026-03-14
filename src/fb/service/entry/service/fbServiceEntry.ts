@@ -110,7 +110,7 @@ class FbServiceClass extends BaseService {
 
         const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, option))
         if (data.code == 14010) {
-            FBNotAuthBaseApi.clearToken(path)
+            // FBNotAuthBaseApi.clearToken(path)
             data.success = true
             data.code = 0
         }

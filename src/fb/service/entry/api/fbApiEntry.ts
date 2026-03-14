@@ -193,11 +193,11 @@ class FBHeaderGenerator {
         if (info.status == 2) {
             return { token: info.token } as LoginInfo
         }
-        info.status = 2
+        this.accountList[i].status = 2
         console.log("=====开始请求新账户");
         await this.refreshInfo(path)
         console.log("-----结束请求新账户");
-        info.status = 1
+        this.accountList[i].status = 1
 
         return this.accountList[i]
     }
@@ -259,7 +259,6 @@ class FBHeaderGenerator {
             info.expire = Date.now() + 10 * 60 * 1000 // 10分钟
             info.token = resp.data.token
             info.serverInfo = resp.data.serverInfo
-            console.log(`++++++++++++++${JSON.stringify(info)},    ${JSON.stringify(this.accountList)}`);
 
             resp = await fetch(
                 `${info.serverInfo.apiServerAddress}/v1/user/accessCheck`,
