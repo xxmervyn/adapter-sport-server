@@ -158,15 +158,14 @@ class FBHeaderGenerator {
 
     /* ================= 获取随机 Header ================= */
 
-    public async getHeaders(path: string): Promise<HeadersInit> {
-        const info = await this.getInfo(path);
+    public async getHeaders(info: LoginInfo): Promise<HeadersInit> {
         const index = info.expire % this.randomHeaders.length;
         const header = this.randomHeaders[index]
 
         return {
             ...header,
             'Authorization': `${info.token}`,
-            'Referer': `${info.serverInfo.pcAddress}/`,
+            'Referer': info.serverInfo?.pcAddress ? `${info.serverInfo.pcAddress}/` : "",
         }
     }
 
