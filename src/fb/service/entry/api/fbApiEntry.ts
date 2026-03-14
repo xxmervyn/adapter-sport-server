@@ -8,15 +8,15 @@ interface LoginInfo {
     userPassword: string,
     token: string,
     serverInfo: {
-        apiServerAddress: string
-        apiEmbeddedServerAddress: string
-        pushServerAddress: string
-        pcAddress: string
-        h5Address: string
-        virtualAddress: string
-        virtualMatchVideoAddress: string
-        ouH5Address: string
-        ouPcAddress: string
+        apiServerAddress: string,
+        apiEmbeddedServerAddress: string,
+        pushServerAddress: string,
+        pcAddress: string,
+        h5Address: string,
+        virtualAddress: string,
+        virtualMatchVideoAddress: string,
+        ouH5Address: string,
+        ouPcAddress: string,
     },
     expire: number,
     status: number,

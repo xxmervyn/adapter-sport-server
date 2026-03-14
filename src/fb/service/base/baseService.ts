@@ -78,23 +78,28 @@ export class BaseService {
         }
 
         if (isExist) {
-            //缓存中
-            // SERVER_ERR_CODE_ENUMS.REQUEST_CACHING
-            const data = item ? item.data : { code: 0, success: true, data: item, eCode: SERVER_ERR_CODE_ENUMS.REQUEST_CACHING } as T
+            const data = item ? item.data : ({ code: 0, success: true, eCode: SERVER_ERR_CODE_ENUMS.REQUEST_CACHING } as T)
             this.tryCleanErrCacheAsync()
-            // console.log("缓存中")
             return data
         }
 
         this.cacheStatusMap.set(cacheKey, Date.now())
         const cacheTime = option?.cache?.cacheTime ?? this.localCacheDefConf.cacheTime ?? 0;
-        const data = await api();
-        if (this.isSuccess(data)) {
-            this.localCacheEntry.setItem(cacheKey, data, cacheTime);
-        }
-        this.cacheStatusMap.delete(cacheKey)
 
-        return data;
+
+        try {
+            const data = await api();
+            if (this.isSuccess(data)) {
+                this.localCacheEntry.setItem(cacheKey, data, cacheTime);
+            }
+            return data;
+        } catch (error) {
+            return ({ code: 0, success: true, eCode: SERVER_ERR_CODE_ENUMS.FAIL_REQUEST } as T);
+        } finally {
+            this.cacheStatusMap.delete(cacheKey)
+        }
+
+
     }
 
     //清除异常缓存状态

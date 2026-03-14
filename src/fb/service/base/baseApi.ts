@@ -147,7 +147,7 @@ export class BaseApi {
         return fullUrl;
     }
 
-    protected async getMergedHeaders(path: string, baseURL: string, ...headersList: (HeadersInit | undefined)[]): Promise<Record<string, string>> {
+    protected async getMergedHeaders(baseURL: string, ...headersList: (HeadersInit | undefined)[]): Promise<Record<string, string>> {
         const result: Record<string, string> = {};
 
         // 合并默认 headers
@@ -219,7 +219,7 @@ export class BaseApi {
             attempt++;
             try {
                 const baseURL = options?.baseURL ?? this.baseURL;
-                const headers = await this.getMergedHeaders(path, baseURL, options?.headers);
+                const headers = await this.getMergedHeaders(baseURL, options?.headers);
                 const fullUrl = this.buildUrl(path, baseURL, method === "GET" ? data : options?.params);
 
                 let body: BodyInit | null | undefined = undefined;
@@ -261,7 +261,7 @@ export class BaseApi {
                 // 状态码验证
                 if (!this.validateStatus(response.status)) {
                     if (attempt == maxRetry) {
-                        return { code: SERVER_ERR_CODE_ENUMS.FB_SERVER_ERR, ecode: SERVER_ERR_CODE_ENUMS.INVALID_RESPONSE_STATUS, message: `${response.status}:${fullUrl}` } as T;
+                        return { code: SERVER_ERR_CODE_ENUMS.FB_SERVER_ERR, ecode: SERVER_ERR_CODE_ENUMS.INVALID_RESPONSE_STATUS, message: `${response.status}:${fullUrl}:${baseURL}` } as T;
                     } else {
                         // 指数退避
                         const delay = retryDelay * Math.pow(2, attempt - 1);
