@@ -2,6 +2,7 @@
 /* ==================== 本地缓存接口 ==================== */
 
 import { SERVER_ERR_CODE_ENUMS } from "../../enums/serverErrCodeEnum";
+import { ApiRequestOptions } from "./baseApi";
 
 export interface ServiceLocalCacheInterface {
     getItem<T>(key: string): { expireAt: number; data: T } | null;
@@ -62,14 +63,18 @@ export class BaseService {
         );
     }
 
-    public async api<T>(path: string, params: any, api: () => Promise<T>, option?: ServiceRequestOptions): Promise<T> {
-        const isCache = option?.cache?.isCache ?? this.localCacheDefConf.isCache;
+    public async api<T>(path: string, params: any,
+        api: (...args: any[]) => Promise<T>,
+        apiOptions?: ApiRequestOptions,
+        serverOptions?: ServiceRequestOptions
+    ): Promise<T> {
+        const isCache = serverOptions?.cache?.isCache ?? this.localCacheDefConf.isCache;
 
         if (!isCache || !this.localCacheEntry) {
-            return api();
+            return api(path, params, apiOptions);
         }
 
-        const cacheKey = option?.cache?.cacheKey ?? await this.localCacheEntry.getRequestKey(path, params);
+        const cacheKey = serverOptions?.cache?.cacheKey ?? await this.localCacheEntry.getRequestKey(path, params);
 
         const item = this.localCacheEntry.getItem<T>(cacheKey);
         const isExist = this.cacheStatusMap.has(cacheKey)
@@ -78,17 +83,19 @@ export class BaseService {
         }
 
         if (isExist) {
+            //缓存中
+            // SERVER_ERR_CODE_ENUMS.REQUEST_CACHING
             const data = item ? item.data : ({ code: 0, success: true, eCode: SERVER_ERR_CODE_ENUMS.REQUEST_CACHING } as T)
             this.tryCleanErrCacheAsync()
             return data
         }
 
         this.cacheStatusMap.set(cacheKey, Date.now())
-        const cacheTime = option?.cache?.cacheTime ?? this.localCacheDefConf.cacheTime ?? 0;
+        const cacheTime = serverOptions?.cache?.cacheTime ?? this.localCacheDefConf.cacheTime ?? 0;
 
 
         try {
-            const data = await api();
+            const data = await api(path, params, apiOptions);
             if (this.isSuccess(data)) {
                 this.localCacheEntry.setItem(cacheKey, data, cacheTime);
             }

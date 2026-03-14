@@ -68,7 +68,7 @@ class FbUserServiceClass extends BaseService {
             headers["x-front-page"] = xFrontPage
         }
         // const headers = req.raw.headers
-        return await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, { headers }))
+        return await this.api<FbCommApiResponse>(path, params, api.post, { headers })
     }
 }
 
