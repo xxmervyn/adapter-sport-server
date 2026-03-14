@@ -11,7 +11,7 @@ export class V1UserApi {
         // if (params.version = "1") {
         //     return defResp
         // }
-
-        return FbServiceEntry.request('/v1/user/accessCheck', params, defResp)
+        return defResp
+        // return FbServiceEntry.request('/v1/user/accessCheck', params, defResp)
     }
 }
