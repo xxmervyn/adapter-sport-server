@@ -119,8 +119,8 @@ class FbServiceClass extends BaseService {
 
     public async virtualRequest(path: string, params: any, defCache?: any) {
         const api = FBNotAuthBaseApi
-        const headers = await api.fBHeaderGeneratorInstance.getHeaders(path)
         const info = await api.fBHeaderGeneratorInstance.getInfo(path)
+        const headers = await api.fBHeaderGeneratorInstance.getHeaders(info)
 
         const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, { headers: headers, baseURL: info.serverInfo?.virtualAddress ?? info.serverInfo?.apiServerAddress }))
         // if (data.code == 14010) {
