@@ -176,7 +176,7 @@ class FBHeaderGenerator {
             return {} as LoginInfo
         }
 
-        info.expire = Date.now() + 5 * 60 * 1000 // 5分钟
+        info.expire = Date.now() + 10 * 60 * 1000 // 10分钟
         info.token = resp.data.token
         info.serverInfo = resp.data.serverInfo
 
