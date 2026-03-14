@@ -2,24 +2,19 @@ import { OpenAPIRoute, contentJson } from "chanfana";
 import { z } from "zod";
 import { FbService } from "../../../service/fbService";
 
-export class V1MatchMatchCount extends OpenAPIRoute {
+export class V1MatchGetList extends OpenAPIRoute {
     public schema = {
-        tags: ["V1MatchMatchCount"],
-        summary: "V1MatchMatchCount",
-        operationId: "V1MatchMatchCount",
+        tags: ["V1MatchGetList"],
+        summary: "V1MatchGetList",
+        operationId: "V1MatchGetList",
         request: {
             body: contentJson(
-                z.object({
-                    sportId: z.number(),
-                    days: z.number().optional(),
-                    timeZone: z.string().optional(),
-                    markets: z.array(z.any()).optional()
-                })
+                z.any()
             ),
         },
         responses: {
             "200": {
-                description: "V1MatchMatchCount",
+                description: "V1MatchGetList",
                 ...contentJson({
                     code: z.any(),
                     data: z.any(),
@@ -31,6 +26,6 @@ export class V1MatchMatchCount extends OpenAPIRoute {
 
     async handle() {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1Match.matchCount(data.body)
+        return FbService.V1Match.getLiveList(data.body)
     }
 }

@@ -4,7 +4,7 @@ import { FbService } from "../../../service/fbService";
 
 export class V1MatchQueryMatchByRecommend extends OpenAPIRoute {
     public schema = {
-        tags: ["猜你喜欢"],
+        tags: ["V1MatchQueryMatchByRecommend"],
         summary: "V1MatchQueryMatchByRecommend",
         operationId: "V1MatchQueryMatchByRecommend",
         request: {

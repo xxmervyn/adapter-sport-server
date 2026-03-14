@@ -2,28 +2,26 @@ import { OpenAPIRoute, contentJson } from "chanfana";
 import { z } from "zod";
 import { FbService } from "../../../service/fbService";
 
-export class V1MatchRecommendMatchList extends OpenAPIRoute {
+export class V1MatchListMarketGroup extends OpenAPIRoute {
     public schema = {
-        tags: ["V1MatchRecommendMatchList"],
-        summary: "V1MatchRecommendMatchList",
-        operationId: "V1MatchRecommendMatchList",
+        tags: ["V1MatchListMarketGroup"],
+        summary: "V1MatchListMarketGroup",
+        operationId: "V1MatchListMarketGroup",
         request: {
             body: contentJson(
                 z.object({
-                    languageType: z.string(),
                     oddsType: z.number(),
-                    size: z.number(),
-                    random: z.boolean(),
-                    isPC: z.boolean(),
-                    sortType: z.number(),
+                    languageType: z.string(),
+                    matchId: z.number(),
+                    tag: z.string()
                 })
             ),
         },
         responses: {
             "200": {
-                description: "V1MatchRecommendMatchList",
+                description: "V1MatchListMarketGroup",
                 ...contentJson({
-                    code: z.number(),
+                    code: z.any(),
                     data: z.any(),
                     success: z.boolean(),
                 }),
@@ -33,6 +31,6 @@ export class V1MatchRecommendMatchList extends OpenAPIRoute {
 
     async handle() {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1Match.recommendMatchList(data.body)
+        return FbService.V1Match.listMarketGroup(data.body)
     }
 }

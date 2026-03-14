@@ -4,7 +4,7 @@ import { FbService } from "../../../service/fbService";
 
 export class V1MatchGetOnSaleLeagues extends OpenAPIRoute {
     public schema = {
-        tags: ["我的关注", "LIVE滚球盘"],
+        tags: ["V1MatchGetOnSaleLeagues"],
         summary: "V1MatchGetOnSaleLeagues",
         operationId: "V1MatchGetOnSaleLeagues",
         request: {

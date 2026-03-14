@@ -23,6 +23,10 @@ export class V1UserApi {
             }
             return resp
         }
+        if (data.code == 4002) {
+            data.code = 0;
+            data.success = true;
+        }
         return data
     }
 }
