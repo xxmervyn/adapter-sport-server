@@ -34,6 +34,6 @@ export class FbV1OrderReserveGetBetParameter extends OpenAPIRoute {
 
     async handle() {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1OrderReserveApi.getBetParameter(data.body)
+        return FbService.V1OrderReserve.getBetParameter(data.body)
     }
 }

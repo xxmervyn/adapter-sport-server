@@ -19,13 +19,13 @@ const FbService = {
     V1Merchant: new V1MerchantApi(),
     V1SportRule: new V1SportRuleApi(),
     V1Order: new V1OrderApi(),
-    V1OrderReserveApi: new V1OrderReserveApi(),
-    V1OrderNewBetApi: new V1OrderNewBetApi(),
+    V1OrderReserve: new V1OrderReserveApi(),
+    V1OrderNewBet: new V1OrderNewBetApi(),
     V1User: new V1UserApi(),
     LanguageStatic: new LanguageStaticApi(),
     VirtualV1Match: new VirtualV1MatchApi(),
     VirtualV1Stat: new VirtualV1StatApi(),
-    V1OrderOddsCartApi: new V1OrderOddsCartApi(),
+    V1OrderOddsCart: new V1OrderOddsCartApi(),
 }
 
 export {

@@ -12,24 +12,24 @@ export class V1MerchantDetail extends OpenAPIRoute {
 			}),
 			body: contentJson(
 				z.object({
-					languageType: z.string()
+					languageType: z.string(),
 				}),
 			),
-            responses: {
-                "200": {
-                    description: "V1MerchantDetail",
-                    ...contentJson({
-                        code: z.string(),
-                        data: z.any(),
-                        success: z.boolean(),
-                    }),
-                },
-            },
+			responses: {
+				"200": {
+					description: "V1MerchantDetail",
+					...contentJson({
+						code: z.string(),
+						data: z.any(),
+						success: z.boolean(),
+					}),
+				},
+			},
 		}
 	};
 
 	public async handle() {
-        const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1Merchant.detail(data.body)
+		const data = await this.getValidatedData<typeof this.schema>();
+		return FbService.V1Merchant.detail(data.body)
 	}
 }

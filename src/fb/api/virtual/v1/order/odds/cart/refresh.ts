@@ -31,6 +31,6 @@ export class VirtualV1OrderOddsCartRefresh extends OpenAPIRoute {
 
     async handle() {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1OrderOddsCartApi.refresh(data.body)
+        return FbService.V1OrderOddsCart.refresh(data.body)
     }
 }

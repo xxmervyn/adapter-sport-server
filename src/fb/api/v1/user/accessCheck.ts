@@ -11,9 +11,7 @@ export class AccessCheck extends OpenAPIRoute {
 			query: z.object({
 			}),
 			body: contentJson(
-				z.object({
-					
-				}),
+				z.any(),
 			),
             responses: {
                 "200": {
