@@ -55,24 +55,44 @@ class FBHeaderGenerator {
     }
 
     public initAccountList() {
-        this.accountList = [{
-            userName: "t013",
-            userPassword: "546071",
-            token: "",
-            serverInfo: {
-                apiServerAddress: "",
-                apiEmbeddedServerAddress: "",
-                pushServerAddress: "",
-                pcAddress: "",
-                h5Address: "",
-                virtualAddress: "",
-                virtualMatchVideoAddress: "",
-                ouH5Address: "",
-                ouPcAddress: "",
+        this.accountList = [
+            {
+                userName: "t013",
+                userPassword: "546071",
+                token: "",
+                serverInfo: {
+                    apiServerAddress: "",
+                    apiEmbeddedServerAddress: "",
+                    pushServerAddress: "",
+                    pcAddress: "",
+                    h5Address: "",
+                    virtualAddress: "",
+                    virtualMatchVideoAddress: "",
+                    ouH5Address: "",
+                    ouPcAddress: "",
+                },
+                expire: 0,
+                status: 0,
             },
-            expire: 0,
-            status: 0,
-        }]
+            // {
+            //     userName: "t012",
+            //     userPassword: "441896",
+            //     token: "",
+            //     serverInfo: {
+            //         apiServerAddress: "",
+            //         apiEmbeddedServerAddress: "",
+            //         pushServerAddress: "",
+            //         pcAddress: "",
+            //         h5Address: "",
+            //         virtualAddress: "",
+            //         virtualMatchVideoAddress: "",
+            //         ouH5Address: "",
+            //         ouPcAddress: "",
+            //     },
+            //     expire: 0,
+            //     status: 0,
+            // }
+        ]
     }
 
     /* ================= 获取随机 Header ================= */
