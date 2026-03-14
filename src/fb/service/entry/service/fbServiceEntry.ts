@@ -117,17 +117,20 @@ class FbServiceClass extends BaseService {
         return data
     }
 
-    // public async virtualRequest(path: string, params: any) {
-    //     const api = FBNotAuthBaseApi
-    //     const headers = await api.fBHeaderGeneratorInstance.getHeaders(path)
-    //     const info = await api.fBHeaderGeneratorInstance.getInfo(path)
+    public async virtualRequest(path: string, params: any, defCache?: any) {
+        const api = FBNotAuthBaseApi
+        const headers = await api.fBHeaderGeneratorInstance.getHeaders(path)
+        const info = await api.fBHeaderGeneratorInstance.getInfo(path)
 
-    //     const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, { headers, baseURL: info.serverInfo?.apiServerAddress }))
-    //     if (data.code == 14010) {
-    //         FBNotAuthBaseApi.clearToken(path)
-    //     }
-    //     return data
-    // }
+        const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, { headers, baseURL: info.serverInfo?.virtualAddress }))
+        // if (data.code == 14010) {
+        //     FBNotAuthBaseApi.clearToken(path)
+        // }
+        if (defCache && data.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
+            return defCache
+        }
+        return data
+    }
 }
 
 export const FbServiceEntry = new FbServiceClass({
