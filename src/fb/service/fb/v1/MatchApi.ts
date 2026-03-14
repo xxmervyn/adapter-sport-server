@@ -28,7 +28,7 @@ export class V1MatchApi {
     public statistical(params: any) {
         return FbServiceEntry.request('/v1/match/statistical', params)
     }
-
+    
     public matchResultPage(params: any) {
         return FbServiceEntry.request('/v1/match/matchResultPage', params)
     }
