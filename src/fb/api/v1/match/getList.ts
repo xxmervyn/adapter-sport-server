@@ -18,7 +18,7 @@ export class V1MatchGetList extends OpenAPIRoute {
                     current: z.number(),
                     isPC: z.boolean(),
                     orderBy: z.number(),
-                    type: z.number(),
+                    type: z.number().optional(),
                     leagueIds: z.array(z.number()).optional(),
                     leaguePhases: z.array(z.any()).optional(),
                 })

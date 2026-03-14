@@ -10,10 +10,13 @@ export class FbV1OrderReserveGetBetParameter extends OpenAPIRoute {
         request: {
             body: contentJson(
                 z.object({
-                    betMatchMarketList: z.any(),
                     currencyId: z.number(),
-                    isSelectSeries: z.boolean(),
-                    languageType: z.string()
+                    languageType: z.string(),
+                    marketId: z.number().optional(),
+                    matchId: z.number().optional(),
+                    betMatchMarketList: z.any().optional(),
+                    isSelectSeries: z.boolean().optional(),
+                    optionType: z.number().optional(),
                 })
             ),
         },
@@ -31,6 +34,6 @@ export class FbV1OrderReserveGetBetParameter extends OpenAPIRoute {
 
     async handle() {
         const data = await this.getValidatedData<typeof this.schema>();
-		return FbService.V1OrderReserveApi.getBetParameter(data.body)
+        return FbService.V1OrderReserveApi.getBetParameter(data.body)
     }
 }
