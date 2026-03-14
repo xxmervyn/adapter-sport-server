@@ -106,7 +106,7 @@ class FbServiceClass extends BaseService {
         const api = FBNotAuthBaseApi
         const info = await api.fBHeaderGeneratorInstance.getInfo(path)
         const headers = await api.fBHeaderGeneratorInstance.getHeaders(info)
-        const option = { headers: headers, baseURL: info.serverInfo?.apiServerAddress }
+        const option = { headers: headers, baseURL: info.serverInfo.apiServerAddress }
 
         const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, option))
         if (data.code == 14010) {
@@ -122,7 +122,7 @@ class FbServiceClass extends BaseService {
         const api = FBNotAuthBaseApi
         const info = await api.fBHeaderGeneratorInstance.getInfo(path)
         const headers = await api.fBHeaderGeneratorInstance.getHeaders(info)
-        const option = { headers: headers, baseURL: info.serverInfo.virtualAddress ?? "https//" }
+        const option = { headers: headers, baseURL: info.serverInfo.virtualAddress }
 
         const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, option))
         // if (data.code == 14010) {
