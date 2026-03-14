@@ -106,11 +106,13 @@ class FbServiceClass extends BaseService {
         const api = FBNotAuthBaseApi
         const info = await api.fBHeaderGeneratorInstance.getInfo(path)
         const headers = await api.fBHeaderGeneratorInstance.getHeaders(info)
-        const option = { headers: headers, baseURL: info.serverInfo?.apiServerAddress }
+        const option = { headers: headers, baseURL: info.serverInfo.apiServerAddress ?? "" }
 
         const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, option))
         if (data.code == 14010) {
             FBNotAuthBaseApi.clearToken(path)
+            data.success = true
+            data.code = 0
         }
         if (defCache && data.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
             return defCache
@@ -122,12 +124,14 @@ class FbServiceClass extends BaseService {
         const api = FBNotAuthBaseApi
         const info = await api.fBHeaderGeneratorInstance.getInfo(path)
         const headers = await api.fBHeaderGeneratorInstance.getHeaders(info)
-        const option = { headers: headers, baseURL: info.serverInfo?.virtualAddress }
+        const option = { headers: headers, baseURL: info.serverInfo.virtualAddress ?? "" }
 
         const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, option))
-        // if (data.code == 14010) {
-        //     FBNotAuthBaseApi.clearToken(path)
-        // }
+        if (data.code == 14010) {
+            // FBNotAuthBaseApi.clearToken(path)
+            data.success = true
+            data.code = 0
+        }
         if (defCache && data.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
             return defCache
         }
