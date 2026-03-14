@@ -19,12 +19,9 @@ export class LanguageStaticList extends OpenAPIRoute {
 				"200": {
 					description: "LanguageStaticList",
 					...contentJson({
-						success: Boolean,
-						result: z.object({
-							code: z.string(),
-							data: z.any(),
-							success: z.boolean(),
-						}),
+						code: z.any(),
+						data: z.any(),
+						success: z.boolean(),
 					}),
 				},
 			},
