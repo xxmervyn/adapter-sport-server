@@ -8,9 +8,9 @@ export class V1UserApi {
             "data": false,
             "code": 0
         }
-        if (params.version = "1") {
-            return defResp
-        }
+        // if (params.version = "1") {
+        //     return defResp
+        // }
 
         return FbServiceEntry.request('/v1/user/accessCheck', params, defResp)
     }
