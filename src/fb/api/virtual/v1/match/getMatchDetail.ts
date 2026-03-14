@@ -30,6 +30,6 @@ export class VirtualV1MatchGetMatchDetail extends OpenAPIRoute {
 
     async handle() {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.VirtualV1Match.getMatchListWithResults(data.body)    
+        return FbService.VirtualV1Match.getMatchDetail(data.body)    
     }
 }
