@@ -283,15 +283,15 @@ export class BaseApi {
                 // 客户端错误直接返回
                 if (error instanceof FbApiError && error.status && error.status >= 400 && error.status < 500) {
                     // console.error("Client Error:", error);
-                    return { code: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR } as T;
+                    return { code: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR, data: error } as T;
                 }
 
-                const baseURL = options?.baseURL ?? this.baseURL;
+                // const baseURL = options?.baseURL ?? this.baseURL;
                 // const fullUrl = this.buildUrl(path, baseURL, method === "GET" ? data : options?.params);
                 // retry结束
                 if (attempt >= maxRetry) {
                     // console.error("Request failed after retries:" + fullUrl, error);
-                    return { code: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR } as T;
+                    return { code: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR, data: error  } as T;
                 }
 
                 // 指数退避

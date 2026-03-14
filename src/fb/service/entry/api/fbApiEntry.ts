@@ -119,7 +119,7 @@ class FBHeaderGenerator {
             return info
         }
         if (info.status == 2) {
-            return { ...info } as LoginInfo
+            return { token: info.token } as LoginInfo
         }
         info.status = 2
         this.accountList[i] = await this.refreshInfo(path)
