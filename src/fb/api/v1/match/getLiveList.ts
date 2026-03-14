@@ -2,11 +2,11 @@ import { OpenAPIRoute, contentJson } from "chanfana";
 import { z } from "zod";
 import { FbService } from "../../../service/fbService";
 
-export class V1MatchGetList extends OpenAPIRoute {
+export class V1MatchGetLiveList extends OpenAPIRoute {
     public schema = {
-        tags: ["V1MatchGetList"],
-        summary: "V1MatchGetList",
-        operationId: "V1MatchGetList",
+        tags: ["V1MatchGetLiveList"],
+        summary: "V1MatchGetLiveList",
+        operationId: "V1MatchGetLiveList",
         request: {
             body: contentJson(
                 z.any()
@@ -14,7 +14,7 @@ export class V1MatchGetList extends OpenAPIRoute {
         },
         responses: {
             "200": {
-                description: "V1MatchGetList",
+                description: "V1MatchGetLiveList",
                 ...contentJson({
                     code: z.any(),
                     data: z.any(),

@@ -10,6 +10,8 @@ import { V1MatchResultPage } from "./resultPage";
 import { V1MatchTips } from "./tips";
 import { V1MatchQueryMatchByRecommend } from "./queryMatchByRecommend";
 import { V1MatchMatchCount } from "./matchCount";
+import { V1MatchGetLiveList } from "./getLiveList";
+import { V1MatchListMarketGroup } from "./listMarketGroup";
 
 export const FbV1MatchRouter = fromHono(new Hono());
 FbV1MatchRouter.post("/statistical", V1MatchStatistical);
@@ -22,3 +24,5 @@ FbV1MatchRouter.post("/matchResultPage", V1MatchResultPage);
 FbV1MatchRouter.post("/tips", V1MatchTips);
 FbV1MatchRouter.post("/matchCount", V1MatchMatchCount);
 FbV1MatchRouter.post("/queryMatchByRecommend", V1MatchQueryMatchByRecommend);
+FbV1MatchRouter.post("/getLiveList", V1MatchGetLiveList);
+FbV1MatchRouter.post("/listMarketGroup", V1MatchListMarketGroup);
