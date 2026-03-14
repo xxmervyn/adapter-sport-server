@@ -33,6 +33,5 @@ export class V1OrderNewBetList extends OpenAPIRoute {
     async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
 		return await FbService.V1OrderNewBetApi.list(data.body);
-        return {}
     }
 }
