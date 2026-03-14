@@ -50,16 +50,16 @@ export class BaseApi {
     }
 
 
-    protected async isValidatedRequest(req: Request): Promise<{ success: boolean, resp: any }> {
-        return { success: true, resp: {} }
+    protected async isValidatedRequest(req: Request): Promise<{ ecode: number, message: string }> {
+        return { message: "", ecode: 0 }
     }
 
 
     /* ================= 生命周期 ================= */
 
-    protected async onGenAuthHeader(path: string): Promise<HeadersInit> {
-        return {}
-    }
+    // protected async onGenAuthHeader(path: string): Promise<HeadersInit> {
+    //     return {}
+    // }
 
     protected onFetchBefore(req: Request): Request {
         return req
@@ -153,9 +153,9 @@ export class BaseApi {
         // 合并默认 headers
         Object.assign(result, this.defaultHeaders);
 
-        // 合并授权 headers
-        const authHeaders = await this.onGenAuthHeader(path);
-        Object.assign(result, this.normalizeHeaders(authHeaders));
+        // // 合并授权 headers
+        // const authHeaders = await this.onGenAuthHeader(path);
+        // Object.assign(result, this.normalizeHeaders(authHeaders));
 
         // 合并其他 headers
         for (const headers of headersList) {
@@ -249,12 +249,12 @@ export class BaseApi {
                 delete (fetchOptions as any).params;
 
                 const request = new Request(fullUrl, fetchOptions);
-                const isValidatedRequest = await this.isValidatedRequest(request);
-                if (isValidatedRequest.success == false) {
-                    return { code: SERVER_ERR_CODE_ENUMS.INVALID_REQUEST, data: isValidatedRequest.resp } as T;
+                const valided = await this.isValidatedRequest(request);
+                if (valided.ecode != 0) {
+                    return { code: SERVER_ERR_CODE_ENUMS.FB_SERVER_ERR, ecode: valided.ecode, message: valided.message } as T;
                 }
                 if (request.url.startsWith("http") == false) {
-                    return { code: SERVER_ERR_CODE_ENUMS.INVALID_HTTP_REQUEST, data: fullUrl } as T;
+                    return { code: SERVER_ERR_CODE_ENUMS.FB_SERVER_ERR, ecode: SERVER_ERR_CODE_ENUMS.FAIL_REQUEST, message: fullUrl } as T;
                 }
 
                 const newRequest = this.onFetchBefore(request)
@@ -271,27 +271,21 @@ export class BaseApi {
                         this.parseResponse(response),
                     );
 
-                    console.error("API ERROR:", err);
-                    return { code: SERVER_ERR_CODE_ENUMS.INVALID_RESPONSE_STATUS } as T;
+                    // console.error("API ERROR:", err);
+                    return { code: SERVER_ERR_CODE_ENUMS.FB_SERVER_ERR, ecode: SERVER_ERR_CODE_ENUMS.INVALID_RESPONSE_STATUS } as T;
                 }
 
                 return this.parseResponse(response);
 
             } catch (error) {
-                // lastError = error;
-
-                // 客户端错误直接返回
+                
                 if (error instanceof FbApiError && error.status && error.status >= 400 && error.status < 500) {
                     // console.error("Client Error:", error);
-                    return { code: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR, data: error } as T;
+                    return { code: SERVER_ERR_CODE_ENUMS.FB_SERVER_ERR, ecode: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR, data: error } as T;
                 }
 
-                // const baseURL = options?.baseURL ?? this.baseURL;
-                // const fullUrl = this.buildUrl(path, baseURL, method === "GET" ? data : options?.params);
-                // retry结束
                 if (attempt >= maxRetry) {
-                    // console.error("Request failed after retries:" + fullUrl, error);
-                    return { code: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR, data: error  } as T;
+                    return { code: SERVER_ERR_CODE_ENUMS.FB_SERVER_ERR, ecode: SERVER_ERR_CODE_ENUMS.REQUEST_ERROR, data: error } as T;
                 }
 
                 // 指数退避
@@ -301,7 +295,7 @@ export class BaseApi {
         }
 
         // console.error("Unexpected request failure:", lastError);
-        return { code: SERVER_ERR_CODE_ENUMS.FAIL_REQUEST } as T;
+        return { code: SERVER_ERR_CODE_ENUMS.FB_SERVER_ERR, ecode: SERVER_ERR_CODE_ENUMS.FAIL_REQUEST } as T;
     }
 
     /* ================= 便捷方法 ================= */
