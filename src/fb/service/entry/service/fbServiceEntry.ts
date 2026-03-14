@@ -67,7 +67,7 @@ class FBLocalCache implements ServiceLocalCacheInterface {
             const now = Date.now();
             // var c = 0;
             for (const [k, v] of this.store) {
-                if (now - v.expireAt > v.cacheTime * 3) {
+                if (now - v.expireAt > v.cacheTime * 30) {
                     this.store.delete(k);
                     // c++;
                 }
