@@ -44,9 +44,9 @@ class FBHeaderGenerator {
                 'Accept-Encoding': 'gzip, deflate, br, zstd',
                 'Content-Type': 'application/json;charset=UTF-8',
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36',
-                'sec-ch-ua': '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"',
-                'sec-ch-ua-mobile': '?0',
-                'sec-ch-ua-platform': '"Windows"',
+                'Sec-Ch-Ua': '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"',
+                'Sec-Ch-Ua-mobile': '?0',
+                'Sec-Ch-Ua-platform': '"Windows"',
                 'Sec-Fetch-Dest': 'empty',
                 'Sec-Fetch-Mode': 'cors',
                 'Sec-Fetch-Site': 'cross-site',
@@ -119,7 +119,7 @@ class FBHeaderGenerator {
             return info
         }
         if (info.status == 2) {
-            return {} as LoginInfo
+            return { ...info } as LoginInfo
         }
         info.status = 2
         this.accountList[i] = await this.refreshInfo(path)
