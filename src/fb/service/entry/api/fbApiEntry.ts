@@ -189,6 +189,7 @@ class FBHeaderGenerator {
         if (info.status == 1 && info.token != "" && Date.now() < info.expire) {
             return info
         }
+
         if (info.status == 2) {
             return { token: info.token } as LoginInfo
         }
@@ -207,67 +208,75 @@ class FBHeaderGenerator {
         const i = this.getAccountIndex(path);
         const info = this.accountList[i]
 
-        const headers = {
-            "content-type": "application/x-www-form-urlencoded",
-        }
-
-        let resp: any = await fetch(
-            "https://client.server.newsportspro.com/clientServer/user/log",
-            {
-                method: "POST",
-                headers,
-                body: new URLSearchParams({
-                    userName: "t013",
-                    userPassword: "546071"
-                })
+        try {
+            const headers = {
+                "content-type": "application/x-www-form-urlencoded",
             }
-        ).then(res => res.json())
 
-        if (!resp?.success || !resp?.data?.token) {
-            return {} as LoginInfo
-        }
+            let resp: any = await fetch(
+                "https://client.server.newsportspro.com/clientServer/user/log",
+                {
+                    method: "POST",
+                    headers,
+                    body: new URLSearchParams({
+                        userName: info.userName,
+                        userPassword: info.userPassword,
+                    })
+                }
+            ).then(res => res.json())
 
-        const token = resp.data.token
-        const userId = resp.data.userId
-
-        resp = await fetch(
-            "https://client.server.newsportspro.com/clientServer/user/jump/newSports",
-            {
-                method: "POST",
-                headers: {
-                    "content-type": "application/x-www-form-urlencoded",
-                    token,
-                    userid: userId
-                },
-                body: new URLSearchParams({
-                    userId: userId,
-                    platForm: "pc"
-                })
+            if (!resp?.success || !resp?.data?.token) {
+                return {} as LoginInfo
             }
-        ).then(r => r.json())
 
-        if (!resp?.success || !resp?.data?.token) {
-            return {} as LoginInfo
-        }
+            const token = resp.data.token
+            const userId = resp.data.userId
 
-        info.expire = Date.now() + 10 * 60 * 1000 // 10分钟
-        info.token = resp.data.token
-        info.serverInfo = resp.data.serverInfo
+            resp = await fetch(
+                "https://client.server.newsportspro.com/clientServer/user/jump/newSports",
+                {
+                    method: "POST",
+                    headers: {
+                        "content-type": "application/x-www-form-urlencoded",
+                        token,
+                        userid: userId
+                    },
+                    body: new URLSearchParams({
+                        userId: userId,
+                        platForm: "pc"
+                    })
+                }
+            ).then(r => r.json())
 
 
-        resp = await fetch(
-            `${info.serverInfo.apiServerAddress}/v1/user/accessCheck`,
-            {
-                method: "POST",
-                headers: {
-                    "authorization": info.token
-                },
-                body: new URLSearchParams({
-                    "languageType": "ZHO",
-                    "version": "1"
-                })
+
+            if (!resp?.success || !resp?.data?.token) {
+                return {} as LoginInfo
             }
-        ).then(r => r.json())
+
+            info.expire = Date.now() + 10 * 60 * 1000 // 10分钟
+            info.token = resp.data.token
+            info.serverInfo = resp.data.serverInfo
+
+
+            resp = await fetch(
+                `${info.serverInfo.apiServerAddress}/v1/user/accessCheck`,
+                {
+                    method: "POST",
+                    headers: {
+                        "authorization": info.token,
+                        "Content-Type": "application/json;charset=UTF-8",
+                    },
+                    body: JSON.stringify({
+                        "languageType": "ZHO",
+                        "version": "1"
+                    })
+                }
+            ).then(r => r.json())
+
+        } catch (error) {
+            console.error("fb账号登入失败", error);
+        }
 
         return info
     }
