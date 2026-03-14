@@ -111,7 +111,7 @@ class FbServiceClass extends BaseService {
         if (data.code == 14010) {
             FBNotAuthBaseApi.clearToken(path)
         }
-        if (data.code == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
+        if (data.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
             return defCache
         }
         return data
