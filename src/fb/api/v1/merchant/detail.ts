@@ -12,7 +12,7 @@ export class MerchantDetail extends OpenAPIRoute {
 			}),
 			body: contentJson(
 				z.object({
-					
+					languageType: z.string()
 				}),
 			),
             responses: {
