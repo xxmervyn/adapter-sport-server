@@ -65,11 +65,11 @@ class FBLocalCache implements ServiceLocalCacheInterface {
 
         queueMicrotask(() => {
             const now = Date.now();
-            var c = 0;
+            // var c = 0;
             for (const [k, v] of this.store) {
                 if (now - v.expireAt > v.cacheTime * 3) {
                     this.store.delete(k);
-                    c++;
+                    // c++;
                 }
             }
 

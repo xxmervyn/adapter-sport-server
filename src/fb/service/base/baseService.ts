@@ -80,8 +80,8 @@ export class BaseService {
         if (isExist) {
             //缓存中
             // SERVER_ERR_CODE_ENUMS.REQUEST_CACHING
-            const data = item?.data ? item.data : { code: 0, success: false } as T
-            this.tryCleanCacheAsync()
+            const data = item ? item.data : { code: 0, success: true, data: item } as T
+            this.tryCleanErrCacheAsync()
             return data
         }
 
@@ -98,7 +98,7 @@ export class BaseService {
     }
 
     //清除异常缓存状态
-    private tryCleanCacheAsync() {
+    private tryCleanErrCacheAsync() {
         const now = Date.now();
         if (now - this.lastCleanTime < 10000) {
             return;
@@ -113,11 +113,9 @@ export class BaseService {
 
         queueMicrotask(() => {
             const now = Date.now();
-            var c = 0;
             for (const [k, v] of this.cacheStatusMap) {
                 if (now - v > 3000) {
                     this.cacheStatusMap.delete(k);
-                    c++;
                 }
             }
             this.cleaning = false;
