@@ -9,9 +9,7 @@ export class VirtualV1MatchGetMatchListWithResults extends OpenAPIRoute {
         operationId: "VirtualV1MatchGetMatchListWithResults",
         request: {
             body: contentJson(
-                z.object({
-                    languageType: z.string(),
-                })
+                z.any()
             ),
         },
         responses: {
