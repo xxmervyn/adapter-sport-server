@@ -9,6 +9,7 @@ import { V1MatchGetOnSaleLeagues } from "./getOnSaleLeagues";
 import { V1MatchResultPage } from "./resultPage";
 import { V1MatchTips } from "./tips";
 import { V1MatchQueryMatchByRecommend } from "./queryMatchByRecommend";
+import { V1MatchMatchCount } from "./matchCount";
 
 export const FbV1MatchRouter = fromHono(new Hono());
 FbV1MatchRouter.post("/statistical", V1MatchStatistical);
@@ -18,5 +19,6 @@ FbV1MatchRouter.post("/getMatchDetail", V1MatchGetMatchDetail);
 FbV1MatchRouter.post("/getOnSaleLeagues", V1MatchGetOnSaleLeagues);
 FbV1MatchRouter.post("/recommendMatchList", V1MatchRecommendMatchList);
 FbV1MatchRouter.post("/matchResultPage", V1MatchResultPage);
-FbV1MatchRouter.post("/V1MatchTips", V1MatchTips);
+FbV1MatchRouter.post("/tips", V1MatchTips);
+FbV1MatchRouter.post("/matchCount", V1MatchMatchCount);
 FbV1MatchRouter.post("/queryMatchByRecommend", V1MatchQueryMatchByRecommend);

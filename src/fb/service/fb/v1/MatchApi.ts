@@ -9,6 +9,10 @@ export class V1MatchApi {
         return FbServiceEntry.request('/v1/match/tips', params)
     }
 
+    public matchCount(params: any) {
+        return FbServiceEntry.request('/v1/match/matchCount', params)
+    }
+
     public getOnSaleLeagues(params: any) {
         return FbServiceEntry.request('/v1/match/getOnSaleLeagues', params)
     }
