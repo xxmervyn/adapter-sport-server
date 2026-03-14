@@ -85,6 +85,12 @@ class FBHeaderGenerator {
                 'Accept-Encoding': 'gzip, deflate, br',
                 'Content-Type': 'application/json;charset=UTF-8',
                 'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3.1 Safari/605.1.15',
+                'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+                'Sec-Ch-Ua-mobile': '?1',
+                'Sec-Ch-Ua-platform': '"Android"',
+                'Sec-Fetch-Dest': 'empty',
+                'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'cross-site',
             },
             {
                 'Accept': 'application/json, text/plain, */*',
@@ -167,6 +173,7 @@ class FBHeaderGenerator {
             'Authorization': `${info.token}`,
             'Referer': info.serverInfo?.pcAddress ? `${info.serverInfo.pcAddress}/` : "",
             'Origin': info.serverInfo?.pcAddress ?? "",
+            'Pragma': "no-cache",
         }
     }
 
