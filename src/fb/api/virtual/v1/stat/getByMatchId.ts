@@ -11,6 +11,7 @@ export class VirtualV1StatGetByMatchId extends OpenAPIRoute {
             body: contentJson(
                 z.object({
                     languageType: z.string(),
+                    matchId: z.number(),
                 })
             ),
         },
@@ -28,6 +29,6 @@ export class VirtualV1StatGetByMatchId extends OpenAPIRoute {
 
     async handle() {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.VirtualV1Match.getMatchDetail(data.body)    
+        return FbService.VirtualV1Match.getMatchDetail(data.body)
     }
 }

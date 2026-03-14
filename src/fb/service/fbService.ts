@@ -11,6 +11,7 @@ import { V1UserApi } from "./fb/v1/UserApi"
 import { LanguageStaticApi } from "./fb/language/StaticApi"
 import { VirtualV1MatchApi } from "./fb/virtual/V1MatchApi"
 import { VirtualV1StatApi } from "./fb/virtual/V1StatApi"
+import { V1OrderOddsCartApi } from "./fb/virtual/V1OrderOddsCartApi"
 
 const FbService = {
     V1Bulletin: new V1BulletinApi(),
@@ -24,6 +25,7 @@ const FbService = {
     LanguageStatic: new LanguageStaticApi(),
     VirtualV1Match: new VirtualV1MatchApi(),
     VirtualV1Stat: new VirtualV1StatApi(),
+    V1OrderOddsCartApi: new V1OrderOddsCartApi(),
 }
 
 export {

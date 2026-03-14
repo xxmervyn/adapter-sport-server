@@ -1,24 +1,25 @@
 import { OpenAPIRoute, contentJson } from "chanfana";
-import { z } from "zod";
-import { FbService } from "../../../../service/fbService";
+import { z } from "zod"; import { FbService } from "../../../../../../service/fbService";
 
-export class VirtualV1MatchGetMatchDetail extends OpenAPIRoute {
+
+export class VirtualV1OrderOddsCartRefresh extends OpenAPIRoute {
     public schema = {
-        tags: ["VirtualV1MatchGetMatchDetail"],
-        summary: "VirtualV1MatchGetMatchDetail",
-        operationId: "VirtualV1MatchGetMatchDetail",
+        tags: ["VirtualV1OrderOddsCartRefresh"],
+        summary: "VirtualV1OrderOddsCartRefresh",
+        operationId: "VirtualV1OrderOddsCartRefresh",
         request: {
             body: contentJson(
                 z.object({
                     languageType: z.string(),
-                    matchId: z.number().optional(),
                     oddsType: z.number().optional(),
+                    currencyId: z.number().optional(),
+                    betMatchMarketList: z.array(z.any()).optional()
                 })
             ),
         },
         responses: {
             "200": {
-                description: "VirtualV1MatchGetMatchDetail",
+                description: "VirtualV1OrderOddsCartRefresh",
                 ...contentJson({
                     code: z.any(),
                     data: z.any(),
@@ -30,6 +31,6 @@ export class VirtualV1MatchGetMatchDetail extends OpenAPIRoute {
 
     async handle() {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.VirtualV1Match.getMatchListWithResults(data.body)    
+        return FbService.V1OrderOddsCartApi.refresh(data.body)
     }
 }

@@ -11,6 +11,12 @@ export class VirtualV1MatchGetList extends OpenAPIRoute {
             body: contentJson(
                 z.object({
                     languageType: z.string(),
+                    oddsType: z.number().optional(),
+                    isPC: z.boolean().optional(),
+                    leagueId: z.number().optional(),
+                    blobkSize: z.number().optional(),
+                    existLive: z.boolean().optional(),
+                    time: z.number().optional()
                 })
             ),
         },
@@ -28,6 +34,6 @@ export class VirtualV1MatchGetList extends OpenAPIRoute {
 
     async handle() {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.VirtualV1Match.getList(data.body)    
+        return FbService.VirtualV1Match.getList(data.body)
     }
 }
