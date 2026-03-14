@@ -282,7 +282,7 @@ class FBHeaderGenerator {
         return info
     }
 
-    public async clearToken(path: string) {
+    public clearToken(path: string) {
         const i = this.getAccountIndex(path);
         const info = this.accountList[i]
         info.expire = 0
@@ -306,7 +306,7 @@ class FBNotAuthBaseApiClass extends BaseApi {
     }
 
 
-    public async clearToken(path: string) {
+    public clearToken(path: string) {
         this.fBHeaderGeneratorInstance.clearToken(path)
     }
 
