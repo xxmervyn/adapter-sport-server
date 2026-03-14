@@ -111,7 +111,7 @@ class FBHeaderGenerator {
                 'Accept-Encoding': 'gzip, deflate, br, zstd',
                 'Content-Type': 'application/json;charset=UTF-8',
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0',
-                'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Microsoft Edge";v="122"',
+                'Sec-Ch-Ua': '"Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145"',
                 'Sec-Ch-Ua-mobile': '?0',
                 'Sec-Ch-Ua-platform': '"Windows"',
                 'Sec-Fetch-Dest': 'empty',
@@ -174,6 +174,8 @@ class FBHeaderGenerator {
             'Referer': info.serverInfo?.pcAddress ? `${info.serverInfo.pcAddress}/` : "",
             'Origin': info.serverInfo?.pcAddress ?? "",
             'Pragma': "no-cache",
+            "Connection": "keep-alive",
+            "Cache-Control": "no-cache",
         }
     }
 

@@ -261,7 +261,7 @@ export class BaseApi {
                 // 状态码验证
                 if (!this.validateStatus(response.status)) {
                     if (attempt == maxRetry) {
-                        return { code: SERVER_ERR_CODE_ENUMS.FB_SERVER_ERR, ecode: SERVER_ERR_CODE_ENUMS.INVALID_RESPONSE_STATUS, message: `${response.status}` } as T;
+                        return { code: SERVER_ERR_CODE_ENUMS.FB_SERVER_ERR, ecode: SERVER_ERR_CODE_ENUMS.INVALID_RESPONSE_STATUS, message: `${response.status}:${fullUrl}` } as T;
                     } else {
                         // 指数退避
                         const delay = retryDelay * Math.pow(2, attempt - 1);
