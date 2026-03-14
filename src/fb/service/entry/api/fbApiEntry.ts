@@ -264,7 +264,7 @@ class FBHeaderGenerator {
                 {
                     method: "POST",
                     headers: {
-                        "authorization": info.token,
+                        "Authorization": info.token,
                         "Content-Type": "application/json;charset=UTF-8",
                     },
                     body: JSON.stringify({

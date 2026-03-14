@@ -289,6 +289,9 @@ export class BaseApi {
     }
 
     public post<T>(path: string, data?: any, options?: ApiRequestOptions): Promise<T> {
+        if (path == "/virtual/v1/match/statistical") {
+            console.warn("!!!!!!!!!!!!!", options);
+        }
         return this.request<T>("POST", path, data, options);
     }
 
