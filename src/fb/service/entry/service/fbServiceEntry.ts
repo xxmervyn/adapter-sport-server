@@ -22,10 +22,10 @@ class FBLocalCache implements ServiceLocalCacheInterface {
         const item = this.store.get(key);
         if (!item) return null;
 
-        if (item.expireAt <= Date.now()) {
-            this.store.delete(key);
-            return null;
-        }
+        // if (item.expireAt <= Date.now()) {
+        //     this.store.delete(key);
+        //     return null;
+        // }
 
         return {
             expireAt: item.expireAt,
