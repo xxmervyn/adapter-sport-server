@@ -9,7 +9,16 @@ export class VirtualV1MatchGetMatchListWithResults extends OpenAPIRoute {
         operationId: "VirtualV1MatchGetMatchListWithResults",
         request: {
             body: contentJson(
-                z.any()
+                z.object({
+                    sportId: z.string(),
+                    beginTime: z.number(),
+                    endTime: z.number(),
+                    languageType: z.string(),
+                    current: z.number(),
+                    size: z.number(),
+                    orderBy: z.number(),
+                    leagueIds: z.array(z.any())
+                })
             ),
         },
         responses: {
@@ -26,6 +35,6 @@ export class VirtualV1MatchGetMatchListWithResults extends OpenAPIRoute {
 
     async handle() {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.VirtualV1Match.getMatchListWithResults(data.body)    
+        return FbService.VirtualV1Match.getMatchListWithResults(data.body)
     }
 }

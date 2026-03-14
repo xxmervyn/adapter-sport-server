@@ -2,11 +2,11 @@ import { contentJson, OpenAPIRoute } from "chanfana";
 import { z } from "zod";
 import { FbService } from "../../../service/fbService";
 
-export class MerchantDetail extends OpenAPIRoute {
+export class V1MerchantDetail extends OpenAPIRoute {
 	public schema = {
-		tags: ["MerchantDetail"],
-		summary: "MerchantDetail",
-		operationId: "MerchantDetail", // This is optional
+		tags: ["V1MerchantDetail"],
+		summary: "V1MerchantDetail",
+		operationId: "V1MerchantDetail", // This is optional
 		request: {
 			query: z.object({
 			}),
@@ -17,7 +17,7 @@ export class MerchantDetail extends OpenAPIRoute {
 			),
             responses: {
                 "200": {
-                    description: "MerchantDetail",
+                    description: "V1MerchantDetail",
                     ...contentJson({
                         code: z.string(),
                         data: z.any(),
