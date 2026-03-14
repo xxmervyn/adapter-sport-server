@@ -1,3 +1,4 @@
+import { json } from "stream/consumers";
 import { API_BASE_URL_ENUMS } from "../../enums/apiBaseUrlEnum";
 import { SERVER_ERR_CODE_ENUMS } from "../../enums/serverErrCodeEnum";
 import { FbApiError } from "../../model/comm/Error";
@@ -290,7 +291,7 @@ export class BaseApi {
 
     public post<T>(path: string, data?: any, options?: ApiRequestOptions): Promise<T> {
         if (path == "/virtual/v1/match/statistical") {
-            console.warn("!!!!!!!!!!!!!", options);
+            console.warn(`!!!!!!!!!!!!!   ${JSON.stringify(options)}`);
         }
         return this.request<T>("POST", path, data, options);
     }
