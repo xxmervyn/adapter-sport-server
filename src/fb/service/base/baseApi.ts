@@ -250,8 +250,11 @@ export class BaseApi {
 
                 const request = new Request(fullUrl, fetchOptions);
                 const isValidatedRequest = await this.isValidatedRequest(request);
-                if (isValidatedRequest.success == false || request.url.startsWith("http") == false) {
+                if (isValidatedRequest.success == false) {
                     return { code: SERVER_ERR_CODE_ENUMS.INVALID_REQUEST, data: isValidatedRequest.resp } as T;
+                }
+                if (request.url.startsWith("http") == false) {
+                    return { code: SERVER_ERR_CODE_ENUMS.INVALID_HTTP_REQUEST, data: fullUrl } as T;
                 }
 
                 const newRequest = this.onFetchBefore(request)

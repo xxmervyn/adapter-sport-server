@@ -1,6 +1,7 @@
 export enum SERVER_ERR_CODE_ENUMS {
     REQUEST_ERROR = 4001, //请求异常
     INVALID_REQUEST = 4002, //无效请求
+    INVALID_HTTP_REQUEST = 4007, //无效请求
     INVALID_RESPONSE_STATUS = 4003, //无效响应码
     INVALID_SIGN = 4004, //无效签名
     FAIL_REQUEST = 4005, //请求失败
