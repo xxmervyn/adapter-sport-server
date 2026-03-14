@@ -166,6 +166,7 @@ class FBHeaderGenerator {
             ...header,
             'Authorization': `${info.token}`,
             'Referer': info.serverInfo?.pcAddress ? `${info.serverInfo.pcAddress}/` : "",
+            'Origin': info.serverInfo?.pcAddress ?? "",
         }
     }
 
