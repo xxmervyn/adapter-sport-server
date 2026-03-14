@@ -56,27 +56,9 @@ class FBHeaderGenerator {
 
     public initAccountList() {
         this.accountList = [
-            // {
-            //     userName: "t013",
-            //     userPassword: "546071",
-            //     token: "",
-            //     serverInfo: {
-            //         apiServerAddress: "",
-            //         apiEmbeddedServerAddress: "",
-            //         pushServerAddress: "",
-            //         pcAddress: "",
-            //         h5Address: "",
-            //         virtualAddress: "",
-            //         virtualMatchVideoAddress: "",
-            //         ouH5Address: "",
-            //         ouPcAddress: "",
-            //     },
-            //     expire: 0,
-            //     status: 0,
-            // },
             {
-                userName: "t012",
-                userPassword: "441896",
+                userName: "t013",
+                userPassword: "546071",
                 token: "",
                 serverInfo: {
                     apiServerAddress: "",
@@ -91,7 +73,25 @@ class FBHeaderGenerator {
                 },
                 expire: 0,
                 status: 0,
-            }
+            },
+            // {
+            //     userName: "t012",
+            //     userPassword: "441896",
+            //     token: "",
+            //     serverInfo: {
+            //         apiServerAddress: "",
+            //         apiEmbeddedServerAddress: "",
+            //         pushServerAddress: "",
+            //         pcAddress: "",
+            //         h5Address: "",
+            //         virtualAddress: "",
+            //         virtualMatchVideoAddress: "",
+            //         ouH5Address: "",
+            //         ouPcAddress: "",
+            //     },
+            //     expire: 0,
+            //     status: 0,
+            // }
         ]
     }
 
@@ -113,7 +113,7 @@ class FBHeaderGenerator {
     }
 
     public async getInfo(path: string): Promise<LoginInfo> {
-        const i = path.length % this.accountList.length
+        const i = this.getAccountIndex(path);
         const info = this.accountList[i]
         if (info.status == 1 && info.token != "" && Date.now() < info.expire) {
             return info
@@ -128,9 +128,12 @@ class FBHeaderGenerator {
         return this.accountList[i]
     }
 
+    private getAccountIndex(path: string): number {
+        return path.length % this.accountList.length
+    }
 
     public async refreshInfo(path: string): Promise<LoginInfo> {
-        const i = path.length % this.accountList.length
+        const i = this.getAccountIndex(path);
         const info = this.accountList[i]
 
         const headers = {
@@ -199,7 +202,7 @@ class FBHeaderGenerator {
     }
 
     public async clearToken(path: string) {
-        const i = path.length % this.accountList.length
+        const i = this.getAccountIndex(path);
         const info = this.accountList[i]
         info.expire = 0
     }

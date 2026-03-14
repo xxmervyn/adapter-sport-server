@@ -31,7 +31,6 @@ export class AccessCheck extends OpenAPIRoute {
 
 	public async handle() {
 		const data = await this.getValidatedData<typeof this.schema>();
-		data.body.version = "1"
 		return FbService.V1User.accessCheck(data.body)
 	}
 }
