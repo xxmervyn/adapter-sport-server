@@ -2,7 +2,6 @@
 /* ==================== 本地缓存接口 ==================== */
 
 import { SERVER_ERR_CODE_ENUMS } from "../../enums/serverErrCodeEnum";
-import { ApiRequestOptions } from "./baseApi";
 
 export interface ServiceLocalCacheInterface {
     getItem<T>(key: string): { expireAt: number; data: T } | null;
@@ -63,15 +62,11 @@ export class BaseService {
         );
     }
 
-    public async api<T>(path: string, params: any,
-        api: (...args: any[]) => Promise<T>,
-        apiOptions?: ApiRequestOptions,
-        serverOptions?: ServiceRequestOptions
-    ): Promise<T> {
+    public async api<T>(path: string, params: any, api: () => Promise<T>, serverOptions?: ServiceRequestOptions): Promise<T> {
         const isCache = serverOptions?.cache?.isCache ?? this.localCacheDefConf.isCache;
 
         if (!isCache || !this.localCacheEntry) {
-            return api(path, params, apiOptions);
+            return api();
         }
 
         const cacheKey = serverOptions?.cache?.cacheKey ?? await this.localCacheEntry.getRequestKey(path, params);
@@ -95,7 +90,7 @@ export class BaseService {
 
 
         try {
-            const data = await api(path, params, apiOptions);
+            const data = await api();
             if (this.isSuccess(data)) {
                 this.localCacheEntry.setItem(cacheKey, data, cacheTime);
             }
