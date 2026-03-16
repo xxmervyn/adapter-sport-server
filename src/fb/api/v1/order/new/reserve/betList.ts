@@ -1,5 +1,7 @@
 import { OpenAPIRoute, contentJson } from "chanfana";
 import { z } from "zod";
+import { UserService } from "../../../../../service/userService";
+import { AppContext } from "../../../../../../types";
 
 export class V1OrderNewReserveBetList extends OpenAPIRoute {
     public schema = {
@@ -26,7 +28,8 @@ export class V1OrderNewReserveBetList extends OpenAPIRoute {
         },
     };
 
-    async handle() {
-        return {"success":true,"data":{"ods":[],"sts":[]},"code":0};
+    async handle(c: AppContext) {
+        const data = await this.getValidatedData<typeof this.schema>();
+        return UserService.V1Order.newReserveBetList(data.body, c.req)
     }
 }

@@ -8,7 +8,5 @@ export enum SERVER_ERR_CODE_ENUMS {
     FAIL_REQUEST = 4005, //请求失败
     REQUEST_CACHING = 4006, //请求缓存中
 
-
-
     FB_SERVER_ERR = 14108, 
 }

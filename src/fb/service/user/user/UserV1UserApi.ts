@@ -1,5 +1,6 @@
 import { HonoRequest } from "hono"
 import { UserServiceEntry } from "../../entry/service/userServiceEntry"
+import { SERVER_ERR_CODE_ENUMS } from "../../../enums/serverErrCodeEnum";
 
 export class V1UserApi {
     public async base(params: any, req: HonoRequest) {
@@ -23,7 +24,7 @@ export class V1UserApi {
             }
             return resp
         }
-        if (data.code == 4002) {
+        if (data.code == SERVER_ERR_CODE_ENUMS.INVALID_TOKEN) {
             data.code = 0;
             data.success = true;
         }
