@@ -6,14 +6,14 @@ import { AppContext } from "../../../../types";
 
 export class V1OrderBatchBetMatchMarketOfJumpLine extends OpenAPIRoute {
     public schema = {
-        tags: ["投注单"],
+        tags: ["V1OrderBatchBetMatchMarketOfJumpLine"],
         summary: "V1OrderBatchBetMatchMarketOfJumpLine",
         operationId: "V1OrderBatchBetMatchMarketOfJumpLine",
         request: {
             body: contentJson(
                 z.object({
                     betMatchMarketList: z.array(z.any()).optional(),
-                    currencyId: z.number(),
+                    currencyId: z.number().nullable().optional(),
                     isSelectSeries: z.boolean(),
                     languageType: z.string()
                 })
