@@ -1,6 +1,7 @@
 import { OpenAPIRoute, contentJson } from "chanfana";
 import { z } from "zod";
 import { FbService } from "../../../../service/fbService";
+import { AppContext } from "../../../../../types";
 
 export class VirtualV1MatchGetList extends OpenAPIRoute {
     public schema = {
@@ -34,6 +35,6 @@ export class VirtualV1MatchGetList extends OpenAPIRoute {
 
     async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.VirtualV1Match.getList(data.body)
+        return FbService.VirtualV1Match.getList(data.body, c.req)
     }
 }

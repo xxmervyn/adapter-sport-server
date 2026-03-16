@@ -1,6 +1,7 @@
 import { contentJson, OpenAPIRoute } from "chanfana";
 import { z } from "zod";
 import { FbService } from "../../../service/fbService";
+import { AppContext } from "../../../../types";
 
 export class AccessCheck extends OpenAPIRoute {
 	public schema = {

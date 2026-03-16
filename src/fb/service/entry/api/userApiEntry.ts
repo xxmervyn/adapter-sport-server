@@ -76,9 +76,9 @@ class FBForwardBaseApiClass extends BaseApi {
     }
 
     protected override fetch(req: Request): Promise<Response> {
-        if (env?.INNER_FETCH != null) {
-            return env.INNER_FETCH.fetch(req);
-        }
+        // if (env?.INNER_FETCH != null) {
+        //     return env.INNER_FETCH.fetch(req);
+        // }
         return fetch(req);
     }
 

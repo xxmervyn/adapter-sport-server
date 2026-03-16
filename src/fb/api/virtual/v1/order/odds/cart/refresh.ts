@@ -1,5 +1,6 @@
 import { OpenAPIRoute, contentJson } from "chanfana";
 import { z } from "zod"; import { FbService } from "../../../../../../service/fbService";
+import { AppContext } from "../../../../../../../types";
 
 
 export class VirtualV1OrderOddsCartRefresh extends OpenAPIRoute {
@@ -31,6 +32,6 @@ export class VirtualV1OrderOddsCartRefresh extends OpenAPIRoute {
 
     async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1OrderOddsCart.refresh(data.body)
+        return FbService.V1OrderOddsCart.refresh(data.body, c.req)
     }
 }
