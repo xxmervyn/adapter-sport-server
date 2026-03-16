@@ -27,7 +27,7 @@ export class VirtualV1StatGetByMatchId extends OpenAPIRoute {
         },
     };
 
-    async handle() {
+    async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
         return FbService.VirtualV1Match.getMatchDetail(data.body)
     }

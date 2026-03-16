@@ -2,6 +2,7 @@ import { OpenAPIRoute, contentJson } from "chanfana";
 import { z } from "zod";
 import { AppContext } from "../../../../../../types";
 import { UserService } from "../../../../../service/userService";
+import { FbService } from "../../../../../service/fbService";
 
 export class V1OrderNewBetList extends OpenAPIRoute {
     public schema = {
@@ -32,6 +33,6 @@ export class V1OrderNewBetList extends OpenAPIRoute {
 
     async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
-        return UserService.V1Order.newBetList(data.body, c.req)
+        return FbService.V1OrderNewBetApi.list(data.body, c.req)
     }
 }

@@ -6,7 +6,12 @@ import { V1MerchantApi } from "./fb/v1/MerchantApi"
 import { V1SportRuleApi } from "./fb/v1/SportRuleApi"
 import { V1OrderApi } from "./fb/v1/OrderApi"
 import { V1OrderReserveApi } from "./fb/v1/OrderReserveApi"
+import { V1OrderCashOutApi } from "./fb/v1/OrderCashOutApi"
+import { V1OrderNewBetReserveApi } from "./fb/v1/OrderNewBetReserveApi"
 import { V1OrderNewBetApi } from "./fb/v1/OrderNewBetApi"
+import { V1OrderCashOutReserveApi } from "./fb/v1/OrderCashOutReserveApi"
+import { V1OrderReserveCashOutApi } from "./fb/v1/OrderReserveCashOutApi"
+import { V1OrderBetApi } from "./fb/v1/OrderBetApi"
 import { V1UserApi } from "./fb/v1/UserApi"
 import { LanguageStaticApi } from "./fb/language/StaticApi"
 import { VirtualV1MatchApi } from "./fb/virtual/V1MatchApi"
@@ -20,7 +25,12 @@ const FbService = {
     V1SportRule: new V1SportRuleApi(),
     V1Order: new V1OrderApi(),
     V1OrderReserve: new V1OrderReserveApi(),
-    V1OrderNewBet: new V1OrderNewBetApi(),
+    V1OrderNewBetApi: new V1OrderNewBetApi(),
+    V1OrderCashOutApi: new V1OrderCashOutApi(),
+    V1OrderCashOutReserveApi: new V1OrderCashOutReserveApi(),
+    V1OrderReserveCashOutApi: new V1OrderReserveCashOutApi(),
+    V1OrderNewBetReserveApi: new V1OrderNewBetReserveApi(),
+    V1OrderBetApi: new V1OrderBetApi(),
     V1User: new V1UserApi(),
     LanguageStatic: new LanguageStaticApi(),
     VirtualV1Match: new VirtualV1MatchApi(),

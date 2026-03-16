@@ -1,6 +1,7 @@
 import { OpenAPIRoute, contentJson } from "chanfana";
 import { z } from "zod";
 import { FbService } from "../../../service/fbService";
+import { AppContext } from "../../../../types";
 
 export class V1MatchListMarketGroup extends OpenAPIRoute {
     public schema = {
@@ -29,8 +30,8 @@ export class V1MatchListMarketGroup extends OpenAPIRoute {
         },
     };
 
-    async handle() {
+    async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1Match.listMarketGroup(data.body)
+        return FbService.V1Match.listMarketGroup(data.body,c.req)
     }
 }

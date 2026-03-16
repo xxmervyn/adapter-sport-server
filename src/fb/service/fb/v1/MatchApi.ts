@@ -1,56 +1,57 @@
+import { HonorequestWithNotAuth } from "hono"
 import { FbServiceEntry } from "../../entry/service/fbServiceEntry"
 
 export class V1MatchApi {
-    public getList(params: any) {
-        return FbServiceEntry.request('/v1/match/getList', params)
+    public getList(params: any, req: HonorequestWithNotAuth) {
+        return FbServiceEntry.request('/v1/match/getList', params, req)
     }
     
-    public tips(params: any) {
-        return FbServiceEntry.request('/v1/match/tips', params)
+    public tips(params: any, req: HonorequestWithNotAuth) {
+        return FbServiceEntry.request('/v1/match/tips', params, req)
     }
 
-    public matchCount(params: any) {
-        return FbServiceEntry.request('/v1/match/matchCount', params)
+    public matchCount(params: any, req: HonorequestWithNotAuth) {
+        return FbServiceEntry.request('/v1/match/matchCount', params, req)
     }
 
-    public getOnSaleLeagues(params: any) {
-        return FbServiceEntry.request('/v1/match/getOnSaleLeagues', params)
+    public getOnSaleLeagues(params: any, req: HonorequestWithNotAuth) {
+        return FbServiceEntry.request('/v1/match/getOnSaleLeagues', params, req)
     }
 
-    public getMatchDetail(params: any) {
-        return FbServiceEntry.request('/v1/match/getMatchDetail', params)
+    public getMatchDetail(params: any, req: HonorequestWithNotAuth) {
+        return FbServiceEntry.request('/v1/match/getMatchDetail', params, req)
     }
 
-    public getBannerMatchList(params: any) {
-        return FbServiceEntry.request('/v1/match/getBannerMatchList', params)
+    public getBannerMatchList(params: any, req: HonorequestWithNotAuth) {
+        return FbServiceEntry.request('/v1/match/getBannerMatchList', params, req)
     }
 
-    public statistical(params: any) {
-        return FbServiceEntry.request('/v1/match/statistical', params)
+    public statistical(params: any, req: HonorequestWithNotAuth) {
+        return FbServiceEntry.request('/v1/match/statistical', params, req)
     }
     
-    public matchResultPage(params: any) {
-        return FbServiceEntry.request('/v1/match/matchResultPage', params)
+    public matchResultPage(params: any, req: HonorequestWithNotAuth) {
+        return FbServiceEntry.request('/v1/match/matchResultPage', params, req)
     }
 
-    public matchResultInfo(params: any) {
-        return FbServiceEntry.request('/v1/match/matchResultInfo', params)
+    public matchResultInfo(params: any, req: HonorequestWithNotAuth) {
+        return FbServiceEntry.request('/v1/match/matchResultInfo', params, req)
     }
 
-    public recommendMatchList(params: any) {
-        return FbServiceEntry.request('/v1/match/recommendMatchList', params)
+    public recommendMatchList(params: any, req: HonorequestWithNotAuth) {
+        return FbServiceEntry.request('/v1/match/recommendMatchList', params, req)
     }
 
-    public queryMatchByRecommend(params: any) {
-        return FbServiceEntry.request('/v1/match/queryMatchByRecommend', params)
+    public queryMatchByRecommend(params: any, req: HonorequestWithNotAuth) {
+        return FbServiceEntry.request('/v1/match/queryMatchByRecommend', params, req)
     }
 
-    public getLiveList(params: any) {
-        return FbServiceEntry.request('/v1/match/getLiveList', params)
+    public getLiveList(params: any, req: HonorequestWithNotAuth) {
+        return FbServiceEntry.request('/v1/match/getLiveList', params, req)
     }
    
-    public listMarketGroup(params: any) {
-        return FbServiceEntry.request('/v1/match//listMarketGroup', params)
+    public listMarketGroup(params: any, req: HonorequestWithNotAuth) {
+        return FbServiceEntry.request('/v1/match//listMarketGroup', params, req)
     }
 
 

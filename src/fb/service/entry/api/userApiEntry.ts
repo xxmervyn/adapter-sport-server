@@ -66,13 +66,19 @@ class FBForwardBaseApiClass extends BaseApi {
             return { ecode: SERVER_ERR_CODE_ENUMS.INVALID_SIGN, message: "sgin" };
         }
 
+
         return { ecode: SERVER_ERR_CODE_ENUMS.SUCCESS, message: "" };
     }
 
+    protected override onFetchBefore(req: Request): Request {
+        req.headers.set('Content-Type', 'application/json;charset=UTF-8')
+        return req
+    }
+
     protected override fetch(req: Request): Promise<Response> {
-        // if (env.INNER_FETCH != null) {
-        //     return env.INNER_FETCH.fetch(req);
-        // }
+        if (env?.INNER_FETCH != null) {
+            return env.INNER_FETCH.fetch(req);
+        }
         return fetch(req);
     }
 
@@ -88,10 +94,10 @@ class FBForwardBaseApiClass extends BaseApi {
 
 
 
-export const FBForwardBaseApi = new FBForwardBaseApiClass(
+export const UserBaseApi = new FBForwardBaseApiClass(
     {
-        baseURL: API_BASE_URL_ENUMS.FORWARD_COM,
-        timeout: 5000,
+        baseURL: API_BASE_URL_ENUMS.FORWARD_BASE_HOST,
+        timeout: 1000,
         retry: 1,
         retryDelay: 1000,
         headers: {}

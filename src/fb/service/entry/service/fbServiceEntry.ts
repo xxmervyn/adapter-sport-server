@@ -1,9 +1,136 @@
 import { sha256 } from "hono/utils/crypto";
-import { FbCommApiResponse } from "../../../model/response/fbModel";
-import { FBNotAuthBaseApi } from "../../entry/api/fbApiEntry";
+import { FbCommApiResponse, TokenApiResponseData } from "../../../model/response/fbModel";
 import { BaseService, ServiceLocalCacheInterface } from "../../base/baseService";
-import { any } from "zod/v4";
 import { SERVER_ERR_CODE_ENUMS } from "../../../enums/serverErrCodeEnum";
+import { HonoRequest } from "hono";
+import { UserBaseApi } from "../api/userApiEntry";
+import { FBNotAuthBaseApi } from "../api/fbApiEntry";
+import { API_BASE_URL_ENUMS } from "../../../enums/apiBaseUrlEnum";
+
+
+class FBHeaderGenerator {
+    private randomHeaders: HeadersInit[] = []
+
+    constructor() {
+        this.initRandomHeaders()
+    }
+
+    /* ================= 初始化 Header 池 ================= */
+
+    public initRandomHeaders() {
+        this.randomHeaders = [
+
+            /* ================= Chrome Windows ================= */
+
+            {
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Language': 'zh-CN,zh;q=0.9',
+                'Accept-Encoding': 'gzip, deflate, br, zstd',
+                'Content-Type': 'application/json;charset=UTF-8',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/144.0.0.0 Safari/537.36',
+                'Sec-Ch-Ua': '"Not(A:Brand";v="8", "Chromium";v="144", "Google Chrome";v="144"',
+                'Sec-Ch-Ua-mobile': '?0',
+                'Sec-Ch-Ua-platform': '"Windows"',
+                'Sec-Fetch-Dest': 'empty',
+                'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'cross-site',
+            },
+            {
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Language': 'zh-CN,zh;q=0.9',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Content-Type': 'application/json;charset=UTF-8',
+                'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1',
+                'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+                'Sec-Ch-Ua-mobile': '?1',
+                'Sec-Ch-Ua-platform': '"iOS"',
+                'Sec-Fetch-Dest': 'empty',
+                'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'cross-site',
+            },
+            {
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+                'Accept-Encoding': 'gzip, deflate, br, zstd',
+                'Content-Type': 'application/json;charset=UTF-8',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+                'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+                'Sec-Ch-Ua-mobile': '?0',
+                'Sec-Ch-Ua-platform': '"Windows"',
+                'Sec-Fetch-Dest': 'empty',
+                'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'cross-site',
+                'Priority': 'u=1, i',
+            },
+            {
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Language': 'zh-CN,zh-Hans;q=0.9',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Content-Type': 'application/json;charset=UTF-8',
+                'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.3.1 Safari/605.1.15',
+                'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+                'Sec-Ch-Ua-mobile': '?1',
+                'Sec-Ch-Ua-platform': '"Android"',
+                'Sec-Fetch-Dest': 'empty',
+                'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'cross-site',
+            },
+            {
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Language': 'zh-CN,zh;q=0.9',
+                'Accept-Encoding': 'gzip, deflate, br',
+                'Content-Type': 'application/json;charset=UTF-8',
+                'User-Agent': 'Mozilla/5.0 (Linux; Android 14; SM-S928B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.6261.119 Mobile Safari/537.36',
+                'Sec-Ch-Ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+                'Sec-Ch-Ua-mobile': '?1',
+                'Sec-Ch-Ua-platform': '"Android"',
+                'Sec-Fetch-Dest': 'empty',
+                'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'cross-site',
+            },
+            {
+                'Accept': 'application/json, text/plain, */*',
+                'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8',
+                'Accept-Encoding': 'gzip, deflate, br, zstd',
+                'Content-Type': 'application/json;charset=UTF-8',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36 Edg/122.0.0.0',
+                'Sec-Ch-Ua': '"Not:A-Brand";v="99", "Google Chrome";v="145", "Chromium";v="145"',
+                'Sec-Ch-Ua-mobile': '?0',
+                'Sec-Ch-Ua-platform': '"Windows"',
+                'Sec-Fetch-Dest': 'empty',
+                'Sec-Fetch-Mode': 'cors',
+                'Sec-Fetch-Site': 'cross-site'
+            }
+        ]
+    }
+
+
+    /* ================= 获取随机 Header ================= */
+
+    public async getHeaders(path: string, tkInfo: TokenApiResponseData): Promise<HeadersInit> {
+        const index = path.length % this.randomHeaders.length;
+        const header = this.randomHeaders[index];
+
+        var headers: HeadersInit = {
+            ...header,
+            'Referer': tkInfo.serverInfo?.pcAddress ? `${tkInfo.serverInfo.pcAddress}/` : "",
+            'Origin': tkInfo.serverInfo?.pcAddress ?? "",
+            'Pragma': "no-cache",
+            "Connection": "keep-alive",
+            "Cache-Control": "no-cache",
+        }
+
+        if (tkInfo?.token) {
+            headers["Authorization"] = tkInfo.token
+        }
+
+        return headers
+    }
+
+}
+
+const FBHeaderGeneratorInstance = new FBHeaderGenerator()
+
 
 class FBLocalCache implements ServiceLocalCacheInterface {
     private store = new Map<string, { value: any; expireAt: number; cacheTime: number }>();
@@ -102,46 +229,88 @@ class FBLocalCache implements ServiceLocalCacheInterface {
 }
 
 class FbServiceClass extends BaseService {
-    public async request(path: string, params: any, defCache?: any) {
-        const api = FBNotAuthBaseApi
-        const info = await api.fBHeaderGeneratorInstance.getInfo(path)
-        const headers = await api.fBHeaderGeneratorInstance.getHeaders(info)
-        const option = { headers: headers, baseURL: info.serverInfo?.apiServerAddress }
 
-        const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, option))
-        if (data.code == 14010) {
-            FBNotAuthBaseApi.clearToken(path)
-            console.log(`~~~~@@@@~~~~~~~~~~~~~ ${path}`);
-            data.success = true
-            data.code = 0
+    public async request(path: string, params: any, req: HonoRequest, defCache?: any): Promise<FbCommApiResponse> {
+        const tkInfo = await this.getTokenInfo(req)
+        const headers = await FBHeaderGeneratorInstance.getHeaders(path, tkInfo)
+        var option = { headers: headers, baseURL: tkInfo.serverInfo?.apiServerAddress }
+        if (path.startsWith("/virtual")) {
+            option = { headers: headers, baseURL: tkInfo.serverInfo?.virtualAddress }
         }
-        if (defCache && data.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
+
+        const result = await this.api<FbCommApiResponse>(path, params, () => FBNotAuthBaseApi.post(path, params, option))
+        if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
             return defCache
         }
-        return data
+
+        if (result.code == 14010) {
+            // 修改结果防止用户被踢出
+            result.success = true
+            result.code = 0
+        }
+
+        return result;
     }
 
-    public async virtualRequest(path: string, params: any, defCache?: any) {
-        const api = FBNotAuthBaseApi
-        const info = await api.fBHeaderGeneratorInstance.getInfo(path)
-        const headers = await api.fBHeaderGeneratorInstance.getHeaders(info)
-        const option = { headers: headers, baseURL: info.serverInfo?.virtualAddress }
+    public async innerRequest(path: string, params: any, req: HonoRequest, defCache?: any): Promise<FbCommApiResponse> {
+        const tkInfo = await this.getTokenInfo(req)
+        const headers = await FBHeaderGeneratorInstance.getHeaders(path, tkInfo)
+        var option = { headers: headers, baseURL: tkInfo.serverInfo?.apiServerAddress }
+        if (path.startsWith("/virtual")) {
+            option = { headers: headers, baseURL: tkInfo.serverInfo?.virtualAddress }
+        }
 
-        if (path == "/virtual/v1/match/statistical") {
-            console.warn(`5555555   ${JSON.stringify(info)}`);
-        }
-        const data = await this.api<FbCommApiResponse>(path, params, () => api.post(path, params, option))
-        if (data.code == 14010) {
-            FBNotAuthBaseApi.clearToken(path)
-            console.log(`~~~~~~@@@@@~~~~~~~~~~~ ${path}`);
-            data.success = true
-            data.code = 0
-        }
-        if (defCache && data.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
+        const result = await this.api<FbCommApiResponse>(path, params, () => UserBaseApi.post(path, params, option))
+        if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
             return defCache
         }
-        return data
+
+        if (result.code == 14010) {
+            // 修改结果防止用户被踢出
+            result.success = true
+            result.code = 0
+        }
+
+        return result;
     }
+
+    private async getTokenInfo(req: HonoRequest): Promise<TokenApiResponseData> {
+        var xFrontPage = req.header("x-front-page")
+        var authorization = req.header("Authorization")
+        if (authorization && xFrontPage) {
+            const headers: HeadersInit = {}
+            headers["x-token"] = authorization
+            headers["x-front-page"] = xFrontPage
+            var result = await this.tokenApi({}, headers)
+            if (result.code == 14010) {
+                //被踢出重新登入
+                result = await this.tokenApi({ "needReset": true }, headers)
+            }
+
+            if (result.code == 0) {
+                return result.data as TokenApiResponseData
+            }
+        }
+
+        // 返回游客token
+        return {
+            token: "",
+            serverInfo: {
+                apiEmbeddedServerAddress: '',
+                apiServerAddress: API_BASE_URL_ENUMS.FB_GUEST_BASE_HOST,
+                pcAddress: API_BASE_URL_ENUMS.FB_GUEST_PC_BASE_HOST,
+                pushServerAddress: '',
+                virtualAddress: API_BASE_URL_ENUMS.FB_GUEST_VIRTUAL_BASE_HOST,
+                ouPcAddress: '',
+                h5Address: ''
+            }
+        } as TokenApiResponseData
+    }
+
+    private async tokenApi(params: {}, headers: HeadersInit): Promise<FbCommApiResponse> {
+        return await UserBaseApi.post<FbCommApiResponse>("/openPlayer/getFbPlayerInfoToken", params, { headers })
+    }
+
 }
 
 export const FbServiceEntry = new FbServiceClass({

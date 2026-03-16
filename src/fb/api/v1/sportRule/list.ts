@@ -1,6 +1,7 @@
 import { OpenAPIRoute, contentJson } from "chanfana";
 import { z } from "zod";
 import { FbService } from "../../../service/fbService";
+import { AppContext } from "../../../../types";
 
 export class V1SportRuleList extends OpenAPIRoute {
     public schema = {
@@ -28,8 +29,8 @@ export class V1SportRuleList extends OpenAPIRoute {
         },
     };
 
-    async handle() {
+    async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1SportRule.list(data.body)
+        return FbService.V1SportRule.list(data.body, c.req)
     }
 }

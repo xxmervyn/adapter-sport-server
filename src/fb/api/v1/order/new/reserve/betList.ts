@@ -2,6 +2,7 @@ import { OpenAPIRoute, contentJson } from "chanfana";
 import { z } from "zod";
 import { UserService } from "../../../../../service/userService";
 import { AppContext } from "../../../../../../types";
+import { FbService } from "../../../../../service/fbService";
 
 export class V1OrderNewReserveBetList extends OpenAPIRoute {
     public schema = {
@@ -11,6 +12,9 @@ export class V1OrderNewReserveBetList extends OpenAPIRoute {
         request: {
             body: contentJson(
                 z.object({
+                    startTime: z.string().optional(),
+                    endTime: z.string().optional(),
+                    currencyId: z.number().optional(),
                     isFailed: z.boolean(),
                     languageType: z.string()
                 })
@@ -30,6 +34,6 @@ export class V1OrderNewReserveBetList extends OpenAPIRoute {
 
     async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
-        return UserService.V1Order.newReserveBetList(data.body, c.req)
+        return FbService.V1OrderNewBetReserveApi.newReserveBetList(data.body, c.req)
     }
 }

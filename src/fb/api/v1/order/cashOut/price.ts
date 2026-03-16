@@ -1,5 +1,7 @@
 import { OpenAPIRoute, contentJson } from "chanfana";
 import { z } from "zod";
+import { AppContext } from "../../../../../types";
+import { FbService } from "../../../../service/fbService";
 
 export class FbV1OrderCashOutPrice extends OpenAPIRoute {
     public schema = {
@@ -10,7 +12,7 @@ export class FbV1OrderCashOutPrice extends OpenAPIRoute {
             body: contentJson(
                 z.object({
                     languageType: z.string(),
-                    orderIds: z.any()
+                    orderIds: z.array(z.number()).optional(),
                 })
             ),
         },
@@ -26,7 +28,8 @@ export class FbV1OrderCashOutPrice extends OpenAPIRoute {
         },
     };
 
-    async handle() {
-        return {"success":true,"data":{"mxc":5,"pr":[{"oid":"1616054290785241298","amt":0.842,"st":4,"smis":10,"pmis":5}]},"code":0};
+    async handle(c: AppContext) {
+        const data = await this.getValidatedData<typeof this.schema>();
+        return FbService.V1OrderCashOutApi.price(data.body, c.req)
     }
 }

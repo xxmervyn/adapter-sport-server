@@ -4,15 +4,19 @@ import { FbV1OrderNewRouter } from "./new/router";
 import { FbV1OrderCashOutRouter } from "./cashOut/router";
 import { FbV1OrderBetRouter } from "./bet/router";
 import { FbV1OrderReserveRouter } from "./reserve/router";
+import { FbV1OrderCashOutReserveRouter } from "./cashOutReserve/router";
 import { V1OrderBatchBetMatchMarketOfJumpLine } from "./batchBetMatchMarketOfJumpLine";
+import { V1OrderBetMultiple } from "./betMultiple";
 import { V1OrderGetStakeOrderStatus } from "./getStakeOrderStatus";
 export const FbV1OrderRouter = fromHono(new Hono());
 
 
-FbV1OrderRouter.route("/reserve",FbV1OrderReserveRouter);
-FbV1OrderRouter.route("/new",FbV1OrderNewRouter);
-FbV1OrderRouter.route("/cashOut",FbV1OrderCashOutRouter);
-FbV1OrderRouter.route("/bet",FbV1OrderBetRouter);
-FbV1OrderRouter.post("/batchBetMatchMarketOfJumpLine",V1OrderBatchBetMatchMarketOfJumpLine);
-FbV1OrderRouter.post("/getStakeOrderStatus",V1OrderGetStakeOrderStatus);
+FbV1OrderRouter.route("/reserve", FbV1OrderReserveRouter);
+FbV1OrderRouter.route("/new", FbV1OrderNewRouter);
+FbV1OrderRouter.route("/cashOut", FbV1OrderCashOutRouter);
+FbV1OrderRouter.route("/cashOutReserve", FbV1OrderCashOutReserveRouter);
+FbV1OrderRouter.route("/bet", FbV1OrderBetRouter);
+FbV1OrderRouter.post("/batchBetMatchMarketOfJumpLine", V1OrderBatchBetMatchMarketOfJumpLine);
+FbV1OrderRouter.post("/getStakeOrderStatus", V1OrderGetStakeOrderStatus);
+FbV1OrderRouter.post("/betMultiple", V1OrderBetMultiple);
 

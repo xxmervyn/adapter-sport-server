@@ -1,10 +1,10 @@
 import { HonoRequest } from "hono"
-import { UserServiceEntry } from "../../entry/service/userServiceEntry"
 import { SERVER_ERR_CODE_ENUMS } from "../../../enums/serverErrCodeEnum";
+import { FbServiceEntry } from "../../entry/service/fbServiceEntry";
 
 export class V1UserApi {
     public async base(params: any, req: HonoRequest) {
-        const data = await UserServiceEntry.request('/openPlayer/getPlayerInfoInner', params, req)
+        const data = await FbServiceEntry.innerRequest('/openPlayer/getPlayerInfoInner', params, req)
         if (data.code == 0) {
             const coin = (data.data.coin / 10000).toFixed(2);
             const resp = {

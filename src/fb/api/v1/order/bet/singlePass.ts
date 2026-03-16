@@ -1,11 +1,13 @@
 import { OpenAPIRoute, contentJson } from "chanfana";
 import { z } from "zod";
+import { AppContext } from "../../../../../types";
+import { FbService } from "../../../../service/fbService";
 
 export class FbV1OrderBetSinglePass extends OpenAPIRoute {
     public schema = {
-        tags: ["投注"],
-        summary: "FbV1OrderCashOutPrice",
-        operationId: "FbV1OrderCashOutPrice",
+        tags: ["FbV1OrderBetSinglePass"],
+        summary: "FbV1OrderBetSinglePass",
+        operationId: "FbV1OrderBetSinglePass",
         request: {
             body: contentJson(
                 z.object({
@@ -17,7 +19,7 @@ export class FbV1OrderBetSinglePass extends OpenAPIRoute {
         },
         responses: {
             "200": {
-                description: "FbV1OrderCashOutPrice",
+                description: "FbV1OrderBetSinglePass",
                 ...contentJson({
                     code: z.any(),
                     data: z.any(),
@@ -27,24 +29,8 @@ export class FbV1OrderBetSinglePass extends OpenAPIRoute {
         },
     };
 
-    async handle() {
-        return {
-            "success": true,
-            "data": [
-                {
-                    "id": "1678540196540320772",
-                    "st": 0,
-                    "ops": [
-                        {
-                            "mid": "260104536",
-                            "od": "1.06",
-                            "of": 1,
-                            "bod": "1.06"
-                        }
-                    ]
-                }
-            ],
-            "code": 0
-        };
+    async handle(c: AppContext) {
+        const data = await this.getValidatedData<typeof this.schema>();
+        return FbService.V1OrderBetApi.singlePass(data.body, c.req)
     }
 }

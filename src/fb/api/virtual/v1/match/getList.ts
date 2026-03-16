@@ -32,7 +32,7 @@ export class VirtualV1MatchGetList extends OpenAPIRoute {
         },
     };
 
-    async handle() {
+    async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
         return FbService.VirtualV1Match.getList(data.body)
     }

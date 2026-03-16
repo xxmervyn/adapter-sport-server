@@ -1,6 +1,7 @@
 import { contentJson, OpenAPIRoute } from "chanfana";
 import { z } from "zod";
 import { FbService } from "../../../service/fbService";
+import { AppContext } from "../../../../types";
 
 export class LanguageStaticList extends OpenAPIRoute {
 	public schema = {
@@ -28,8 +29,8 @@ export class LanguageStaticList extends OpenAPIRoute {
 		}
 	};
 
-	public async handle() {
+	public async handle(c: AppContext) {
 		const data = await this.getValidatedData<typeof this.schema>();
-		return FbService.LanguageStatic.list(data.body)
+		return FbService.LanguageStatic.list(data.body,c.req)
 	}
 }

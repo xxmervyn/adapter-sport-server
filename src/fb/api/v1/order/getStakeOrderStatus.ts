@@ -31,6 +31,6 @@ export class V1OrderGetStakeOrderStatus extends OpenAPIRoute {
 
     async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
-        return UserService.V1Order.getStakeOrderStatus(data.body, c.req)
+        return FbService.V1Order.getStakeOrderStatus(data.body, c.req)
     }
 }
