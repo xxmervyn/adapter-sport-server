@@ -37,7 +37,10 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			pcFgColor: "#4C6FFF",
 			pcThemeCustomFgColor: "#4C6FFF"
 		}))
-		var url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=t013&` +
+
+		const info = decodeJWT(data.query.playerGameToken)
+
+		var url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
 			`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=wss://push.${apiHostName}&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
 			`handicap=1&themeBg=4C6FFF&themeText=${themeText}&controlMenu=2&language=ZHO`
 		url = genGameUrlSignWithKeys(data.query, url, ["token", "pcAddress", "virtualSrc", "apiSrc"], true)
@@ -91,4 +94,15 @@ function genGameUrlSignWithKeys(reqParams: any, url: string, keys: string[] | nu
 	url = url + "&esign=" + resTag + res;
 
 	return url;
+}
+
+
+function decodeJWT(token: string) {
+	const base64Url = token.split('.')[1]; // 获取 payload 部分
+	const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+	const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
+		return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+	}).join(''));
+
+	return JSON.parse(jsonPayload);
 }
