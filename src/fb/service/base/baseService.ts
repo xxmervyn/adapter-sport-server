@@ -69,7 +69,7 @@ export class BaseService {
             return api();
         }
 
-        const cacheKey = serverOptions?.cache?.cacheKey ?? await this.localCacheEntry.getRequestKey(path, params, req);
+        const cacheKey = serverOptions?.cache?.cacheKey ?? await this.localCacheEntry.getRequestKey(path, params);
 
         const item = this.localCacheEntry.getItem<T>(cacheKey);
         const isExist = this.cacheStatusMap.has(cacheKey)
