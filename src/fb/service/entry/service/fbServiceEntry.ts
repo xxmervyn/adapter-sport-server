@@ -253,24 +253,19 @@ class FbServiceClass extends BaseService {
     }
 
     public async innerRequest(path: string, params: any, req: HonoRequest, defCache?: any): Promise<FbCommApiResponse> {
-        const tkInfo = await this.getTokenInfo(req)
-        const headers = await FBHeaderGeneratorInstance.getHeaders(path, tkInfo)
-        var option = { headers: headers, baseURL: tkInfo.serverInfo?.apiServerAddress }
-        if (path.startsWith("/virtual")) {
-            option = { headers: headers, baseURL: tkInfo.serverInfo?.virtualAddress }
+        var xFrontPage = req.header("X-Front-Page")
+        var authorization = req.header("Authorization")
+        const headers: HeadersInit = {}
+        if (authorization && xFrontPage) {
+            headers["X-Token"] = authorization
+            headers["X-Front-Page"] = xFrontPage
         }
 
+        var option = { headers: headers}
         const result = await this.api<FbCommApiResponse>(path, params, () => UserBaseApi.post(path, params, option))
         if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
             return defCache
         }
-
-        if (result.code == 14010) {
-            // 修改结果防止用户被踢出
-            result.success = true
-            result.code = 0
-        }
-
         return result;
     }
 
