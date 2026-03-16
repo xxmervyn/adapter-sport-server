@@ -51,8 +51,10 @@ export class V1MatchApi {
     }
    
     public listMarketGroup(params: any, req: HonoRequest) {
-        return FbServiceEntry.request('/v1/match//listMarketGroup', params, req)
+        return FbServiceEntry.request('/v1/match/listMarketGroup', params, req)
     }
 
-
+    public resultStatistics(params: any, req: HonoRequest) {
+        return FbServiceEntry.request('/v1/match/resultStatistics', params, req)
+    }
 }

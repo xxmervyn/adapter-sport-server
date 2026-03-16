@@ -3,26 +3,24 @@ import { z } from "zod";
 import { FbService } from "../../../service/fbService";
 import { AppContext } from "../../../../types";
 
-export class V1MatchStatistical extends OpenAPIRoute {
+export class V1MatchResultStatistics extends OpenAPIRoute {
     public schema = {
-        tags: ["V1MatchStatistical"],
-        summary: "V1MatchStatistical",
-        operationId: "V1MatchStatistical",
+        tags: ["V1MatchResultStatistics"],
+        summary: "V1MatchResultStatistics",
+        operationId: "V1MatchResultStatistics",
         request: {
             body: contentJson(
                 z.object({
-                    sportTypes: z.array(z.number()).optional(),
+                    oddsType: z.number(),
                     languageType: z.string(),
-                    leagueId: z.number().optional(),
-                    allLeague: z.boolean().optional(),
-                    typeForLeagueStat: z.number().optional(),
-                    markets: z.array(z.any()).optional()
-                  })
+                    matchId: z.number(),
+                    tag: z.string()
+                })
             ),
         },
         responses: {
             "200": {
-                description: "V1MatchStatistical",
+                description: "V1MatchResultStatistics",
                 ...contentJson({
                     code: z.any(),
                     data: z.any(),
@@ -34,6 +32,6 @@ export class V1MatchStatistical extends OpenAPIRoute {
 
     async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1Match.statistical(data.body,c.req)
+        return FbService.V1Match.resultStatistics(data.body,c.req)
     }
 }
