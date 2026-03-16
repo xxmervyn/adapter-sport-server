@@ -275,12 +275,12 @@ class FbServiceClass extends BaseService {
     }
 
     private async getTokenInfo(req: HonoRequest): Promise<TokenApiResponseData> {
-        var xFrontPage = req.header("x-front-page")
+        var xFrontPage = req.header("X-Front-Page")
         var authorization = req.header("Authorization")
         if (authorization && xFrontPage) {
             const headers: HeadersInit = {}
-            headers["x-token"] = authorization
-            headers["x-front-page"] = xFrontPage
+            headers["X-Token"] = authorization
+            headers["X-Front-Page"] = xFrontPage
             var result = await this.tokenApi({}, headers)
             if (result.code == 14010) {
                 //被踢出重新登入

@@ -4,7 +4,7 @@ import { BaseApi } from "../../base/baseApi";
 
 class FBForwardBaseApiClass extends BaseApi {
     protected override async isValidatedRequest(req: Request): Promise<{ ecode: number, message: string }> {
-        let refererStr = req.headers.get("x-front-page");
+        let refererStr = req.headers.get("X-Front-Page");
 
         if (refererStr == null || refererStr == "" || refererStr.indexOf("&esign=") < 0) {
             refererStr = req.url;
@@ -97,7 +97,7 @@ class FBForwardBaseApiClass extends BaseApi {
 export const UserBaseApi = new FBForwardBaseApiClass(
     {
         baseURL: API_BASE_URL_ENUMS.FORWARD_BASE_HOST,
-        timeout: 1000,
+        timeout: 5000,
         retry: 1,
         retryDelay: 1000,
         headers: {}
