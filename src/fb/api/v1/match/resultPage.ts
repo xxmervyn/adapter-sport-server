@@ -20,7 +20,7 @@ export class V1MatchResultPage extends OpenAPIRoute {
                     matchType: z.number().optional(),
                     orderBy: z.number().optional(),
                     size: z.number().optional(),
-                    sportId: z.string().optional(),
+                    sportId: z.string().or(z.number()).optional(),
                 })
             ),
         },
@@ -38,6 +38,6 @@ export class V1MatchResultPage extends OpenAPIRoute {
 
     async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1Match.matchResultPage(data.body,c.req)
+        return FbService.V1Match.matchResultPage(data.body, c.req)
     }
 }
