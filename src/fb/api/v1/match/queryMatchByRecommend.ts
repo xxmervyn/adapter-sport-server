@@ -18,6 +18,7 @@ export class V1MatchQueryMatchByRecommend extends OpenAPIRoute {
                     random: z.boolean().optional(),
                     isPC: z.boolean().optional(),
                     sortType: z.number().optional(),
+                    orderBy: z.number().optional(),
                 })
             ),
         },
