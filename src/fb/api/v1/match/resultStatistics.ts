@@ -11,7 +11,7 @@ export class V1MatchResultStatistics extends OpenAPIRoute {
         request: {
             body: contentJson(
                 z.object({
-                    oddsType: z.number(),
+                    oddsType: z.number().or(z.string()),
                     languageType: z.string(),
                     matchId: z.number(),
                     tag: z.string()

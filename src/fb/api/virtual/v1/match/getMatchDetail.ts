@@ -13,7 +13,7 @@ export class VirtualV1MatchGetMatchDetail extends OpenAPIRoute {
                 z.object({
                     languageType: z.string(),
                     matchId: z.number().optional(),
-                    oddsType: z.number().optional(),
+                    oddsType: z.number().or(z.string()).optional(),
                 })
             ),
         },

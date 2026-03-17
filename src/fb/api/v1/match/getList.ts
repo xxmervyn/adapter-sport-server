@@ -12,7 +12,7 @@ export class V1MatchGetList extends OpenAPIRoute {
             body: contentJson(
                 z.object({
                     languageType: z.string(),
-                    oddsType: z.number(),
+                    oddsType: z.number().or(z.string()),
                     sportTypes: z.array(z.number()),
                     current: z.number(),
                     isPC: z.boolean(),
@@ -40,6 +40,6 @@ export class V1MatchGetList extends OpenAPIRoute {
 
     async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1Match.getList(data.body,c.req)
+        return FbService.V1Match.getList(data.body, c.req)
     }
 }

@@ -12,7 +12,7 @@ export class V1MatchRecommendMatchList extends OpenAPIRoute {
             body: contentJson(
                 z.object({
                     languageType: z.string(),
-                    oddsType: z.number(),
+                    oddsType: z.number().or(z.string()),
                     size: z.number(),
                     random: z.boolean(),
                     isPC: z.boolean(),

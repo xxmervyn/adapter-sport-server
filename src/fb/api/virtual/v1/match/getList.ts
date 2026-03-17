@@ -12,7 +12,7 @@ export class VirtualV1MatchGetList extends OpenAPIRoute {
             body: contentJson(
                 z.object({
                     languageType: z.string(),
-                    oddsType: z.number().optional(),
+                    oddsType: z.number().or(z.string()).optional(),
                     isPC: z.boolean().optional(),
                     leagueId: z.number().optional(),
                     blobkSize: z.number().optional(),

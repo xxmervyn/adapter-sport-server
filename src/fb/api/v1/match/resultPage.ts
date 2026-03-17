@@ -12,7 +12,7 @@ export class V1MatchResultPage extends OpenAPIRoute {
             body: contentJson(
                 z.object({
                     languageType: z.string(),
-                    oddsType: z.number().optional(),
+                    oddsType: z.number().or(z.string()).optional(),
                     matchId: z.string().optional(),
                     beginTime: z.number().optional(),
                     current: z.number().optional(),

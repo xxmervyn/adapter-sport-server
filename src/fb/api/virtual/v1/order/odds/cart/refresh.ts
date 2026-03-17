@@ -12,7 +12,7 @@ export class VirtualV1OrderOddsCartRefresh extends OpenAPIRoute {
             body: contentJson(
                 z.object({
                     languageType: z.string(),
-                    oddsType: z.number().optional(),
+                    oddsType: z.number().or(z.string()).optional(),
                     currencyId: z.number().optional(),
                     betMatchMarketList: z.array(z.any()).optional()
                 })
