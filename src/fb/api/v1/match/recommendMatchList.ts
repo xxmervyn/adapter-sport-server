@@ -15,7 +15,7 @@ export class V1MatchRecommendMatchList extends OpenAPIRoute {
                     oddsType: z.number().or(z.string()),
                     size: z.number(),
                     random: z.boolean(),
-                    isPC: z.boolean(),
+                    isPC: z.boolean().optional(),
                     sortType: z.number(),
                 })
             ),
