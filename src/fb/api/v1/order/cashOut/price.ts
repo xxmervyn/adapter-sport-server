@@ -12,7 +12,7 @@ export class FbV1OrderCashOutPrice extends OpenAPIRoute {
             body: contentJson(
                 z.object({
                     languageType: z.string(),
-                    orderIds: z.array(z.number()).optional(),
+                    orderIds: z.array(z.number().or(z.string())).optional(),
                 })
             ),
         },

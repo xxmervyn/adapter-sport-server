@@ -11,7 +11,7 @@ export class FbV1OrderCashOutReserveCancel extends OpenAPIRoute {
         request: {
             body: contentJson(
                 z.object({
-                    reserveCashOutId: z.number(),
+                    reserveCashOutId: z.number().or(z.string()),
                     languageType: z.string().optional()
                 })
             ),

@@ -12,9 +12,9 @@ export class FbV1OrderCashOutBet extends OpenAPIRoute {
             body: contentJson(
                 z.object({
                     deviceId: z.string().optional(),
-                    orderId: z.number(),
-                    cashOutStake: z.number(),
-                    unitCashOutPayoutStake: z.number(),
+                    orderId: z.number().or(z.string()),
+                    cashOutStake: z.number().or(z.string()),
+                    unitCashOutPayoutStake: z.number().or(z.string()),
                     acceptOddsChange: z.boolean(),
                     parlay: z.boolean().optional(),
                     languageType: z.string().optional()

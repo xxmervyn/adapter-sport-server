@@ -11,7 +11,7 @@ export class FbV1OrderReserveCancel extends OpenAPIRoute {
         request: {
             body: contentJson(
                 z.object({
-                    reserveId: z.number(),
+                    reserveId: z.number().or(z.string()),
                     languageType: z.string().optional()
                   })
             ),

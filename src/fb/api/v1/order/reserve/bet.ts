@@ -17,7 +17,7 @@ export class FbV1OrderReserveBet extends OpenAPIRoute {
                     currencyId: z.number().optional(),
                     languageType: z.string().optional(),
                     pay: z.number().optional(),
-                    relatedId: z.string().optional()
+                    relatedId: z.string().or(z.number()).optional()
                 })
             ),
         },

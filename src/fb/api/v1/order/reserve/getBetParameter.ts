@@ -13,8 +13,8 @@ export class FbV1OrderReserveGetBetParameter extends OpenAPIRoute {
                 z.object({
                     currencyId: z.number(),
                     languageType: z.string(),
-                    marketId: z.number().optional(),
-                    matchId: z.number().optional(),
+                    marketId: z.number().or(z.string()).optional(),
+                    matchId: z.number().or(z.string()).optional(),
                     betMatchMarketList: z.any().optional(),
                     isSelectSeries: z.boolean().optional(),
                     optionType: z.number().optional(),
