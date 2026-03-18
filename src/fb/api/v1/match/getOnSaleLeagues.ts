@@ -15,7 +15,7 @@ export class V1MatchGetOnSaleLeagues extends OpenAPIRoute {
                     oddsType: z.number().or(z.string()),
                     sportTypes: z.array(z.number()),
                     markets: z.array(z.any()).optional(),
-                    sportId: z.number().optional(),
+                    sportId: z.number().or(z.string()).optional(),
                     current: z.number(),
                     isPC: z.boolean(),
                     orderBy: z.number(),

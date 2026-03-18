@@ -11,7 +11,7 @@ export class VirtualV1MatchGetMatchListWithResults extends OpenAPIRoute {
         request: {
             body: contentJson(
                 z.object({
-                    sportId: z.string(),
+                    sportId: z.number().or(z.string()).optional(),
                     beginTime: z.number(),
                     endTime: z.number(),
                     languageType: z.string(),

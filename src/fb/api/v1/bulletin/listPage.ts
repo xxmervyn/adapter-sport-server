@@ -15,7 +15,7 @@ export class V1BulletinListPage extends OpenAPIRoute {
                     size: z.number().optional(),
                     orders: z.array(z.any()).optional(),
                     languageType: z.string(),
-                    sportId: z.number().optional(),
+                    sportId: z.number().or(z.string()).optional(),
                     startTime: z.number().optional(),
                     endTime: z.number().optional(),
                 })
