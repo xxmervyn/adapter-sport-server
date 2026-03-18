@@ -50,6 +50,9 @@ openapi.use("/*", cors({
 	credentials: true, // 如果需要发送 Cookie
 }));
 
+
+
+
 // // Register Tasks Sub router
 // openapi.route("/tasks", tasksRouter);
 
@@ -58,7 +61,6 @@ openapi.use("/*", cors({
 
 //跳转
 openapi.get("/games/enter", GamesEnterEndpoint);
-
 
 openapi.route("/v1", FbV1Router);
 

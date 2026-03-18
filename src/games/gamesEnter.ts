@@ -40,9 +40,20 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 
 		const info = decodeJWT(data.query.playerGameToken)
 
-		var url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
-			`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=wss://push.${apiHostName}&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
-			`handicap=1&themeBg=4C6FFF&themeText=${themeText}&controlMenu=2&language=ZHO`
+		var url = ""
+		if (isMobileRequest(c.req)) {
+			var hostName = `${urlReq?.hostname}`
+			url = `https://${hostName}/index.html#/?token=${data.query.playerGameToken}&pcAddress=${hostName}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&themeBg=4C6FFF` +
+				`&themeText=%7B"h5FgColor"%3A"%234C6FFF","pcFgColor"%3A"%234C6FFF","pcThemeCustomFgColor"%3A"%234C6FFF"%7D&controlMenu=2&language=ZHO`
+		} else {
+			url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
+				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
+				`handicap=1&themeBg=4C6FFF&themeText=${themeText}&controlMenu=2&language=ZHO`
+			// url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
+			// 	`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=wss://push.${apiHostName}&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
+			// 	`handicap=1&themeBg=4C6FFF&themeText=${themeText}&controlMenu=2&language=ZHO`
+		}
+
 		url = genGameUrlSignWithKeys(data.query, url, ["token", "pcAddress", "virtualSrc", "apiSrc"], true)
 
 		return c.redirect(url)
@@ -105,4 +116,18 @@ function decodeJWT(token: string) {
 	}).join(''));
 
 	return JSON.parse(jsonPayload);
+}
+
+function isMobileRequest(req: HonoRequest) {
+	const urlReq = new URL(req.url);
+	const platform = urlReq.searchParams.get("platform");
+	if (platform == "h5" || platform == "mobile") {
+		return true;
+	}
+
+	var ua = req.header("user-agent") || "";
+	ua = ua.toLowerCase();
+
+	if (/ipad|mobile|android|iphone|ipod/.test(ua)) return true;
+	return false;
 }
