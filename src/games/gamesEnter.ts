@@ -42,8 +42,10 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 
 		var url = ""
 		if (isMobileRequest(c.req)) {
-			const hostName = `${urlReq?.hostname}`
-			console.log("/////////////////////////////////////", hostName);
+			var hostName = `${urlReq?.hostname}`;
+			var hostArr = hostName.split(".");
+			hostArr[0] = `${hostArr[0]}-h5`
+			hostName = hostArr.join(".")
 			url = `https://${hostName}/index.html#/?token=${data.query.playerGameToken}&pcAddress=${hostName}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&themeBg=4C6FFF` +
 				`&themeText=%7B"h5FgColor"%3A"%234C6FFF","pcFgColor"%3A"%234C6FFF","pcThemeCustomFgColor"%3A"%234C6FFF"%7D&controlMenu=2&language=ZHO`
 		} else {
