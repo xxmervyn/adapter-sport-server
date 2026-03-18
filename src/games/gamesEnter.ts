@@ -5,6 +5,43 @@ import { MD5 } from "crypto-js";
 import { HonoRequest } from "hono";
 import { tr } from "zod/v4/locales";
 
+const languageMap: Record<string, string> = {
+	'en': 'ENG',
+	'cmn': 'CMN',
+	'zh': 'CMN',
+	'zho': 'ZHO',
+	'zh-tw': 'ZHO',
+	'zh-hk': 'ZHO',
+	'jpn': 'JPN',
+	'ja': 'JPN',
+	'kor': 'KOR',
+	'ko': 'KOR',
+	'spa': 'SPA',
+	'es': 'SPA',
+	'vie': 'VIE',
+	'vi': 'VIE',
+	'tha': 'THA',
+	'th': 'THA',
+	'msa': 'MSA',
+	'ms': 'MSA',
+	'ind': 'IND',
+	'id': 'IND',
+	'hin': 'HIN',
+	'hi': 'HIN',
+	'sau': 'SAU',
+	'ar': 'SAU',
+	'deu': 'DEU',
+	'de': 'DEU',
+	'fra': 'FRA',
+	'fr': 'FRA',
+	'bra': 'BRA',
+	'pt-br': 'BRA',
+	'rus': 'RUS',
+	'ru': 'RUS',
+	'tr': 'TR',
+	'tur': 'TR'
+};
+
 export class GamesEnterEndpoint extends OpenAPIRoute {
 	public schema = {
 		tags: ["GamesEnter"],
@@ -39,7 +76,8 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		}))
 
 		const info = decodeJWT(data.query.playerGameToken)
-
+		var lang = "ENG";
+		lang = languageMap[data.query.lang?.toLowerCase() || "en"]
 		var url = ""
 		if (isMobileRequest(c.req)) {
 			var hostName = `${urlReq?.hostname}`;
@@ -52,9 +90,6 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
 				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
 				`handicap=1&themeBg=4C6FFF&themeText=${themeText}&controlMenu=2&language=ZHO`
-			// url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
-			// 	`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=wss://push.${apiHostName}&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
-			// 	`handicap=1&themeBg=4C6FFF&themeText=${themeText}&controlMenu=2&language=ZHO`
 		}
 
 		url = genGameUrlSignWithKeys(data.query, url, ["token", "pcAddress", "virtualSrc", "apiSrc"], true)
