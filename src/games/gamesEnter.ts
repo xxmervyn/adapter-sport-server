@@ -4,44 +4,9 @@ import { z } from "zod";
 import { MD5 } from "crypto-js";
 import { HonoRequest } from "hono";
 import { tr } from "zod/v4/locales";
+import { LANGUAGE_MAP } from "../fb/enums";
 
-const languageMap: Record<string, string> = {
-	'en': 'ENG',
-	'cmn': 'CMN',
-	'zh': 'CMN',
-	'zho': 'ZHO',
-	'zh-tw': 'ZHO',
-	'zh-hk': 'ZHO',
-	'jpn': 'JPN',
-	'ja': 'JPN',
-	'kor': 'KOR',
-	'ko': 'KOR',
-	'spa': 'SPA',
-	'es': 'SPA',
-	'vie': 'VIE',
-	'vi': 'VIE',
-	'tha': 'THA',
-	'th': 'THA',
-	'msa': 'MSA',
-	'ms': 'MSA',
-	'in': 'IND',
-	'id': 'IND',
-	'hin': 'HIN',
-	'hi': 'HIN',
-	'sau': 'SAU',
-	'ar': 'SAU',
-	'deu': 'DEU',
-	'de': 'DEU',
-	'fra': 'FRA',
-	'fr': 'FRA',
-	'bra': 'BRA',
-	'br': 'BRA',
-	'pt': 'BRA',
-	'rus': 'RUS',
-	'ru': 'RUS',
-	'tr': 'TR',
-	'tur': 'TR'
-};
+
 
 export class GamesEnterEndpoint extends OpenAPIRoute {
 	public schema = {
@@ -78,7 +43,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 
 		const info = decodeJWT(data.query.playerGameToken)
 		var lang = "ENG";
-		lang = languageMap[data.query.lang?.toLowerCase() || "en"]
+		lang = LANGUAGE_MAP[data.query.lang?.toLowerCase() || "en"]
 		var url = ""
 		if (isMobileRequest(c.req)) {
 			var hostName = `${urlReq?.hostname}`;
