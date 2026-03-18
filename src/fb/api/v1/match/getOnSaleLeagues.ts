@@ -12,7 +12,7 @@ export class V1MatchGetOnSaleLeagues extends OpenAPIRoute {
             body: contentJson(
                 z.object({
                     languageType: z.string(),
-                    oddsType: z.number().or(z.string()),
+                    oddsType: z.number().or(z.string()).optional(),
                     sportTypes: z.array(z.number()),
                     markets: z.array(z.any()).optional(),
                     sportId: z.number().or(z.string()).optional(),
