@@ -248,7 +248,7 @@ class FbServiceClass extends BaseService {
         const requestKey = `${option.baseURL}${path}`
 
         const result = await this.api<FbCommApiResponse>(requestKey, params, () => FBNotAuthBaseApi.post(path, params, option), serviceOptions)
-        if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.FB_TOO_MANY_REQUESTS_ERR) {
+        if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
             return defCache
         }
 
@@ -272,7 +272,7 @@ class FbServiceClass extends BaseService {
 
         var option = { headers: headers }
         const result = await this.api<FbCommApiResponse>(path, params, () => UserBaseApi.post(path, params, option))
-        if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.FB_TOO_MANY_REQUESTS_ERR) {
+        if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
             return defCache
         }
         return result;

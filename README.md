@@ -75,3 +75,4 @@ Test files are located in the `tests/` directory, with examples demonstrating ho
 
 ## 注意事项
 + enter请求生成的url要带有pushSrc不然国际版进不去
++ reloadPage 和 tryCloseWebTab 分别对应PC端和H5端的语音切换

@@ -6,6 +6,7 @@ export enum SERVER_ERR_CODE_ENUMS {
     INVALID_RESPONSE_STATUS = 4003, //无效响应码
     INVALID_SIGN = 4004, //无效签名
     FAIL_REQUEST = 4005, //请求失败
+    REQUEST_CACHING = 4006, //请求缓存中
 
     FB_SERVER_ERR = 14108, 
     FB_TOO_MANY_REQUESTS_ERR = 12, 
