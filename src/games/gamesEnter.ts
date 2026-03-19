@@ -36,20 +36,28 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		const apiHostName = urlReq?.hostname.replace(".", "-api.");
 
 
+
 		const info = decodeJWT(data.query.playerGameToken)
 		var lang = "ENG";
 		lang = LANGUAGE_MAP[data.query.lang?.toLowerCase() || "en"]
 		var url = ""
+
+		const themeText = encodeURIComponent(JSON.stringify({
+			h5FgColor: "#4C6FFF",
+			pcFgColor: "#4C6FFF",
+			pcThemeCustomFgColor: "#4C6FFF"
+		}))
+
 		if (isMobileRequest(c.req)) {
 			var hostName = `${urlReq?.hostname}`;
 			var hostArr = hostName.split(".");
 			hostArr[0] = `${hostArr[0]}-h5`
 			hostName = hostArr.join(".")
-			const themeText = `%7B"h5FgColor"%3A"%234C6FFF","pcFgColor"%3A"%234C6FFF","pcThemeCustomFgColor"%3A"%234C6FFF"%7D`
+
 			url = `https://${hostName}/index.html#/?token=${data.query.playerGameToken}&pcAddress=${hostName}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&themeBg=4C6FFF` +
 				`&themeText=${themeText}&controlMenu=2&language=${lang}`
 		} else {
-			const themeText = `%7B&quot;h5FgColor&quot;:&quot;#4C6FFF&quot;,&quot;pcFgColor&quot;:&quot;#4C6FFF&quot;,&quot;pcThemeCustomFgColor&quot;:&quot;#4C6FFF&quot;%7D`
+
 			url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
 				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=${apiHostName}&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
 				`handicap=1&themeBg=4C6FFF&themeText=${themeText}&controlMenu=2&language=${lang}`
