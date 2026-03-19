@@ -67,7 +67,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			var xfontpage = genGameUrlSignWithKeys(data.query, sginUrl, ["token"], true)
 			const tokenInfo = await UserService.V1User.token(xfontpage, data.query.playerGameToken)
 
-			url = genGameUrlSignWithKeys(data.query, sginUrl, ["token"], true)
+			url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
 			url = `${url}&tk=${tokenInfo.token}`
 		}
 
