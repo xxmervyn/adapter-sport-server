@@ -61,7 +61,9 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
 				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=wss://push.5890v.com&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
 				`handicap=1&themeBg=4C6FFF&themeText=${themeText}&controlMenu=2&language=${lang}`
-			const tokenInfo = await UserService.V1User.token(url, data.query.playerGameToken);
+			const tokenInfo = await UserService.V1User.token(encodeURIComponent(url), data.query.playerGameToken);
+			console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!!!", tokenInfo);
+
 			url = `${url}&tk=${tokenInfo.token}`
 		}
 
