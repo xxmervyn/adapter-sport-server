@@ -60,7 +60,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
 		} else {
 			url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
-				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=wss://push.5890v.com&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
+				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
 				`handicap=1&themeBg=4C6FFF&themeText=${themeText}&controlMenu=2&language=${lang}`
 
 			const sginUrl = `https://${urlReq?.hostname}?token=${data.query.playerGameToken}`
@@ -68,7 +68,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			const tokenInfo = await UserService.V1User.token(xfontpage, data.query.playerGameToken)
 
 			url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
-			url = `${url}&tk=${tokenInfo.token}`
+			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress ?? "wss://push.5890v.com"}&tk=${tokenInfo.token}`
 		}
 
 
