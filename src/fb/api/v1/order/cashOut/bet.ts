@@ -35,6 +35,6 @@ export class FbV1OrderCashOutBet extends OpenAPIRoute {
 
     async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1OrderCashOutApi.bet(data.body, c.req)
+        return FbService.V1OrderCashOut.bet(data.body, c.req)
     }
 }

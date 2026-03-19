@@ -30,6 +30,6 @@ export class FbV1OrderCashOutPrice extends OpenAPIRoute {
 
     async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1OrderCashOutApi.price(data.body, c.req)
+        return FbService.V1OrderCashOut.price(data.body, c.req)
     }
 }

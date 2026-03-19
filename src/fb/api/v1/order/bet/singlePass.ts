@@ -31,6 +31,6 @@ export class FbV1OrderBetSinglePass extends OpenAPIRoute {
 
     async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1OrderBetApi.singlePass(data.body, c.req)
+        return FbService.V1OrderBet.singlePass(data.body, c.req)
     }
 }

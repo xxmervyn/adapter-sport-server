@@ -1,27 +1,23 @@
 import { OpenAPIRoute, contentJson } from "chanfana";
 import { z } from "zod";
-import { AppContext } from "../../../../../../types";
-import { UserService } from "../../../../../service/userService";
-import { FbService } from "../../../../../service/fbService";
+import { FbService } from "../../../service/fbService";
+import { AppContext } from "../../../../types";
 
-export class V1OrderNewBetList extends OpenAPIRoute {
+export class V1SportTheme extends OpenAPIRoute {
     public schema = {
-        tags: ["未结算注单"],
-        summary: "V1OrderNewBetList",
-        operationId: "V1OrderNewBetList",
+        tags: ["V1SportTheme"],
+        summary: "V1SportTheme",
+        operationId: "V1SportTheme",
         request: {
             body: contentJson(
                 z.object({
                     languageType: z.string(),
-                    isSettled: z.boolean(),
-                    current: z.number(),
-                    size: z.number(),
                 })
             ),
         },
         responses: {
             "200": {
-                description: "V1OrderNewBetList",
+                description: "V1SportTheme",
                 ...contentJson({
                     code: z.any(),
                     data: z.any(),
@@ -33,6 +29,6 @@ export class V1OrderNewBetList extends OpenAPIRoute {
 
     async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1OrderNewBet.list(data.body, c.req)
+        return FbService.V1Sport.theme(data.body, c.req)
     }
 }

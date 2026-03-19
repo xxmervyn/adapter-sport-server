@@ -31,6 +31,6 @@ export class FbV1OrderReserveCashOutstatusInfoByIdsRouter extends OpenAPIRoute {
 
     async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1OrderReserveCashOutApi.statusInfoByIds(data.body, c.req)
+        return FbService.V1OrderReserveCashOut.statusInfoByIds(data.body, c.req)
     }
 }

@@ -30,6 +30,6 @@ export class FbV1OrderCashOutReserveCancel extends OpenAPIRoute {
 
     async handle(c: AppContext) {
         const data = await this.getValidatedData<typeof this.schema>();
-        return FbService.V1OrderCashOutReserveApi.cancel(data.body, c.req)
+        return FbService.V1OrderCashOutReserve.cancel(data.body, c.req)
     }
 }
