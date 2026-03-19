@@ -19,7 +19,7 @@ export class V1UserApi {
                     "cbs": [
                         {
                             "bl": coin,
-                            "cid": currencyId
+                            "cid": 1
                         }
                     ]
                 },
