@@ -282,9 +282,9 @@ class FbServiceClass extends BaseService {
                 result = await this.tokenApi({ "needReset": true }, headers)
             }
 
-            // if (result.code == 0) {
-            //     return result.data as TokenApiResponseData
-            // }
+            if (result.code == 0) {
+                return result.data as TokenApiResponseData
+            }
         }
 
         // 返回游客token
