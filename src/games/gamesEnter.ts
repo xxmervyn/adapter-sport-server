@@ -57,7 +57,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 
 			url = `https://${hostName}/index.html#/?token=${data.query.playerGameToken}&pcAddress=${hostName}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&themeBg=4C6FFF` +
 				`&themeText=${themeText}&controlMenu=2&language=${lang}`
-			url = genGameUrlSignWithKeys(data.query, url, ["token", "pcAddress", "virtualSrc", "apiSrc"], true)
+			url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
 		} else {
 			url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
 				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=wss://push.5890v.com&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
