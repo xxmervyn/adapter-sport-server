@@ -1,6 +1,6 @@
 import { sha256 } from "hono/utils/crypto";
 import { FbCommApiResponse, TokenApiResponseData } from "../../../model/response/fbModel";
-import { BaseService, ServiceLocalCacheInterface } from "../../base/baseService";
+import { BaseService, ServiceLocalCacheInterface, ServiceRequestOptions } from "../../base/baseService";
 import { SERVER_ERR_CODE_ENUMS } from "../../../enums/serverErrCodeEnum";
 import { HonoRequest } from "hono";
 import { UserBaseApi } from "../api/userApiEntry";
@@ -219,8 +219,8 @@ class FBLocalCache implements ServiceLocalCacheInterface {
 
     /* ---------- Request Key ---------- */
 
-    async getRequestKey(url: string, params: any): Promise<string> {
-        const body = url + JSON.stringify(params)
+    async getRequestKey(requestKey: string, params: any): Promise<string> {
+        const body = requestKey + JSON.stringify(params)
         const key = await sha256(body) ?? "";
 
         return key;
@@ -230,16 +230,25 @@ class FBLocalCache implements ServiceLocalCacheInterface {
 
 class FbServiceClass extends BaseService {
 
+    public async requestNotCache(path: string, params: any, req: HonoRequest, defCache?: any): Promise<FbCommApiResponse> {
+        return this.requestWithOptions(path, params, req, { cache: { isCache: false } }, defCache);
+    }
+
     public async request(path: string, params: any, req: HonoRequest, defCache?: any): Promise<FbCommApiResponse> {
+        return this.requestWithOptions(path, params, req, { cache: { isCache: true } }, defCache);
+    }
+
+    public async requestWithOptions(path: string, params: any, req: HonoRequest, serviceOptions: ServiceRequestOptions, defCache?: any): Promise<FbCommApiResponse> {
         const tkInfo = await this.getTokenInfoByReq(req)
         const headers = await FBHeaderGeneratorInstance.getHeaders(path, tkInfo)
         var option = { headers: headers, baseURL: tkInfo.serverInfo?.apiServerAddress }
         if (path.startsWith("/virtual")) {
             option = { headers: headers, baseURL: tkInfo.serverInfo?.virtualAddress }
         }
+        const requestKey = `${option.baseURL}${path}`
 
-        const result = await this.api<FbCommApiResponse>(path, params, () => FBNotAuthBaseApi.post(path, params, option))
-        if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
+        const result = await this.api<FbCommApiResponse>(requestKey, params, () => FBNotAuthBaseApi.post(path, params, option), serviceOptions)
+        if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.FB_TOO_MANY_REQUESTS_ERR) {
             return defCache
         }
 
@@ -263,7 +272,7 @@ class FbServiceClass extends BaseService {
 
         var option = { headers: headers }
         const result = await this.api<FbCommApiResponse>(path, params, () => UserBaseApi.post(path, params, option))
-        if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
+        if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.FB_TOO_MANY_REQUESTS_ERR) {
             return defCache
         }
         return result;

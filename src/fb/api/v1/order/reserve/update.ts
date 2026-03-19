@@ -11,9 +11,9 @@ export class FbV1OrderReserveUpdate extends OpenAPIRoute {
         request: {
             body: contentJson(
                 z.object({
-                    reserveId: z.number(),
-                    unitStake: z.number(),
-                    odds: z.number(),
+                    reserveId: z.number().or(z.string()).optional(),
+                    unitStake: z.number().or(z.string()).optional(),
+                    odds: z.number().optional(),
                     languageType: z.string().optional()
                   })
             ),

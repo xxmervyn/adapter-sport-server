@@ -11,10 +11,10 @@ export class FbV1OrderReserveBet extends OpenAPIRoute {
         request: {
             body: contentJson(
                 z.object({
-                    deviceId: z.string().optional(),
-                    unitStake: z.number(),
+                    deviceId: z.string().or(z.number()).optional(),
+                    unitStake: z.number().or(z.string()).optional(),
                     betOptionList: z.array(z.any()),
-                    currencyId: z.number().optional(),
+                    currencyId: z.number().or(z.string()).optional(),
                     languageType: z.string().optional(),
                     pay: z.number().optional(),
                     relatedId: z.string().or(z.number()).optional()

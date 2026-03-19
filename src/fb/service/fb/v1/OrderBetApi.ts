@@ -3,10 +3,10 @@ import { FbServiceEntry } from "../../entry/service/fbServiceEntry"
 
 export class V1OrderBetApi {
     public singlePass(params: any, req: HonoRequest) {
-        return FbServiceEntry.request('/v1/order/bet/singlePass', params, req)
+        return FbServiceEntry.requestNotCache('/v1/order/bet/singlePass', params, req)
     }
 
     public list(params: any, req: HonoRequest) {
-        return FbServiceEntry.request('/v1/order/bet/list', params, req)
+        return FbServiceEntry.requestNotCache('/v1/order/bet/list', params, req)
     }
 }

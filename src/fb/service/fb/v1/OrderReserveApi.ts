@@ -7,18 +7,22 @@ export class V1OrderReserveApi {
     }
 
     public bet(params: any, req: HonoRequest) {
-        return FbServiceEntry.request('/v1/order/reserve/bet', params, req)
+        return FbServiceEntry.requestNotCache('/v1/order/reserve/bet', params, req)
     }
 
     public betList(params: any, req: HonoRequest) {
-        return FbServiceEntry.request('/v1/order/reserve/betList', params, req)
+        return FbServiceEntry.requestNotCache('/v1/order/reserve/betList', params, req)
     }
 
     public update(params: any, req: HonoRequest) {
-        return FbServiceEntry.request('/v1/order/reserve/update', params, req)
+        return FbServiceEntry.requestNotCache('/v1/order/reserve/update', params, req)
     }
 
     public cancel(params: any, req: HonoRequest) {
-        return FbServiceEntry.request('/v1/order/reserve/cancel', params, req)
+        return FbServiceEntry.requestNotCache('/v1/order/reserve/cancel', params, req)
+    }
+
+    public statusInfoByIds(params: any, req: HonoRequest) {
+        return FbServiceEntry.requestNotCache('/v1/order/reserve/statusInfoByIds', params, req)
     }
 }

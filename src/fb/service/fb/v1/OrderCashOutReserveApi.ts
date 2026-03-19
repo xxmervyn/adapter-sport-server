@@ -3,10 +3,10 @@ import { FbServiceEntry } from "../../entry/service/fbServiceEntry"
 
 export class V1OrderCashOutReserveApi {
     public bet(params: any, req: HonoRequest) {
-        return FbServiceEntry.request('/v1/order/cashOutReserve/bet', params, req)
+        return FbServiceEntry.requestNotCache('/v1/order/cashOutReserve/bet', params, req)
     }
     
     public cancel(params: any, req: HonoRequest) {
-        return FbServiceEntry.request('/v1/order/cashOutReserve/cancel', params, req)
+        return FbServiceEntry.requestNotCache('/v1/order/cashOutReserve/cancel', params, req)
     }
 }

@@ -8,7 +8,7 @@ export interface ServiceLocalCacheInterface {
     hasItem(key: string): boolean;
     setItem<T = any>(key: string, value: T, cacheTime?: number): void;
     deleteItem(key: string): boolean;
-    getRequestKey(url: string, params: any): Promise<string>;
+    getRequestKey(requestKey: string, params: any): Promise<string>;
     clearTTLAll(): void;
 }
 
@@ -62,14 +62,14 @@ export class BaseService {
         );
     }
 
-    public async api<T>(path: string, params: any, api: () => Promise<T>, serverOptions?: ServiceRequestOptions): Promise<T> {
+    public async api<T>(requestKey: string, params: any, api: () => Promise<T>, serverOptions?: ServiceRequestOptions): Promise<T> {
         const isCache = serverOptions?.cache?.isCache ?? this.localCacheDefConf.isCache;
 
         if (!isCache || !this.localCacheEntry) {
             return api();
         }
 
-        const cacheKey = serverOptions?.cache?.cacheKey ?? await this.localCacheEntry.getRequestKey(path, params);
+        const cacheKey = serverOptions?.cache?.cacheKey ?? await this.localCacheEntry.getRequestKey(requestKey, params);
 
         const item = this.localCacheEntry.getItem<T>(cacheKey);
         const isExist = this.cacheStatusMap.has(cacheKey)
@@ -79,8 +79,7 @@ export class BaseService {
 
         if (isExist) {
             //缓存中
-            // SERVER_ERR_CODE_ENUMS.REQUEST_CACHING
-            const data = item ? item.data : ({ code: 0, success: true, eCode: SERVER_ERR_CODE_ENUMS.REQUEST_CACHING } as T)
+            const data = item ? item.data : ({ code: 0, success: false, message: "server busy", eCode: SERVER_ERR_CODE_ENUMS.FB_TOO_MANY_REQUESTS_ERR } as T)
             this.tryCleanErrCacheAsync()
             return data
         }

@@ -7,6 +7,6 @@ export class V1OrderCashOutApi {
     }
 
     public bet(params: any, req: HonoRequest) {
-        return FbServiceEntry.request('/v1/order/cashOut/bet', params, req)
+        return FbServiceEntry.requestNotCache('/v1/order/cashOut/bet', params, req)
     }
 }

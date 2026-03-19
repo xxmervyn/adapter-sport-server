@@ -13,11 +13,11 @@ export class V1OrderBetMultiple extends OpenAPIRoute {
             body: contentJson(
                 z.object({
                     betMultipleData: z.array(z.any()),
-                    deviceId: z.string().optional(),
+                    deviceId: z.string().or(z.number()).optional(),
                     betOptionList: z.array(z.any()),
-                    currencyId: z.number().int().optional(),
+                    currencyId: z.number().optional(),
                     languageType: z.string().optional(),
-                    relatedId: z.string().optional()
+                    relatedId: z.string().or(z.number()).optional()
                 })
             ),
         },

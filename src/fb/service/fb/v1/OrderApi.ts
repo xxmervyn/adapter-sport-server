@@ -8,14 +8,14 @@ export class V1OrderApi {
     }
 
     public getStakeOrderStatus(params: any, req: HonoRequest) {
-        return FbServiceEntry.request('/v1/order/getStakeOrderStatus', params, req)
+        return FbServiceEntry.requestNotCache('/v1/order/getStakeOrderStatus', params, req)
     }
 
     public betMultiple(params: any, req: HonoRequest) {
-        return FbServiceEntry.request('/v1/order/betMultiple', params, req)
+        return FbServiceEntry.requestNotCache('/v1/order/betMultiple', params, req)
     }
 
     public getCashOutsByIds(params: any, req: HonoRequest) {
-        return FbServiceEntry.request('/v1/order/getCashOutsByIds', params, req)
+        return FbServiceEntry.requestNotCache('/v1/order/getCashOutsByIds', params, req)
     }
 }
