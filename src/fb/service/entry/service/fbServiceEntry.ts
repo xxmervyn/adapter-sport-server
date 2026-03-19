@@ -231,7 +231,7 @@ class FBLocalCache implements ServiceLocalCacheInterface {
 class FbServiceClass extends BaseService {
 
     public async request(path: string, params: any, req: HonoRequest, defCache?: any): Promise<FbCommApiResponse> {
-        const tkInfo = await this.getTokenInfo(req)
+        const tkInfo = await this.getTokenInfoByReq(req)
         const headers = await FBHeaderGeneratorInstance.getHeaders(path, tkInfo)
         var option = { headers: headers, baseURL: tkInfo.serverInfo?.apiServerAddress }
         if (path.startsWith("/virtual")) {
@@ -261,7 +261,7 @@ class FbServiceClass extends BaseService {
             headers["X-Front-Page"] = xFrontPage
         }
 
-        var option = { headers: headers}
+        var option = { headers: headers }
         const result = await this.api<FbCommApiResponse>(path, params, () => UserBaseApi.post(path, params, option))
         if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
             return defCache
@@ -269,13 +269,17 @@ class FbServiceClass extends BaseService {
         return result;
     }
 
-    private async getTokenInfo(req: HonoRequest): Promise<TokenApiResponseData> {
-        var xFrontPage = req.header("X-Front-Page")
-        var authorization = req.header("Authorization")
-        if (authorization && xFrontPage) {
+    public async getTokenInfoByReq(req: HonoRequest): Promise<TokenApiResponseData> {
+        var xfrontpage = req.header("X-Front-Page") ?? "";
+        var authorization = req.header("Authorization") ?? "";
+        return this.getTokenInfo(xfrontpage, authorization);
+    }
+
+    public async getTokenInfo(xfrontpage: string, authorization: string): Promise<TokenApiResponseData> {
+        if (xfrontpage != "") {
             const headers: HeadersInit = {}
             headers["X-Token"] = authorization
-            headers["X-Front-Page"] = xFrontPage
+            headers["X-Front-Page"] = xfrontpage
             var result = await this.tokenApi({}, headers)
             if (result.code == 14010) {
                 //被踢出重新登入

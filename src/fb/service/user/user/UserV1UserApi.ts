@@ -2,11 +2,12 @@ import { HonoRequest } from "hono"
 import { SERVER_ERR_CODE_ENUMS } from "../../../enums/serverErrCodeEnum";
 import { FbServiceEntry } from "../../entry/service/fbServiceEntry";
 import { CURRENCY_MAP } from "../../../enums";
+import { TokenApiResponseData } from "../../../model/response/fbModel";
 
 
 export class V1UserApi {
     public async base(params: any, req: HonoRequest) {
-        const data = await FbServiceEntry.innerRequest('/openPlayer/getPlayerInfoInner', params, req)
+        const data = await FbServiceEntry.innerRequest('/openPlayer/getPlayerInfoInner', params, req);
         if (data.code == 0) {
             var currencyId = CURRENCY_MAP[data.data.currency ?? "USD"]
             const coin = (data.data.coin / 10000).toFixed(2);
@@ -32,5 +33,10 @@ export class V1UserApi {
             data.success = true;
         }
         return data
+    }
+
+
+    public async token(xfrontpage: string, authorization: string): Promise<TokenApiResponseData> {
+        return await FbServiceEntry.getTokenInfo(xfrontpage, authorization)
     }
 }

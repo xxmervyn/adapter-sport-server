@@ -3,8 +3,9 @@ import { AppContext } from "../types";
 import { z } from "zod";
 import { MD5 } from "crypto-js";
 import { HonoRequest } from "hono";
-import { tr } from "zod/v4/locales";
+import { tr, ur } from "zod/v4/locales";
 import { LANGUAGE_MAP } from "../fb/enums";
+import { UserService } from "../fb/service/userService";
 
 
 
@@ -36,7 +37,6 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		const apiHostName = urlReq?.hostname.replace(".", "-api.");
 
 
-
 		const info = decodeJWT(data.query.playerGameToken)
 		var lang = "ENG";
 		lang = LANGUAGE_MAP[data.query.lang?.toLowerCase() || "en"]
@@ -48,6 +48,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			pcThemeCustomFgColor: "#4C6FFF"
 		}))
 
+
 		if (isMobileRequest(c.req)) {
 			var hostName = `${urlReq?.hostname}`;
 			var hostArr = hostName.split(".");
@@ -57,10 +58,11 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			url = `https://${hostName}/index.html#/?token=${data.query.playerGameToken}&pcAddress=${hostName}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&themeBg=4C6FFF` +
 				`&themeText=${themeText}&controlMenu=2&language=${lang}`
 		} else {
-
 			url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
-				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=${apiHostName}&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
+				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&pushSrc=wss://push.5890v.com&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
 				`handicap=1&themeBg=4C6FFF&themeText=${themeText}&controlMenu=2&language=${lang}`
+			const tokenInfo = await UserService.V1User.token(url, data.query.playerGameToken);
+			url = `${url}&tk=${tokenInfo.token}`
 		}
 
 		url = genGameUrlSignWithKeys(data.query, url, ["token", "pcAddress", "virtualSrc", "apiSrc"], true)
