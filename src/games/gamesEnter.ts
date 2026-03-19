@@ -21,6 +21,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 				playerGameToken: z.string(),
 				reqt: z.string(),
 				esign: z.string(),
+				ui: z.string().optional()
 			}),
 			body: contentJson(
 				z.object({
@@ -47,9 +48,10 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			pcFgColor: "#4C6FFF",
 			pcThemeCustomFgColor: "#4C6FFF"
 		}))
+		const ui = data.query?.ui
 
 
-		if (isMobileRequest(c.req)) {
+		if (ui == "h5" || isMobileRequest(c.req)) {
 			var hostName = `${urlReq?.hostname}`;
 			var hostArr = hostName.split(".");
 			hostArr[0] = `${hostArr[0]}-h5`
@@ -57,18 +59,19 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 
 			url = `https://${hostName}/index.html#/?token=${data.query.playerGameToken}&pcAddress=${hostName}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&themeBg=4C6FFF` +
 				`&themeText=${themeText}&controlMenu=2&language=${lang}&one=1`
-			url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
 		} else {
 			url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
 				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
 				`handicap=1&themeBg=4C6FFF&themeText=${themeText}&controlMenu=2&language=${lang}`
+		}
+		const sginUrl = `https://${urlReq?.hostname}?token=${data.query.playerGameToken}`
+		var xfontpage = genGameUrlSignWithKeys(data.query, sginUrl, ["token"], true)
+		const tokenInfo = await UserService.V1User.token(xfontpage, data.query.playerGameToken)
 
-			const sginUrl = `https://${urlReq?.hostname}?token=${data.query.playerGameToken}`
-			var xfontpage = genGameUrlSignWithKeys(data.query, sginUrl, ["token"], true)
-			const tokenInfo = await UserService.V1User.token(xfontpage, data.query.playerGameToken)
-
-			url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
-			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress ?? "wss://push.5890v.com"}&one=1&tk=${tokenInfo.token}`
+		url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
+		url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress ?? "wss://push.5890v.com"}&one=1&tk=${tokenInfo.token}`
+		if (ui) {
+			url = `${url}&ui=${ui}`
 		}
 
 
