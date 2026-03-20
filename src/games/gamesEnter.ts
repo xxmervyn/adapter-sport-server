@@ -38,11 +38,13 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		const urlReq = new URL(c.req.url);
 		const apiHostName = urlReq?.hostname.replace(".", "-api.");
 
+		if (data.query.playerGameToken == null) {
+			data.query.playerGameToken = "guestMode"
+		}
 
-		const info = decodeJWT(data.query.playerGameToken ?? "")
+		const info = decodeJWT(data.query.playerGameToken)
 		var lang = "ENG";
 		lang = LANGUAGE_MAP[data.query.lang?.toLowerCase() || "en"]
-		var url = ""
 
 		const themeText = encodeURIComponent(JSON.stringify({
 			h5FgColor: "#4C6FFF",
@@ -51,13 +53,12 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		}))
 		const ui = data.query?.ui
 
-
+		var url = ""
 		if (ui == "h5" || isMobileRequest(c.req)) {
 			var hostName = `${urlReq?.hostname}`;
 			var hostArr = hostName.split(".");
 			hostArr[0] = `${hostArr[0]}-h5`
 			hostName = hostArr.join(".")
-
 			url = `https://${hostName}/index.html#/?token=${data.query.playerGameToken}&pcAddress=${hostName}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&themeBg=4C6FFF` +
 				`&themeText=${themeText}&controlMenu=2&language=${lang}&one=1`
 		} else {
@@ -68,7 +69,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 
 		url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
 
-		if (data.query.playerGameToken == null || data.query.playerGameToken == "guestMode") {
+		if (data.query.playerGameToken == "guestMode") {
 			const tokenInfo = await UserService.V1User.token("", "")
 			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&tk=${tokenInfo.token}`
 		} else {
