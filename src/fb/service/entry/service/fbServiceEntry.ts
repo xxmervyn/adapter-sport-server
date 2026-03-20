@@ -245,7 +245,8 @@ class FbServiceClass extends BaseService {
         if (path.startsWith("/virtual")) {
             option = { headers: headers, baseURL: tkInfo.serverInfo?.virtualAddress }
         }
-        const requestKey = `${option.baseURL}${path}`
+
+        const requestKey = `${option.baseURL}${path}-${tkInfo.token && tkInfo.token != "" ? "1" : "0"}`
 
         const result = await this.api<FbCommApiResponse>(requestKey, params, () => FBNotAuthBaseApi.post(path, params, option), serviceOptions)
         if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
@@ -270,7 +271,7 @@ class FbServiceClass extends BaseService {
             headers["X-Front-Page"] = xFrontPage
         }
 
-        if (authorization == null || authorization == ""){
+        if (authorization == null || authorization == "") {
             return {
                 "code": 14010,
                 "message": "賬號已登出，請重新登錄",
