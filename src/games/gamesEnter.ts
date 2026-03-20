@@ -67,7 +67,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 
 		url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
 
-		if (data.query.playerGameToken != "test"){
+		if (data.query.playerGameToken != "guestMode"){
 			const sginUrl = `https://${urlReq?.hostname}?token=${data.query.playerGameToken}`
 			var xfontpage = genGameUrlSignWithKeys(data.query, sginUrl, ["token"], true)
 			const tokenInfo = await UserService.V1User.token(xfontpage, data.query.playerGameToken)
@@ -132,6 +132,10 @@ function genGameUrlSignWithKeys(reqParams: any, url: string, keys: string[] | nu
 
 
 function decodeJWT(token: string) {
+	if (token == "guestMode"){
+		return {UserName:"guestMode"}
+	}
+
 	const base64Url = token.split('.')[1]; // 获取 payload 部分
 	const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
 	const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
