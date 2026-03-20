@@ -76,7 +76,13 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			const sginUrl = `https://${urlReq?.hostname}?token=${data.query.playerGameToken}`
 			var xfontpage = genGameUrlSignWithKeys(data.query, sginUrl, ["token"], true)
 			const tokenInfo = await UserService.V1User.token(xfontpage, data.query.playerGameToken)
-			console.log("!!!!!!!!!!!!!!!!!!!!!!!!!!", tokenInfo.token);
+			if (tokenInfo.token == "") {
+				return {
+					"code": 14010,
+					"message": "賬號已登出，請重新登錄",
+					"success": false
+				}
+			}
 			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress ?? "wss://push.5890v.com"}&one=1&tk=${tokenInfo.token}`
 		}
 
