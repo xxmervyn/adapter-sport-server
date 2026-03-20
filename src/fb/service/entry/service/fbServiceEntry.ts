@@ -270,6 +270,14 @@ class FbServiceClass extends BaseService {
             headers["X-Front-Page"] = xFrontPage
         }
 
+        if (authorization == ""){
+            return {
+                "code": 14010,
+                "message": "賬號已登出，請重新登錄",
+                "success": false
+            }
+        }
+
         var option = { headers: headers }
         const result = await this.api<FbCommApiResponse>(path, params, () => UserBaseApi.post(path, params, option))
         if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
@@ -285,7 +293,7 @@ class FbServiceClass extends BaseService {
     }
 
     public async getTokenInfo(xfrontpage: string, authorization: string): Promise<TokenApiResponseData> {
-        if (xfrontpage != "") {
+        if (xfrontpage != "" && authorization != "") {
             const headers: HeadersInit = {}
             headers["X-Token"] = authorization
             headers["X-Front-Page"] = xfrontpage
