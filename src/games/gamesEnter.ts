@@ -64,12 +64,16 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
 				`handicap=1&themeBg=4C6FFF&themeText=${themeText}&controlMenu=2&language=${lang}`
 		}
-		const sginUrl = `https://${urlReq?.hostname}?token=${data.query.playerGameToken}`
-		var xfontpage = genGameUrlSignWithKeys(data.query, sginUrl, ["token"], true)
-		const tokenInfo = await UserService.V1User.token(xfontpage, data.query.playerGameToken)
 
 		url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
-		url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress ?? "wss://push.5890v.com"}&one=1&tk=${tokenInfo.token}`
+
+		if (data.query.playerGameToken != "test"){
+			const sginUrl = `https://${urlReq?.hostname}?token=${data.query.playerGameToken}`
+			var xfontpage = genGameUrlSignWithKeys(data.query, sginUrl, ["token"], true)
+			const tokenInfo = await UserService.V1User.token(xfontpage, data.query.playerGameToken)
+			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress ?? "wss://push.5890v.com"}&one=1&tk=${tokenInfo.token}`
+		}
+
 		if (ui) {
 			url = `${url}&ui=${ui}`
 		}
