@@ -6,6 +6,7 @@ import { HonoRequest } from "hono";
 import { tr, ur } from "zod/v4/locales";
 import { LANGUAGE_MAP } from "../fb/enums";
 import { UserService } from "../fb/service/userService";
+import { API_BASE_URL_ENUMS } from "../fb/enums/apiBaseUrlEnum";
 
 
 
@@ -67,7 +68,10 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 
 		url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
 
-		if (data.query.playerGameToken != "guestMode"){
+		if (data.query.playerGameToken == "guestMode") {
+			const tokenInfo = await UserService.V1User.token("", "")
+			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&tk=${tokenInfo.token}`
+		} else {
 			const sginUrl = `https://${urlReq?.hostname}?token=${data.query.playerGameToken}`
 			var xfontpage = genGameUrlSignWithKeys(data.query, sginUrl, ["token"], true)
 			const tokenInfo = await UserService.V1User.token(xfontpage, data.query.playerGameToken)
@@ -132,8 +136,8 @@ function genGameUrlSignWithKeys(reqParams: any, url: string, keys: string[] | nu
 
 
 function decodeJWT(token: string) {
-	if (token == "guestMode"){
-		return {UserName:"guestMode"}
+	if (token == "guestMode") {
+		return { UserName: "guestMode" }
 	}
 
 	const base64Url = token.split('.')[1]; // 获取 payload 部分

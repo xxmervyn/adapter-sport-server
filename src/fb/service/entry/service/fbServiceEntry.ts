@@ -316,7 +316,7 @@ class FbServiceClass extends BaseService {
                 apiEmbeddedServerAddress: '',
                 apiServerAddress: API_BASE_URL_ENUMS.FB_GUEST_BASE_HOST,
                 pcAddress: API_BASE_URL_ENUMS.FB_GUEST_PC_BASE_HOST,
-                pushServerAddress: '',
+                pushServerAddress: API_BASE_URL_ENUMS.FB_GUEST_PUSH_SERVER_ADDRESS,
                 virtualAddress: API_BASE_URL_ENUMS.FB_GUEST_VIRTUAL_BASE_HOST,
                 ouPcAddress: '',
                 h5Address: ''
