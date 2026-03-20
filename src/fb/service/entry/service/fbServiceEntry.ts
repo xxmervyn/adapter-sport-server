@@ -270,7 +270,7 @@ class FbServiceClass extends BaseService {
             headers["X-Front-Page"] = xFrontPage
         }
 
-        if (authorization == ""){
+        if (authorization == null || authorization == ""){
             return {
                 "code": 14010,
                 "message": "賬號已登出，請重新登錄",
