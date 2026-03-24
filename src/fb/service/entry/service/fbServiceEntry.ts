@@ -290,7 +290,7 @@ class FbServiceClass extends BaseService {
 
     public getInnerHost(req: HonoRequest): string {
         const url = new URL(req.url)
-        const host = url.hostname
+        const host = url.hostname.replaceAll("-h5","")
         return `https://inner2${host}`
     }
 
