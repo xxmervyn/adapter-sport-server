@@ -96,7 +96,6 @@ class FBForwardBaseApiClass extends BaseApi {
 
 export const UserBaseApi = new FBForwardBaseApiClass(
     {
-        baseURL: API_BASE_URL_ENUMS.FORWARD_BASE_HOST,
         timeout: 5000,
         retry: 1,
         retryDelay: 1000,
