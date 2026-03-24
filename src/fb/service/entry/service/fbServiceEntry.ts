@@ -296,7 +296,8 @@ class FbServiceClass extends BaseService {
 			hostArr[0] = `${hostArr[0]}-api`
 			host = hostArr.join(".")
         }
-        return `https://inner2${host}`
+        let innerHost = `https://inner2${host}`;
+        return innerHost;
     }
 
     public async getTokenInfoByReq(req: HonoRequest): Promise<TokenApiResponseData> {
