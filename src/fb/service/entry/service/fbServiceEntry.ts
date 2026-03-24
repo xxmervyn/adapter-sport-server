@@ -293,7 +293,7 @@ class FbServiceClass extends BaseService {
         var host = url.hostname.replaceAll("-h5", "")
         if (host.includes("-api") == false) {
             var hostArr = host.split(".");
-			hostArr[0] = `${hostArr[0]}-h5`
+			hostArr[0] = `${hostArr[0]}-api`
 			host = hostArr.join(".")
         }
         return `https://inner2${host}`
