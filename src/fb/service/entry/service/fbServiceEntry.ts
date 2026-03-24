@@ -279,7 +279,8 @@ class FbServiceClass extends BaseService {
             }
         }
 
-        var option = { headers: headers }
+
+        var option = { headers: headers, baseURL: this.getInnerHost(req) }
         const result = await this.api<FbCommApiResponse>(path, params, () => UserBaseApi.post(path, params, option))
         if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
             return defCache
@@ -287,21 +288,27 @@ class FbServiceClass extends BaseService {
         return result;
     }
 
+    public getInnerHost(req: HonoRequest): string {
+        const url = new URL(req.url)
+        const host = url.hostname
+        return `https://inner2.${host}`
+    }
+
     public async getTokenInfoByReq(req: HonoRequest): Promise<TokenApiResponseData> {
         var xfrontpage = req.header("X-Front-Page") ?? "";
         var authorization = req.header("Authorization") ?? "";
-        return this.getTokenInfo(xfrontpage, authorization);
+        return this.getTokenInfo(req, xfrontpage, authorization);
     }
 
-    public async getTokenInfo(xfrontpage: string, authorization: string): Promise<TokenApiResponseData> {
+    public async getTokenInfo(req: HonoRequest, xfrontpage: string, authorization: string): Promise<TokenApiResponseData> {
         if (xfrontpage != "" && authorization != "") {
             const headers: HeadersInit = {}
             headers["X-Token"] = authorization
             headers["X-Front-Page"] = xfrontpage
-            var result = await this.tokenApi({}, headers)
+            var result = await this.tokenApi(req, {}, headers)
             if (result.code == 14010) {
                 //被踢出重新登入
-                result = await this.tokenApi({ "needReset": true }, headers)
+                result = await this.tokenApi(req, { "needReset": true }, headers)
             }
 
             if (result.code == 0) {
@@ -324,8 +331,8 @@ class FbServiceClass extends BaseService {
         } as TokenApiResponseData
     }
 
-    private async tokenApi(params: {}, headers: HeadersInit): Promise<FbCommApiResponse> {
-        return await UserBaseApi.post<FbCommApiResponse>("/openPlayer/getFbPlayerInfoToken", params, { headers })
+    private async tokenApi(req: HonoRequest, params: {}, headers: HeadersInit): Promise<FbCommApiResponse> {
+        return await UserBaseApi.post<FbCommApiResponse>("/openPlayer/getFbPlayerInfoToken", params, { headers, baseURL: this.getInnerHost(req) })
     }
 
 }

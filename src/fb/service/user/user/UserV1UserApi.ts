@@ -36,7 +36,7 @@ export class V1UserApi {
     }
 
 
-    public async token(xfrontpage: string, authorization: string): Promise<TokenApiResponseData> {
-        return await FbServiceEntry.getTokenInfo(xfrontpage, authorization)
+    public async token(req: HonoRequest, xfrontpage: string, authorization: string): Promise<TokenApiResponseData> {
+        return await FbServiceEntry.getTokenInfo(req, xfrontpage, authorization)
     }
 }

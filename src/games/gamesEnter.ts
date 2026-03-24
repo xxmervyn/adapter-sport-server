@@ -70,12 +70,12 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
 
 		if (data.query.playerGameToken == "guestMode") {
-			const tokenInfo = await UserService.V1User.token("", "")
+			const tokenInfo = await UserService.V1User.token(c.req, "", "")
 			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&tk=${tokenInfo.token}`
 		} else {
 			const sginUrl = `https://${urlReq?.hostname}?token=${data.query.playerGameToken}`
 			var xfontpage = genGameUrlSignWithKeys(data.query, sginUrl, ["token"], true)
-			const tokenInfo = await UserService.V1User.token(xfontpage, data.query.playerGameToken)
+			const tokenInfo = await UserService.V1User.token(c.req, xfontpage, data.query.playerGameToken)
 			if (tokenInfo.token == "") {
 				return {
 					"code": 14010,
