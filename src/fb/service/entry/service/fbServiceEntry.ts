@@ -291,7 +291,7 @@ class FbServiceClass extends BaseService {
     public getInnerHost(req: HonoRequest): string {
         const url = new URL(req.url)
         const host = url.hostname
-        return `https://inner2.${host}`
+        return `https://inner2${host}`
     }
 
     public async getTokenInfoByReq(req: HonoRequest): Promise<TokenApiResponseData> {
