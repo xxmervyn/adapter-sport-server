@@ -48,6 +48,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 
 		const themeText = encodeURIComponent(JSON.stringify({ h5FgColor: "#17856F", pcFgColor: "#17856F", pcThemeCustomFgColor: "#4C6FFF" }))
 		const ui = data.query?.ui
+		
 
 		var url = ""
 		if (ui == "h5" || isMobileRequest(c.req)) {
