@@ -6,6 +6,7 @@ import { HonoRequest } from "hono";
 import { UserBaseApi } from "../api/userApiEntry";
 import { FBNotAuthBaseApi } from "../api/fbApiEntry";
 import { API_BASE_URL_ENUMS } from "../../../enums/apiBaseUrlEnum";
+import { ApiRequestOptions } from "../../base/baseApi";
 
 
 class FBHeaderGenerator {
@@ -234,16 +235,16 @@ class FbServiceClass extends BaseService {
         return this.requestWithOptions(path, params, req, { cache: { isCache: false } }, defCache);
     }
 
-    public async request(path: string, params: any, req: HonoRequest, defCache?: any): Promise<FbCommApiResponse> {
-        return this.requestWithOptions(path, params, req, { cache: { isCache: true } }, defCache);
+    public async request(path: string, params: any, req: HonoRequest, defCache?: any, apiOptions?: ApiRequestOptions): Promise<FbCommApiResponse> {
+        return this.requestWithOptions(path, params, req, { cache: { isCache: true } }, defCache, apiOptions);
     }
 
-    public async requestWithOptions(path: string, params: any, req: HonoRequest, serviceOptions: ServiceRequestOptions, defCache?: any): Promise<FbCommApiResponse> {
+    public async requestWithOptions(path: string, params: any, req: HonoRequest, serviceOptions: ServiceRequestOptions, defCache?: any, apiOptions?: ApiRequestOptions): Promise<FbCommApiResponse> {
         const tkInfo = await this.getTokenInfoByReq(req)
         const headers = await FBHeaderGeneratorInstance.getHeaders(path, tkInfo)
-        var option = { headers: headers, baseURL: tkInfo.serverInfo?.apiServerAddress }
+        var option = { headers: headers, baseURL: tkInfo.serverInfo?.apiServerAddress, ...apiOptions }
         if (path.startsWith("/virtual")) {
-            option = { headers: headers, baseURL: tkInfo.serverInfo?.virtualAddress }
+            option = { headers: headers, baseURL: tkInfo.serverInfo?.virtualAddress, ...apiOptions }
         }
 
         const requestKey = `${option.baseURL}${path}-${tkInfo.token && tkInfo.token != "" ? "1" : "0"}`
@@ -293,8 +294,8 @@ class FbServiceClass extends BaseService {
         var host = url.hostname.replaceAll("-h5", "")
         if (host.includes("-api") == false) {
             var hostArr = host.split(".");
-			hostArr[0] = `${hostArr[0]}-api`
-			host = hostArr.join(".")
+            hostArr[0] = `${hostArr[0]}-api`
+            host = hostArr.join(".")
         }
         let innerHost = `https://inner2${host}`;
         return innerHost;

@@ -7,7 +7,7 @@ export class VirtualV1MatchApi {
     }
 
     public statistical(params: any, req: HonoRequest) {
-        return FbServiceEntry.request('/virtual/v1/match/statistical', params, req)
+        return FbServiceEntry.request('/virtual/v1/match/statistical', params, req, null, { retry: 2, retryDelay: 1000 })
     }
 
     public getList(params: any, req: HonoRequest) {
