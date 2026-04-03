@@ -242,6 +242,12 @@ class FbServiceClass extends BaseService {
     public async requestWithOptions(path: string, params: any, req: HonoRequest, serviceOptions: ServiceRequestOptions, defCache?: any, apiOptions?: ApiRequestOptions): Promise<FbCommApiResponse> {
         const tkInfo = await this.getTokenInfoByReq(req)
         const headers = await FBHeaderGeneratorInstance.getHeaders(path, tkInfo)
+
+        if (tkInfo.token != "") {
+            // 用户数据隔离 游客数据不隔离
+            serviceOptions.cache = { isCache: false }
+        }
+
         var option = { headers: headers, baseURL: tkInfo.serverInfo?.apiServerAddress, ...apiOptions }
         if (path.startsWith("/virtual")) {
             option = { headers: headers, baseURL: tkInfo.serverInfo?.virtualAddress, ...apiOptions }
@@ -282,7 +288,7 @@ class FbServiceClass extends BaseService {
 
 
         var option = { headers: headers, baseURL: this.getInnerHost(req) }
-        const result = await this.api<FbCommApiResponse>(path, params, () => UserBaseApi.post(path, params, option))
+        const result = await this.api<FbCommApiResponse>(path, params, () => UserBaseApi.post(path, params, option), { cache: { isCache: false } })
         if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
             return defCache
         }

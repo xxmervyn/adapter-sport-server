@@ -80,9 +80,6 @@ export class BaseService {
 
         if (isExist) {
             //缓存中
-            // const data = item ? item.data : ({ code: SERVER_ERR_CODE_ENUMS.FB_TOO_MANY_REQUESTS_ERR, success: false, message: "server busy", eCode: SERVER_ERR_CODE_ENUMS.REQUEST_CACHING } as T)
-            // this.tryCleanErrCacheAsync()
-            
             return await api();
         }
 
