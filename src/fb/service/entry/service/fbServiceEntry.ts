@@ -260,8 +260,8 @@ class FbServiceClass extends BaseService {
             return defCache
         }
 
-        if (result.code == 14010) {
-            // 修改结果防止用户被踢出
+        if (result.code == 14010 || result.code == 14108) {
+            // 修改结果  14010防止用户被踢出  14108网络异常
             result.success = true
             result.code = 0
         }
