@@ -56,12 +56,12 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			var hostArr = hostName.split(".");
 			hostArr[0] = `${hostArr[0]}-h5`
 			hostName = hostArr.join(".")
-			url = `https://${hostName}/index.html#/?token=${data.query.playerGameToken}&pcAddress=${hostName}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&themeBg=4C6FFF` +
-				`&themeText=${themeText}&controlMenu=2&language=${lang}&one=1`
+			url = `https://${hostName}/index.html#/?token=${data.query.playerGameToken}&pcAddress=${hostName}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&themeBg=022B22` +
+				`&themeText=${themeText}&nickname=${info?.UserName}&controlMenu=2&language=${lang}&one=1`
 		} else {
 			url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
 				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
-				`handicap=1&themeBg=4C6FFF&themeText=${themeText}&controlMenu=2&language=${lang}`
+				`handicap=1&themeBg=022B22&themeText=${themeText}&controlMenu=2&language=${lang}`
 		}
 
 		url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
