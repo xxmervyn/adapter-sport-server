@@ -60,15 +60,15 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 				`&themeText=${themeText}&nickname=${info?.UserName}&controlMenu=2&language=${lang}&one=1`
 		} else {
 			url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
-				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&platformName=FB体育&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
+				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
 				`handicap=1&themeBg=022B22&themeText=${themeText}&controlMenu=2&language=${lang}`
 		}
 
 		url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
-
+		const platformName = "HBSPORTS"
 		if (data.query.playerGameToken == "guestMode") {
 			const tokenInfo = await UserService.V1User.token(c.req, "", "")
-			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&tk=${tokenInfo.token}`
+			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&platformName=${platformName}&tk=${tokenInfo.token}`
 		} else {
 			const sginUrl = `https://${urlReq?.hostname}?token=${data.query.playerGameToken}`
 			var xfontpage = genGameUrlSignWithKeys(data.query, sginUrl, ["token"], true)
@@ -80,7 +80,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 					"success": false
 				}
 			}
-			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&tk=${tokenInfo.token}`
+			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&platformName=${platformName}&tk=${tokenInfo.token}`
 		}
 
 		if (ui) {
