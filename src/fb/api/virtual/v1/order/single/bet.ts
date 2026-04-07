@@ -3,11 +3,11 @@ import { z } from "zod"; import { FbService } from "../../../../../service/fbSer
 import { AppContext } from "../../../../../../types";
 
 
-export class VirtualV1OrderSingle extends OpenAPIRoute {
+export class VirtualV1OrderSingleBet extends OpenAPIRoute {
     public schema = {
-        tags: ["VirtualV1OrderSingle"],
-        summary: "VirtualV1OrderSingle",
-        operationId: "VirtualV1OrderSingle",
+        tags: ["VirtualV1OrderSingleBet"],
+        summary: "VirtualV1OrderSingleBet",
+        operationId: "VirtualV1OrderSingleBet",
         request: {
             body: contentJson(
                 z.any()
@@ -15,7 +15,7 @@ export class VirtualV1OrderSingle extends OpenAPIRoute {
         },
         responses: {
             "200": {
-                description: "VirtualV1OrderSingle",
+                description: "VirtualV1OrderSingleBet",
                 ...contentJson({
                     code: z.any(),
                     data: z.any(),
