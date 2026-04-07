@@ -10,16 +10,17 @@ export class VirtualV1MatchGetMatchListWithResults extends OpenAPIRoute {
         operationId: "VirtualV1MatchGetMatchListWithResults",
         request: {
             body: contentJson(
-                z.object({
-                    sportId: z.number().or(z.string()).optional(),
-                    beginTime: z.number(),
-                    endTime: z.number(),
-                    languageType: z.string(),
-                    current: z.number(),
-                    size: z.number(),
-                    orderBy: z.number(),
-                    leagueIds: z.array(z.any())
-                })
+                z.any()
+                // z.object({
+                //     sportId: z.number().or(z.string()).optional(),
+                //     beginTime: z.number(),
+                //     endTime: z.number(),
+                //     languageType: z.string(),
+                //     current: z.number(),
+                //     size: z.number(),
+                //     orderBy: z.number(),
+                //     leagueIds: z.array(z.any())
+                // })
             ),
         },
         responses: {
