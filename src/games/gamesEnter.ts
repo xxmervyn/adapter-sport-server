@@ -80,7 +80,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 					"success": false
 				}
 			}
-			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress ?? "wss://push.5890v.com"}&one=1&tk=${tokenInfo.token}`
+			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&tk=${tokenInfo.token}`
 		}
 
 		if (ui) {
