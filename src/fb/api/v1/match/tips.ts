@@ -10,12 +10,7 @@ export class V1MatchTips extends OpenAPIRoute {
         operationId: "V1MatchTips",
         request: {
             body: contentJson(
-                z.object({
-                    languageType: z.string(),
-                    oddsType: z.number().or(z.string()),
-                    matchIds: z.array(z.number()).optional(),
-                    onlyOneMarket: z.boolean()
-                  })
+                z.any()
             ),
         },
         responses: {
