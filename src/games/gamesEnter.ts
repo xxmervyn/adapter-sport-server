@@ -89,8 +89,6 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 					"success": false
 				}
 			}
-			
-			console.log("!!!!!!!!!!",JSON.stringify(userInfo));
 
 			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&platformName=${platformName}&tk=${tokenInfo.token}&r=${userInfo.data?.region}`
 		}
