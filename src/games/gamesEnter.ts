@@ -47,6 +47,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 
 		const themeText = encodeURIComponent(JSON.stringify({"h5FgColor":"#4C6FFF","pcFgColor":"#4C6FFF","pcThemeCustomFgColor":"#4C6FFF"}))
 		const ui = data.query?.ui
+		const themeBg = "05259D"
 
 
 		var url = ""
@@ -55,12 +56,12 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			var hostArr = hostName.split(".");
 			hostArr[0] = `${hostArr[0]}-h5`
 			hostName = hostArr.join(".")
-			url = `https://${hostName}/index.html#/?token=${data.query.playerGameToken}&pcAddress=${hostName}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&themeBg=022B22` +
+			url = `https://${hostName}/index.html#/?token=${data.query.playerGameToken}&pcAddress=${hostName}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&themeBg=${themeBg}` +
 				`&themeText=${themeText}&nickname=${info?.UserName}&controlMenu=2&language=${lang}&one=1`
 		} else {
 			url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
 				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
-				`handicap=1&themeBg=022B22&themeText=${themeText}&controlMenu=2&language=${lang}`
+				`handicap=1&themeBg=${themeBg}&themeText=${themeText}&controlMenu=2&language=${lang}`
 		}
 
 		url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
