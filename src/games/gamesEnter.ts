@@ -47,7 +47,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 
 		const themeText = encodeURIComponent(JSON.stringify({ h5FgColor: "#17856F", pcFgColor: "#17856F", pcThemeCustomFgColor: "#4C6FFF" }))
 		const ui = data.query?.ui
-		
+
 
 		var url = ""
 		if (ui == "h5" || isMobileRequest(c.req)) {
@@ -83,15 +83,15 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			const userReq = new Request('http://localhost/user', {
 				method: 'POST',
 				headers: {
-					'X-Front-Page': sginUrl,
-					'Authorization': tokenInfo.token ,
+					'x-front-page': sginUrl,
+					'authorization': tokenInfo.token,
 				}
 			})
 			const userHonoReq = new HonoRequest(userReq)
-			const userInfo = await UserService.V1User.userInfo({},userHonoReq)
+			console.log("!!!!!!!!!!!!!!!!", userHonoReq.header("x-front-page"))
+			console.log("!!!!!!!!!!!!!!!!", userHonoReq.header("authorization"))
+			const userInfo = await UserService.V1User.userInfo({}, userHonoReq)
 			if (userInfo.code != 0) {
-				console.warn("!!!!!!!!!!!!!!!!!!!!!!",JSON.stringify(userInfo));
-				
 				return {
 					"code": 14010,
 					"message": "賬號已登出，請重新登錄2",
