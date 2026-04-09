@@ -1,4 +1,4 @@
-import { HonoRequest } from "hono"
+import { HonoRequest } from "hono/request"
 import { SERVER_ERR_CODE_ENUMS } from "../../../enums/serverErrCodeEnum";
 import { FbServiceEntry } from "../../entry/service/fbServiceEntry";
 import { CURRENCY_MAP } from "../../../enums";
@@ -41,7 +41,15 @@ export class V1UserApi {
     }
 
 
-    public async userInfo(params: any, req: HonoRequest){
-        return await FbServiceEntry.innerRequest('/openPlayer/getPlayerInfoInner', params, req);
+    public async userInfo(hostname: string, xfrontpage: string, authorization: string) {
+        const userReq = new Request(`https://${hostname}/openPlayer/getPlayerInfoInner`, {
+            method: 'POST',
+            headers: {
+                'X-Front-Page': xfrontpage,
+                'Authorization': authorization,
+            }
+        })
+        const userHonoReq = new HonoRequest(userReq)
+        return await FbServiceEntry.innerRequest('/openPlayer/getPlayerInfoInner', {}, userHonoReq);
     }
 }
