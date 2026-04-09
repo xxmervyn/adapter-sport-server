@@ -81,7 +81,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			}
 
 
-			const userInfo = await UserService.V1User.userInfo(urlReq?.hostname ?? "", xfontpage, data.query.playerGameToken)
+			const userInfo = await UserService.V1User.userInfo(c.req, xfontpage, data.query.playerGameToken)
 			if (userInfo.code != 0) {
 				return {
 					"code": 14010,
@@ -89,6 +89,8 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 					"success": false
 				}
 			}
+			
+			console.log("!!!!!!!!!!",JSON.stringify(userInfo));
 
 			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&platformName=${platformName}&tk=${tokenInfo.token}&r=${userInfo.data?.region}`
 		}

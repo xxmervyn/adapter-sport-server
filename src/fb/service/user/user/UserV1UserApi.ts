@@ -41,8 +41,8 @@ export class V1UserApi {
     }
 
 
-    public async userInfo(hostname: string, xfrontpage: string, authorization: string) {
-        const userReq = new Request(`https://${hostname}/openPlayer/getPlayerInfoInner`, {
+    public async userInfo(req: HonoRequest, xfrontpage: string, authorization: string) {
+        const userReq = new Request(req.url, {
             method: 'POST',
             headers: {
                 'X-Front-Page': xfrontpage,
