@@ -2,7 +2,7 @@ import { contentJson, OpenAPIRoute } from "chanfana";
 import { AppContext } from "../types";
 import { z } from "zod";
 import { MD5 } from "crypto-js";
-import { HonoRequest } from "hono";
+import { HonoRequest } from "hono/request";
 import { LANGUAGE_MAP } from "../fb/enums";
 import { UserService } from "../fb/service/userService";
 
@@ -20,7 +20,6 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 				playerGameToken: z.string().optional(),
 				reqt: z.string(),
 				esign: z.string(),
-				region: z.number().optional(),
 				ui: z.string().optional()
 			}),
 			body: contentJson(
@@ -56,18 +55,18 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			hostArr[0] = `${hostArr[0]}-h5`
 			hostName = hostArr.join(".")
 			url = `https://${hostName}/index.html#/?token=${data.query.playerGameToken}&pcAddress=${hostName}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&themeBg=022B22` +
-				`&themeText=${themeText}&nickname=${info?.UserName}&controlMenu=2&language=${lang}&r=${data.query.region}&one=1`
+				`&themeText=${themeText}&nickname=${info?.UserName}&controlMenu=2&language=${lang}&one=1`
 		} else {
 			url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
 				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
-				`handicap=1&themeBg=022B22&themeText=${themeText}&controlMenu=2&language=${lang}&r=${data.query.region}`
+				`handicap=1&themeBg=022B22&themeText=${themeText}&controlMenu=2&language=${lang}`
 		}
 
 		url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
 		const platformName = "HBSPORTS"
 		if (data.query.playerGameToken == "guestMode") {
 			const tokenInfo = await UserService.V1User.token(c.req, "", "")
-			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&platformName=${platformName}&tk=${tokenInfo.token}`
+			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&platformName=${platformName}&tk=${tokenInfo.token}&r=55555`
 		} else {
 			const sginUrl = `https://${urlReq?.hostname}?token=${data.query.playerGameToken}`
 			var xfontpage = genGameUrlSignWithKeys(data.query, sginUrl, ["token"], true)
@@ -79,7 +78,25 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 					"success": false
 				}
 			}
-			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&platformName=${platformName}&tk=${tokenInfo.token}`
+
+			const userReq = new Request('http://localhost/user', {
+				method: 'GET',
+				headers: {
+					'X-Front-Page': sginUrl,
+					'Authorization': tokenInfo.token ,
+				}
+			})
+			const userHonoReq = new HonoRequest(userReq)
+			const userInfo = await UserService.V1User.userInfo({},userHonoReq)
+			if (userInfo.code != 0) {
+				return {
+					"code": 14010,
+					"message": "賬號已登出，請重新登錄2",
+					"success": false
+				}
+			}
+
+			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&platformName=${platformName}&tk=${tokenInfo.token}&r=${userInfo.data?.region}`
 		}
 
 		if (ui) {

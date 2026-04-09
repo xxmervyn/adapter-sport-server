@@ -39,4 +39,9 @@ export class V1UserApi {
     public async token(req: HonoRequest, xfrontpage: string, authorization: string): Promise<TokenApiResponseData> {
         return await FbServiceEntry.getTokenInfo(req, xfrontpage, authorization)
     }
+
+
+    public async userInfo(params: any, req: HonoRequest){
+        return await FbServiceEntry.innerRequest('/openPlayer/getPlayerInfoInner', params, req);
+    }
 }

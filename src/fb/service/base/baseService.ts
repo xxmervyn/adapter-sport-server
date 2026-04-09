@@ -71,6 +71,10 @@ export class BaseService {
 
         const cacheKey = serverOptions?.cache?.cacheKey ?? await this.localCacheEntry.getRequestKey(requestKey, params);
 
+        if (cacheKey == "") {
+            return api();
+        }
+
         const item = this.localCacheEntry.getItem<T>(cacheKey);
         const isExist = this.cacheStatusMap.has(cacheKey)
         // if (item && item.expireAt > Date.now() && isExist == false) {

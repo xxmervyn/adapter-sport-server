@@ -243,9 +243,16 @@ class FbServiceClass extends BaseService {
         const tkInfo = await this.getTokenInfoByReq(req)
         const headers = await FBHeaderGeneratorInstance.getHeaders(path, tkInfo)
 
-        if (tkInfo.token != "") {
-            // 用户数据隔离 游客数据不隔离
-            serviceOptions.cache = { isCache: false }
+
+        var region = ""
+        var xfrontpage = req.header("X-Front-Page") ?? "";
+        if (xfrontpage != "") {
+            region = new URLSearchParams(xfrontpage).get("r") ?? "";
+            params["__region"] == region;
+        }
+
+        if (tkInfo.token == "") {
+            params["__region"] = "-100"
         }
 
         var option = { headers: headers, baseURL: tkInfo.serverInfo?.apiServerAddress, ...apiOptions }
