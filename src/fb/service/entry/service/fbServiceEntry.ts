@@ -249,7 +249,6 @@ class FbServiceClass extends BaseService {
         if (xfrontpage != "") {
             region = new URLSearchParams(xfrontpage).get("r") ?? "";
             params["__region"] == region;
-            console.log("!!!!!!!!!!!!!!!!!!!", region)
         }
 
         if (tkInfo.token == "") {
