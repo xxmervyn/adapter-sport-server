@@ -5,6 +5,7 @@ import { MD5 } from "crypto-js";
 import { HonoRequest } from "hono/request";
 import { LANGUAGE_MAP } from "../fb/enums";
 import { UserService } from "../fb/service/userService";
+import { json } from "stream/consumers";
 
 
 
@@ -80,7 +81,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			}
 
 			const userReq = new Request('http://localhost/user', {
-				method: 'GET',
+				method: 'POST',
 				headers: {
 					'X-Front-Page': sginUrl,
 					'Authorization': tokenInfo.token ,
