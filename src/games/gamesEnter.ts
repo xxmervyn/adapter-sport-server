@@ -57,7 +57,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			hostArr[0] = `${hostArr[0]}-h5`
 			hostName = hostArr.join(".")
 			url = `https://${hostName}/index.html#/?token=${data.query.playerGameToken}&pcAddress=${hostName}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&themeBg=${themeBg}` +
-				`&themeText=${themeText}&nickname=${info?.UserName}&controlMenu=2&language=${lang}&one=1`
+				`&themeText=${themeText}&nickname=${info?.UserName}&controlMenu=2&language=${lang}`
 		} else {
 			url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
 				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
