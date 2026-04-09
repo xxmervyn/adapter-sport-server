@@ -45,7 +45,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		var lang = "ENG";
 		lang = LANGUAGE_MAP[data.query.lang?.toLowerCase() || "en"]
 
-		const themeText = encodeURIComponent(JSON.stringify({ h5FgColor: "#17856F", pcFgColor: "#17856F", pcThemeCustomFgColor: "#4C6FFF" }))
+		const themeText = encodeURIComponent(JSON.stringify({"h5FgColor":"#4C6FFF","pcFgColor":"#4C6FFF","pcThemeCustomFgColor":"#4C6FFF"}))
 		const ui = data.query?.ui
 
 
