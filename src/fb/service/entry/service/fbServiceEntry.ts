@@ -1,4 +1,3 @@
-import { sha256 } from "hono/utils/crypto";
 import { FbCommApiResponse, TokenApiResponseData } from "../../../model/response/fbModel";
 import { BaseService, ServiceLocalCacheInterface, ServiceRequestOptions } from "../../base/baseService";
 import { SERVER_ERR_CODE_ENUMS } from "../../../enums/serverErrCodeEnum";
@@ -7,7 +6,7 @@ import { UserBaseApi } from "../api/userApiEntry";
 import { FBNotAuthBaseApi } from "../api/fbApiEntry";
 import { API_BASE_URL_ENUMS } from "../../../enums/apiBaseUrlEnum";
 import { ApiRequestOptions } from "../../base/baseApi";
-
+import XXH from "xxhashjs";
 
 class FBHeaderGenerator {
     private randomHeaders: HeadersInit[] = []
@@ -222,8 +221,8 @@ class FBLocalCache implements ServiceLocalCacheInterface {
 
     async getRequestKey(requestKey: string, params: any): Promise<string> {
         const body = requestKey + JSON.stringify(params)
-        const key = await sha256(body) ?? "";
-
+        // const key = await sha256(body) ?? "";
+        const key = XXH.h32(body, 0xABCD).toString(16);
         return key;
     }
 
