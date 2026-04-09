@@ -15,6 +15,10 @@ export class V1OrderApi {
         return FbServiceEntry.requestNotCache('/v1/order/betMultiple', params, req)
     }
 
+    public earlySettlementBet(params: any, req: HonoRequest) {
+        return FbServiceEntry.requestNotCache('/v1/order/earlySettlementBet', params, req)
+    }
+
     public getCashOutsByIds(params: any, req: HonoRequest) {
         return FbServiceEntry.requestNotCache('/v1/order/getCashOutsByIds', params, req)
     }
