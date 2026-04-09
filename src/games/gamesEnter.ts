@@ -90,6 +90,8 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			const userHonoReq = new HonoRequest(userReq)
 			const userInfo = await UserService.V1User.userInfo({},userHonoReq)
 			if (userInfo.code != 0) {
+				console.warn("!!!!!!!!!!!!!!!!!!!!!!",JSON.stringify(userInfo));
+				
 				return {
 					"code": 14010,
 					"message": "賬號已登出，請重新登錄2",
