@@ -83,11 +83,13 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			const userReq = new Request('http://localhost/user', {
 				method: 'POST',
 				headers: {
-					'X-Front-Page': xfontpage,
-					'Authorization': tokenInfo.token,
+					'x-front-page': xfontpage,
+					'authorization': tokenInfo.token,
 				}
 			})
 			const userHonoReq = new HonoRequest(userReq)
+			console.log("!!!!!!!!!!!!!!!!", userHonoReq.header("x-front-page"))
+			console.log("!!!!!!!!!!!!!!!!", userHonoReq.header("authorization"))
 			const userInfo = await UserService.V1User.userInfo({}, userHonoReq)
 			if (userInfo.code != 0) {
 				return {
