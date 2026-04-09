@@ -3,10 +3,8 @@ import { AppContext } from "../types";
 import { z } from "zod";
 import { MD5 } from "crypto-js";
 import { HonoRequest } from "hono";
-import { tr, ur } from "zod/v4/locales";
 import { LANGUAGE_MAP } from "../fb/enums";
 import { UserService } from "../fb/service/userService";
-import { API_BASE_URL_ENUMS } from "../fb/enums/apiBaseUrlEnum";
 
 
 
@@ -22,6 +20,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 				playerGameToken: z.string().optional(),
 				reqt: z.string(),
 				esign: z.string(),
+				region: z.number().optional(),
 				ui: z.string().optional()
 			}),
 			body: contentJson(
@@ -57,11 +56,11 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			hostArr[0] = `${hostArr[0]}-h5`
 			hostName = hostArr.join(".")
 			url = `https://${hostName}/index.html#/?token=${data.query.playerGameToken}&pcAddress=${hostName}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&themeBg=022B22` +
-				`&themeText=${themeText}&nickname=${info?.UserName}&controlMenu=2&language=${lang}&one=1`
+				`&themeText=${themeText}&nickname=${info?.UserName}&controlMenu=2&language=${lang}&r=${data.query.region}&one=1`
 		} else {
 			url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
 				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
-				`handicap=1&themeBg=022B22&themeText=${themeText}&controlMenu=2&language=${lang}`
+				`handicap=1&themeBg=022B22&themeText=${themeText}&controlMenu=2&language=${lang}&r=${data.query.region}`
 		}
 
 		url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
