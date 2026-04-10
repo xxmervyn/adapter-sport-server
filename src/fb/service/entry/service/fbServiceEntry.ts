@@ -307,13 +307,12 @@ class FbServiceClass extends BaseService {
         const url = new URL(req.url)
 
         let apihost = ""
-        if (xfp != "" && url.hostname == "fbsports.appplaygasdsd.org") {
+        if (xfp != "" && url.hostname.includes("appplaygasdsd.org")) {
             const xfpUrl = new URLSearchParams(xfp)
             const host = xfpUrl.get("hbinnerapihost") ?? "";
             if (host != "") {
                 apihost = decodeURIComponent(host).replaceAll("https://", "");
             }
-            console.log("1111111111111       ", apihost);
         }
         if (apihost == "") {
             apihost = url.hostname
@@ -328,7 +327,6 @@ class FbServiceClass extends BaseService {
         let innerHost = `https://inner2${host}`;
 
 
-        console.log("333333333333       ", apihost);
         return innerHost;
     }
 
