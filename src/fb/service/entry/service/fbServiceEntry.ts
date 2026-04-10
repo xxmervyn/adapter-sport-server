@@ -327,7 +327,7 @@ class FbServiceClass extends BaseService {
         }
         let innerHost = `https://inner2${host}`;
 
-        console.log("222222222222222       ", innerHost);
+        console.log("222222222222222       ", url.hostname);
 
         return innerHost;
     }
