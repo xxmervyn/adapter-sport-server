@@ -307,7 +307,7 @@ class FbServiceClass extends BaseService {
         const url = new URL(req.url)
 
         let apihost = ""
-        if (xfp != "" && url.hostname == "fbsports-api.appplaygasdsd.org") {
+        if (xfp != "" && url.hostname == "fbsports.appplaygasdsd.org") {
             const xfpUrl = new URLSearchParams(xfp)
             const host = xfpUrl.get("hbinnerapihost") ?? "";
             if (host != "") {
