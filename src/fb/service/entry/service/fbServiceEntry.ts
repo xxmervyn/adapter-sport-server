@@ -313,6 +313,7 @@ class FbServiceClass extends BaseService {
             if (host != "") {
                 apihost = decodeURIComponent(host).replaceAll("https://", "");
             }
+            console.log("1111111111111       ", apihost);
         }
         if (apihost == "") {
             apihost = url.hostname
@@ -326,8 +327,8 @@ class FbServiceClass extends BaseService {
         }
         let innerHost = `https://inner2${host}`;
 
-        console.log("222222222222222       ", innerHost);
 
+        console.log("333333333333       ", apihost);
         return innerHost;
     }
 
