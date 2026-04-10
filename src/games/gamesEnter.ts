@@ -21,7 +21,8 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 				playerGameToken: z.string().optional(),
 				reqt: z.string(),
 				esign: z.string(),
-				ui: z.string().optional()
+				ui: z.string().optional(),
+				apihost: z.string().optional(),
 			}),
 			body: contentJson(
 				z.object({
@@ -45,7 +46,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		var lang = "ENG";
 		lang = LANGUAGE_MAP[data.query.lang?.toLowerCase() || "en"]
 
-		const themeText = encodeURIComponent(JSON.stringify({"h5FgColor":"#4C6FFF","pcFgColor":"#4C6FFF","pcThemeCustomFgColor":"#4C6FFF"}))
+		const themeText = encodeURIComponent(JSON.stringify({ "h5FgColor": "#4C6FFF", "pcFgColor": "#4C6FFF", "pcThemeCustomFgColor": "#4C6FFF" }))
 		const ui = data.query?.ui
 		const themeBg = "05259D"
 

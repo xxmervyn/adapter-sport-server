@@ -22,7 +22,7 @@ class FBForwardBaseApiClass extends BaseApi {
         let reqt = refererUrl.searchParams.get("reqt") ?? "";
         if (esign == "" || reqt == "") {
             // console.warn("主链接未签名", refererStr);
-            return { ecode: SERVER_ERR_CODE_ENUMS.INVALID_SIGN, message: "sgin" }
+            return { ecode: SERVER_ERR_CODE_ENUMS.INVALID_SIGN, message: "sgin1" }
         }
 
         let reqtBase = reqt;
@@ -33,13 +33,13 @@ class FBForwardBaseApiClass extends BaseApi {
         // console.log("esign:", esign, "regt:", reqt);
         if (Math.abs(parseInt(reqt) - (new Date()).getTime() / 1000) > 86400) {
             // console.warn("主链接已过有效期", refererStr);
-            return { ecode: SERVER_ERR_CODE_ENUMS.INVALID_SIGN, message: "sgin" };
+            return { ecode: SERVER_ERR_CODE_ENUMS.INVALID_SIGN, message: "sgin2" };
         }
 
         let signStrVec = refererStr.split("&esign=");
         if (signStrVec.length != 2) {
             // console.warn("主链接没有签名:", refererStr);
-            return { ecode: SERVER_ERR_CODE_ENUMS.INVALID_SIGN, message: "sgin" };
+            return { ecode: SERVER_ERR_CODE_ENUMS.INVALID_SIGN, message: "sgin3" };
         }
 
         let signStr = "";
@@ -63,7 +63,7 @@ class FBForwardBaseApiClass extends BaseApi {
 
         if (signStr != esign) {
             // console.warn("主链接签名错误:", refererStr);
-            return { ecode: SERVER_ERR_CODE_ENUMS.INVALID_SIGN, message: "sgin" };
+            return { ecode: SERVER_ERR_CODE_ENUMS.INVALID_SIGN, message: "sgin4" };
         }
 
 
