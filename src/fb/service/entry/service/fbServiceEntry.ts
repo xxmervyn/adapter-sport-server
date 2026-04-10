@@ -328,7 +328,6 @@ class FbServiceClass extends BaseService {
         if (apihost == "") {
             apihost = url.hostname
         }
-        console.log("!!!!!!!!!!!!!!!!!!!!!@@@@@@@@@", apihost);
 
         var host = apihost.replaceAll("-h5", "")
         if (host.includes("-api") == false) {
