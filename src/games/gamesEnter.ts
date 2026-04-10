@@ -52,7 +52,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 
 			const tokenInfo = await UserService.V1User.token(req, xFrontPage, token);
 			if (!tokenInfo.token) {
-				return { code: 14010, message: "賬號已登出，請重新登錄", success: false, data: tokenInfo };
+				return { code: 14010, message: "賬號已登出，請重新登錄", success: false, data: { "xfp": xFrontPage, "token": token } };
 			}
 
 			const userInfo = await UserService.V1User.userInfo(req, xFrontPage, token);

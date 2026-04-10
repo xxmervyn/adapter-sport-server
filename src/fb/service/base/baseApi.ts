@@ -223,6 +223,9 @@ export class BaseApi {
                 const headers = await this.getMergedHeaders(baseURL, options?.headers);
                 const fullUrl = this.buildUrl(path, baseURL, method === "GET" ? data : options?.params);
 
+                console.log("@@@@@@@@@@@@@@", fullUrl);
+
+
                 let body: BodyInit | null | undefined = undefined;
 
                 // 处理请求体
