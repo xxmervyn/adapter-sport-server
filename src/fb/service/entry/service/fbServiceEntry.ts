@@ -267,8 +267,9 @@ class FbServiceClass extends BaseService {
         }
         if (apihost != "") {
             apihost = decodeURIComponent(apihost);
-            console.log("!!!!!!!", apihost);
-            option.baseURL = apihost;
+            if (apihost == "https://sportapi.fast1sports66.com") {
+                option.baseURL = apihost;
+            }
         }
 
         const requestKey = `${option.baseURL}${path}-${tkInfo.token && tkInfo.token != "" ? "1" : "0"}`
@@ -305,7 +306,7 @@ class FbServiceClass extends BaseService {
         }
 
 
-        var option = { headers: headers, baseURL: this.getInnerHost(req) }
+        var option = { headers: headers, baseURL: this.getInnerHost(req, xFrontPage ?? "") }
         const result = await this.api<FbCommApiResponse>(path, params, () => UserBaseApi.post(path, params, option), { cache: { isCache: false } })
         if (defCache && result.eCode == SERVER_ERR_CODE_ENUMS.REQUEST_CACHING) {
             return defCache
@@ -313,8 +314,18 @@ class FbServiceClass extends BaseService {
         return result;
     }
 
-    public getInnerHost(req: HonoRequest): string {
+    public getInnerHost(req: HonoRequest, xfp: string): string {
         const url = new URL(req.url)
+
+
+        if (xfp != "" && url.hostname == "fbsports-api.appplaygasdsd.org") {
+            const xfpUrl = new URLSearchParams(xfp)
+            const apihost = xfpUrl.get("hbinnerapihost") ?? "";
+            if (apihost != "") {
+                return decodeURIComponent(apihost);
+            }
+        }
+
         var host = url.hostname.replaceAll("-h5", "")
         if (host.includes("-api") == false) {
             var hostArr = host.split(".");
@@ -363,7 +374,9 @@ class FbServiceClass extends BaseService {
     }
 
     private async tokenApi(req: HonoRequest, params: {}, headers: HeadersInit): Promise<FbCommApiResponse> {
-        return await UserBaseApi.post<FbCommApiResponse>("/openPlayer/getFbPlayerInfoToken", params, { headers, baseURL: this.getInnerHost(req) })
+        const h = new Headers(headers);
+        const xfp = h.get("X-Front-Page");
+        return await UserBaseApi.post<FbCommApiResponse>("/openPlayer/getFbPlayerInfoToken", params, { headers, baseURL: this.getInnerHost(req, xfp ?? "") })
     }
 
 }
