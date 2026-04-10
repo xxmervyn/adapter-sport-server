@@ -5,15 +5,12 @@ import { MD5 } from "crypto-js";
 import { HonoRequest } from "hono/request";
 import { LANGUAGE_MAP } from "../fb/enums";
 import { UserService } from "../fb/service/userService";
-import { json } from "stream/consumers";
-
-
 
 export class GamesEnterEndpoint extends OpenAPIRoute {
 	public schema = {
 		tags: ["GamesEnter"],
 		summary: "Gaems Enter And Login",
-		operationId: "Gaems Enter And Login", // This is optional
+		operationId: "Gaems Enter And Login",
 		request: {
 			query: z.object({
 				lang: z.string(),
@@ -24,144 +21,133 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 				ui: z.string().optional(),
 				apihost: z.string().optional(),
 			}),
-			body: contentJson(
-				z.object({
-					name: z.string(),
-				}),
-			),
+			body: contentJson(z.object({ name: z.string() })),
 		}
 	};
 
 	public async handle(c: AppContext) {
 		const data = await this.getValidatedData<typeof this.schema>();
+		const req = c.req;
 
-		const urlReq = new URL(c.req.url);
-		const apiHostName = urlReq?.hostname.replace(".", "-api.");
+		const urlObj = new URL(req.url);
+		const hostname = urlObj.hostname;
+		const apiHost = hostname.replace(".", "-api.");
 
-		if (data.query.playerGameToken == null) {
-			data.query.playerGameToken = "guestMode"
-		}
+		const token = data.query.playerGameToken ?? "guestMode";
+		const jwtInfo = decodeJWT(token);
 
-		const info = decodeJWT(data.query.playerGameToken)
-		var lang = "ENG";
-		lang = LANGUAGE_MAP[data.query.lang?.toLowerCase() || "en"]
+		const lang = LANGUAGE_MAP[data.query.lang?.toLowerCase() || "en"] || "ENG";
+		const ui = data.query.ui;
 
-		const themeText = encodeURIComponent(JSON.stringify({ "h5FgColor": "#4C6FFF", "pcFgColor": "#4C6FFF", "pcThemeCustomFgColor": "#4C6FFF" }))
-		const ui = data.query?.ui
-		const themeBg = "05259D"
+		let url = this.buildGameUrl(req, token, jwtInfo, hostname, apiHost, lang, ui);
+		url = genGameUrlSignWithKeys(data.query, url, ["token"], true);
 
-
-		var url = ""
-		if (ui == "h5" || isMobileRequest(c.req)) {
-			var hostName = `${urlReq?.hostname}`;
-			var hostArr = hostName.split(".");
-			hostArr[0] = `${hostArr[0]}-h5`
-			hostName = hostArr.join(".")
-			url = `https://${hostName}/index.html#/?token=${data.query.playerGameToken}&pcAddress=${hostName}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&themeBg=${themeBg}` +
-				`&themeText=${themeText}&nickname=${info?.UserName}&controlMenu=2&language=${lang}`
+		if (token === "guestMode") {
+			const tokenInfo = await UserService.V1User.token(req, "", "");
+			url = this.appendPlatformParams(url, tokenInfo, "&r=55555");
 		} else {
-			url = `https://${urlReq?.hostname}/index.html#/?token=${data.query.playerGameToken}&nickname=${info?.UserName}&` +
-				`pcAddress=https://${urlReq?.hostname}&virtualSrc=https://${apiHostName}&apiSrc=https://${apiHostName}&icoUrl=https://${urlReq?.hostname}/favicon.ico&` +
-				`handicap=1&themeBg=${themeBg}&themeText=${themeText}&controlMenu=2&language=${lang}`
-		}
+			const extraParam = data.query.apihost ? `&hbinnerapihost=${encodeURIComponent(data.query.apihost)}` : "";
+			const signUrl = `https://${hostname}?token=${token}`;
+			const xFrontPage = genGameUrlSignWithKeys(data.query, signUrl, ["token"], true) + extraParam;
 
-		url = genGameUrlSignWithKeys(data.query, url, ["token"], true)
-		const platformName = "HBSPORTS"
-		if (data.query.playerGameToken == "guestMode") {
-			const tokenInfo = await UserService.V1User.token(c.req, "", "")
-			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&platformName=${platformName}&tk=${tokenInfo.token}&r=55555`
-		} else {
-			const sginUrl = `https://${urlReq?.hostname}?token=${data.query.playerGameToken}`
-			var xfontpage = genGameUrlSignWithKeys(data.query, sginUrl, ["token"], true)
-			const tokenInfo = await UserService.V1User.token(c.req, xfontpage, data.query.playerGameToken)
-			if (tokenInfo.token == "") {
-				return {
-					"code": 14010,
-					"message": "賬號已登出，請重新登錄",
-					"success": false
-				}
+			const tokenInfo = await UserService.V1User.token(req, xFrontPage, token);
+			if (!tokenInfo.token) {
+				return { code: 14010, message: "賬號已登出，請重新登錄", success: false };
 			}
 
-
-			const userInfo = await UserService.V1User.userInfo(c.req, xfontpage, data.query.playerGameToken)
-			if (userInfo.code != 0) {
-				return {
-					"code": 14010,
-					"message": "賬號已登出，請重新登錄2",
-					"success": false
-				}
+			const userInfo = await UserService.V1User.userInfo(req, xFrontPage, token);
+			if (userInfo.code !== 0) {
+				return { code: 14010, message: "賬號已登出，請重新登錄2", success: false };
 			}
 
-			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&platformName=${platformName}&tk=${tokenInfo.token}&hbr=${userInfo.data?.region}&hbgf=${info?.GameField}`
+			url = this.appendPlatformParams(url, tokenInfo, `&hbr=${userInfo.data?.region}&hbgf=${jwtInfo?.GameField}${extraParam}`);
 		}
 
-		if (ui) {
-			url = `${url}&ui=${ui}`
+		if (ui) url += `&ui=${ui}`;
+
+		return c.redirect(url);
+	}
+
+	private buildGameUrl(req: HonoRequest, token: string, jwtInfo: any, hostname: string, apiHost: string, lang: string, ui?: string) {
+		const isH5 = ui === "h5" || isMobileRequest(req);
+
+		const themeText = encodeURIComponent(JSON.stringify({
+			h5FgColor: "#4C6FFF",
+			pcFgColor: "#4C6FFF",
+			pcThemeCustomFgColor: "#4C6FFF"
+		}));
+
+		const themeBg = "05259D";
+
+		if (isH5) {
+			const h5Host = this.buildH5Host(hostname);
+
+			return `https://${h5Host}/index.html#/?token=${token}&pcAddress=${h5Host}` +
+				`&virtualSrc=https://${apiHost}&apiSrc=https://${apiHost}` +
+				`&themeBg=${themeBg}&themeText=${themeText}` +
+				`&nickname=${jwtInfo?.UserName}&controlMenu=2&language=${lang}`;
 		}
 
+		return `https://${hostname}/index.html#/?token=${token}&nickname=${jwtInfo?.UserName}` +
+			`&pcAddress=https://${hostname}&virtualSrc=https://${apiHost}` +
+			`&apiSrc=https://${apiHost}&icoUrl=https://${hostname}/favicon.ico` +
+			`&handicap=1&themeBg=${themeBg}&themeText=${themeText}` +
+			`&controlMenu=2&language=${lang}`;
+	}
 
-		return c.redirect(url)
+	private buildH5Host(hostname: string) {
+		const arr = hostname.split(".");
+		arr[0] = `${arr[0]}-h5`;
+		return arr.join(".");
+	}
+
+	private appendPlatformParams(url: string, tokenInfo: any, extra?: string) {
+		return url +
+			`&pushSrc=${tokenInfo.serverInfo.pushServerAddress}` +
+			`&one=1&platformName=HBSPORTS` +
+			`&tk=${tokenInfo.token}` +
+			(extra || "");
 	}
 }
 
-
 function genGameUrlSignWithKeys(reqParams: any, url: string, keys: string[] | null, changeJinhan: boolean): string {
 	const reqTime = reqParams["reqt"] ?? Math.floor(Date.now() / 1000).toString();
-
 	url = `${url}&reqt=${reqTime}`;
 
 	let fullHref = "";
 	let resTag = "";
 
 	if (!keys || keys.length === 0) {
-
 		fullHref = url + "&jO8nH7sK2sK9sF4p";
-
 	} else {
-
-		let urlQuery = url;
-
-		if (changeJinhan) {
-			urlQuery = urlQuery.replace(/#/g, "&");
-		}
-
+		let urlQuery = changeJinhan ? url.replace(/#/g, "&") : url;
 		const urlDetail = new URL(urlQuery);
 		const query = urlDetail.searchParams;
 
 		fullHref = urlDetail.hostname + "&" + (query.get("reqt") ?? "");
-
 		resTag = "k_";
 
 		for (const key of keys) {
-
 			const value = query.get(key) ?? "";
-
-			fullHref = fullHref + "&" + value;
-			resTag = resTag + key + "_";
+			fullHref += "&" + value;
+			resTag += key + "_";
 		}
 
-		fullHref = fullHref + "&jO8nH7sK2sK9sF4p";
+		fullHref += "&jO8nH7sK2sK9sF4p";
 	}
 
-	const md5 = MD5(fullHref).toString()
+	const md5 = MD5(fullHref).toString();
 	const res = md5.substring(0, 12);
 
-	url = url + "&esign=" + resTag + res;
-
-	return url;
+	return url + "&esign=" + resTag + res;
 }
 
-
 function decodeJWT(token: string) {
-	if (token == "guestMode") {
-		return { UserName: "guestMode" }
-	}
+	if (token === "guestMode") return { UserName: "guestMode" };
 
-	const base64Url = token.split('.')[1]; // 获取 payload 部分
+	const base64Url = token.split('.')[1];
 	const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-	const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-		return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-	}).join(''));
+	const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
 
 	return JSON.parse(jsonPayload);
 }
@@ -169,13 +155,10 @@ function decodeJWT(token: string) {
 function isMobileRequest(req: HonoRequest) {
 	const urlReq = new URL(req.url);
 	const platform = urlReq.searchParams.get("platform");
-	if (platform == "h5" || platform == "mobile") {
-		return true;
-	}
+	if (platform === "h5" || platform === "mobile") return true;
 
-	var ua = req.header("user-agent") || "";
+	let ua = req.header("user-agent") || "";
 	ua = ua.toLowerCase();
 
-	if (/ipad|mobile|android|iphone|ipod/.test(ua)) return true;
-	return false;
+	return /ipad|mobile|android|iphone|ipod/.test(ua);
 }
