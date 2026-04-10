@@ -322,6 +322,8 @@ class FbServiceClass extends BaseService {
             const xfpUrl = new URLSearchParams(xfp)
             const host = xfpUrl.get("hbinnerapihost") ?? "";
             if (host != "") {
+                console.log("!!!!!!!!!!!!!!!!!!!!!", host);
+
                 apihost = decodeURIComponent(host);
             }
         }
