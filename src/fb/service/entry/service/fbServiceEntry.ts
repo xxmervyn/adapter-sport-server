@@ -317,16 +317,19 @@ class FbServiceClass extends BaseService {
     public getInnerHost(req: HonoRequest, xfp: string): string {
         const url = new URL(req.url)
 
-
+        let apihost = ""
         if (xfp != "" && url.hostname == "fbsports-api.appplaygasdsd.org") {
             const xfpUrl = new URLSearchParams(xfp)
-            const apihost = xfpUrl.get("hbinnerapihost") ?? "";
-            if (apihost != "") {
-                return decodeURIComponent(apihost);
+            const host = xfpUrl.get("hbinnerapihost") ?? "";
+            if (host != "") {
+                apihost = decodeURIComponent(host);
             }
         }
+        if (apihost == "") {
+            apihost = url.hostname
+        }
 
-        var host = url.hostname.replaceAll("-h5", "")
+        var host = apihost.replaceAll("-h5", "")
         if (host.includes("-api") == false) {
             var hostArr = host.split(".");
             hostArr[0] = `${hostArr[0]}-api`
