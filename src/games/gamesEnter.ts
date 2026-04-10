@@ -91,7 +91,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 				}
 			}
 
-			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&platformName=${platformName}&tk=${tokenInfo.token}&r=${userInfo.data?.region}`
+			url = `${url}&pushSrc=${tokenInfo.serverInfo.pushServerAddress}&one=1&platformName=${platformName}&tk=${tokenInfo.token}&hbr=${userInfo.data?.region}&hbgf=${info?.GameField}`
 		}
 
 		if (ui) {

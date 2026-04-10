@@ -244,14 +244,19 @@ class FbServiceClass extends BaseService {
 
 
         var region = ""
+        var gameField = ""
         var xfrontpage = req.header("X-Front-Page") ?? "";
         if (xfrontpage != "") {
-            region = new URLSearchParams(xfrontpage).get("r") ?? "";
-            params["__region"] == region;
+            const xfpUrl = new URLSearchParams(xfrontpage)
+            region = xfpUrl.get("hbr") ?? "";
+            gameField = xfpUrl.get("hbgf") ?? "";
+            params["__r"] = region;
+            params["__gf"] = gameField;
         }
 
         if (tkInfo.token == "") {
-            params["__region"] = "-100"
+            params["__r"] = "-100"
+            params["__gf"] == "-100";
         }
 
         var option = { headers: headers, baseURL: tkInfo.serverInfo?.apiServerAddress, ...apiOptions }
