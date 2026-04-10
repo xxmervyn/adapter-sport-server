@@ -7,6 +7,8 @@ import { FBNotAuthBaseApi } from "../api/fbApiEntry";
 import { API_BASE_URL_ENUMS } from "../../../enums/apiBaseUrlEnum";
 import { ApiRequestOptions } from "../../base/baseApi";
 import XXH from "xxhashjs";
+import { fa } from "zod/v4/locales";
+import { number } from "zod/v4";
 
 class FBHeaderGenerator {
     private randomHeaders: HeadersInit[] = []
@@ -132,29 +134,37 @@ class FBHeaderGenerator {
 const FBHeaderGeneratorInstance = new FBHeaderGenerator()
 
 
-class FBLocalCache implements ServiceLocalCacheInterface {
-    private store = new Map<string, { value: any; expireAt: number; cacheTime: number }>();
+class FBTimeBlockCache implements ServiceLocalCacheInterface {
+    private store = new Map<number, Map<string, { value: any; expireAt: number; cacheTime: number }>>();
 
     private lastCleanTime = 0;
-    private readonly CLEAN_INTERVAL = 10000;
-    private cleaning = false;
 
     constructor() {
+        this.store = new Map()
+        for (let i = 0; i < 3; i++) {
+            this.store.set(i, new Map())
+        }
     }
 
     /* ---------- Cache API ---------- */
 
     getItem<T>(key: string): { expireAt: number; data: T } | null {
         if (key == "") return null;
-        this.tryCleanAsync();
 
-        const item = this.store.get(key);
+        const i = new Date().getMinutes() % 3;
+        const lastI = (i - 1 + this.store.size) % this.store.size
+        if (this.lastCleanTime != i) {
+            this.clearOldZone(i);
+            this.lastCleanTime = i;
+        }
+
+        const item = this.store.get(i)?.get(key) || this.store.get(lastI)?.get(key);
         if (!item) return null;
 
-        // if (item.expireAt <= Date.now()) {
-        //     this.store.delete(key);
-        //     return null;
-        // }
+        if (item.expireAt <= Date.now()) {
+            // this.deleteItemByZoneIndexArr([i, lastI], key);
+            return null;
+        }
 
         return {
             expireAt: item.expireAt,
@@ -166,54 +176,45 @@ class FBLocalCache implements ServiceLocalCacheInterface {
         return this.getItem(key) !== null;
     }
 
-    setItem<T>(key: string, value: T, cacheTime: number = 0): void {
-        this.store.set(key, {
-            value: value,
-            expireAt: Date.now() + cacheTime,
-            cacheTime: cacheTime,
-        });
+    setItem<T>(key: string, value: T, cacheTime: number = 1000): void {
+        const i = new Date().getMinutes() % 3;
+        const zone = this.store.get(i)
+        if (zone) {
+            zone.set(key, {
+                value: value,
+                expireAt: Date.now() + cacheTime,
+                cacheTime: cacheTime,
+            });
+        }
+    }
+
+    deleteItemByZoneIndexArr(zArr: Array<number>, key: string): boolean {
+        zArr.forEach(k => {
+            this.store.get(k)?.delete(key);
+        })
+
+        return true
     }
 
     deleteItem(key: string): boolean {
-        return this.store.delete(key);
+        this.store.forEach(zone => {
+            if (zone) {
+                zone.delete(key);
+            }
+        })
+        return true
     }
 
 
-    private tryCleanAsync() {
-        const now = Date.now();
-        if (now - this.lastCleanTime < this.CLEAN_INTERVAL) {
-            return;
-        }
-
-        if (this.cleaning) {
-            return;
-        }
-
-        this.cleaning = true;
-        this.lastCleanTime = Date.now();
-
-        queueMicrotask(() => {
-            const now = Date.now();
-            // var c = 0;
-            for (const [k, v] of this.store) {
-                if (now - v.expireAt > v.cacheTime * 30) {
-                    this.store.delete(k);
-                    // c++;
-                }
-            }
-
-            // console.log("缓存清除时间:", this.lastCleanTime, "  清理数量:", c, "  剩余数量:", this.store.size);
-            this.cleaning = false;
-        });
-
+    private clearOldZone(i: number) {
+        const delZoneIndex = (i - 2 + this.store.size) % this.store.size
+        this.store.set(delZoneIndex, new Map())
     }
 
     clearTTLAll(): void {
-        const now = Date.now();
-        for (const [k, v] of this.store) {
-            if (v.expireAt <= now) {
-                this.store.delete(k);
-            }
+        this.store = new Map()
+        for (let i = 0; i < 3; i++) {
+            this.store.set(i, new Map())
         }
     }
 
@@ -387,7 +388,7 @@ class FbServiceClass extends BaseService {
 export const FbServiceEntry = new FbServiceClass({
     localCacheDefConf: {
         isCache: true,
-        cacheTime: 1_000 // 1 秒（毫秒）
+        cacheTime: 1_000
     },
-    localCache: new FBLocalCache()
+    localCache: new FBTimeBlockCache()
 });

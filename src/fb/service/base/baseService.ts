@@ -38,7 +38,6 @@ export class BaseService {
         isCache?: boolean;
         cacheTime?: number;
     };
-    protected cacheStatusMap: Map<string, number> = new Map()
 
     private cleaning = false;
     private lastCleanTime = 0;
@@ -76,20 +75,12 @@ export class BaseService {
         }
 
         const item = this.localCacheEntry.getItem<T>(cacheKey);
-        const isExist = this.cacheStatusMap.has(cacheKey)
-        // if (item && item.expireAt > Date.now() && isExist == false) {
+
         if (item && item.expireAt > Date.now()) {
             return item.data;
         }
 
-        if (isExist) {
-            //缓存中
-            return await api();
-        }
-
-        this.cacheStatusMap.set(cacheKey, Date.now())
         const cacheTime = serverOptions?.cache?.cacheTime ?? this.localCacheDefConf.cacheTime ?? 0;
-
 
         try {
             const data = await api();
@@ -99,38 +90,9 @@ export class BaseService {
             return data;
         } catch (error) {
             return ({ code: 0, success: true, eCode: SERVER_ERR_CODE_ENUMS.FAIL_REQUEST } as T);
-        } finally {
-            this.cacheStatusMap.delete(cacheKey)
         }
-
-
     }
 
-    //清除异常缓存状态
-    private tryCleanErrCacheAsync() {
-        const now = Date.now();
-        if (now - this.lastCleanTime < 10000) {
-            return;
-        }
-
-        if (this.cleaning) {
-            return;
-        }
-
-        this.cleaning = true;
-        this.lastCleanTime = Date.now();
-
-        queueMicrotask(() => {
-            const now = Date.now();
-            for (const [k, v] of this.cacheStatusMap) {
-                if (now - v > 3000) {
-                    this.cacheStatusMap.delete(k);
-                }
-            }
-            this.cleaning = false;
-        });
-
-    }
 }
 
 
