@@ -335,6 +335,8 @@ class FbServiceClass extends BaseService {
     }
 
     public async getTokenInfo(req: HonoRequest, xfrontpage: string, authorization: string): Promise<TokenApiResponseData> {
+        console.log(`!!!!!!!!!!!!!!!!!!!!!!!    ${xfrontpage}    【】:${authorization}`);
+        
         if (xfrontpage != "" && authorization != "") {
             const headers: HeadersInit = {}
             headers["X-Token"] = authorization
