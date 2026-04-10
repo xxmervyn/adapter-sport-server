@@ -312,6 +312,7 @@ class FbServiceClass extends BaseService {
             const host = xfpUrl.get("hbinnerapihost") ?? "";
             if (host != "") {
                 apihost = decodeURIComponent(host).replaceAll("https://", "");
+                console.log("11111111111       ", host);
             }
         }
         if (apihost == "") {
@@ -325,6 +326,9 @@ class FbServiceClass extends BaseService {
             host = hostArr.join(".")
         }
         let innerHost = `https://inner2${host}`;
+
+        console.log("222222222222222       ", innerHost);
+
         return innerHost;
     }
 
