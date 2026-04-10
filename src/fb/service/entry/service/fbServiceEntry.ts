@@ -267,6 +267,7 @@ class FbServiceClass extends BaseService {
         }
         if (apihost != "") {
             apihost = decodeURIComponent(apihost);
+            console.log("!!!!!!!", apihost);
             option.baseURL = apihost;
         }
 
