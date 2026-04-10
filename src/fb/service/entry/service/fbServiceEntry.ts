@@ -246,12 +246,14 @@ class FbServiceClass extends BaseService {
         var region = ""
         var gameField = ""
         var xfrontpage = req.header("X-Front-Page") ?? "";
+        var apihost = ""
         if (xfrontpage != "") {
             const xfpUrl = new URLSearchParams(xfrontpage)
             region = xfpUrl.get("hbr") ?? "";
             gameField = xfpUrl.get("hbgf") ?? "";
             params["__r"] = region;
             params["__gf"] = gameField;
+            apihost = xfpUrl.get("hbapihost") ?? "";
         }
 
         if (tkInfo.token == "") {
@@ -262,6 +264,10 @@ class FbServiceClass extends BaseService {
         var option = { headers: headers, baseURL: tkInfo.serverInfo?.apiServerAddress, ...apiOptions }
         if (path.startsWith("/virtual")) {
             option = { headers: headers, baseURL: tkInfo.serverInfo?.virtualAddress, ...apiOptions }
+        }
+        if (apihost != "") {
+            apihost = decodeURIComponent(apihost);
+            option.baseURL = apihost;
         }
 
         const requestKey = `${option.baseURL}${path}-${tkInfo.token && tkInfo.token != "" ? "1" : "0"}`
