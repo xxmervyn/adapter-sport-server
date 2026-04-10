@@ -146,8 +146,6 @@ class FBTimeBlockCache implements ServiceLocalCacheInterface {
         }
     }
 
-    /* ---------- Cache API ---------- */
-
     getItem<T>(key: string): { expireAt: number; data: T } | null {
         if (key == "") return null;
 
@@ -188,14 +186,6 @@ class FBTimeBlockCache implements ServiceLocalCacheInterface {
         }
     }
 
-    deleteItemByZoneIndexArr(zArr: Array<number>, key: string): boolean {
-        zArr.forEach(k => {
-            this.store.get(k)?.delete(key);
-        })
-
-        return true
-    }
-
     deleteItem(key: string): boolean {
         this.store.forEach(zone => {
             if (zone) {
@@ -205,12 +195,6 @@ class FBTimeBlockCache implements ServiceLocalCacheInterface {
         return true
     }
 
-
-    private clearOldZone(i: number) {
-        const delZoneIndex = (i - 2 + this.store.size) % this.store.size
-        this.store.set(delZoneIndex, new Map())
-    }
-
     clearTTLAll(): void {
         this.store = new Map()
         for (let i = 0; i < 3; i++) {
@@ -218,7 +202,11 @@ class FBTimeBlockCache implements ServiceLocalCacheInterface {
         }
     }
 
-    /* ---------- Request Key ---------- */
+    private clearOldZone(i: number) {
+        const delZoneIndex = (i - 2 + this.store.size) % this.store.size
+        this.store.set(delZoneIndex, new Map())
+    }
+
 
     async getRequestKey(requestKey: string, params: any): Promise<string> {
         const body = requestKey + JSON.stringify(params)
