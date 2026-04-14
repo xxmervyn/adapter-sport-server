@@ -3,7 +3,7 @@ import { FbServiceEntry } from "../../entry/service/fbServiceEntry"
 
 export class V1MatchApi {
     public getList(params: any, req: HonoRequest) {
-        return FbServiceEntry.request('/v1/match/getList', params, req)
+        return FbServiceEntry.requestWithNotFbContent('/v1/match/getList', params, req)
     }
     
     public tips(params: any, req: HonoRequest) {

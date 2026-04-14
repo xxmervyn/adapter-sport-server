@@ -71,13 +71,21 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 	private buildGameUrl(req: HonoRequest, token: string, jwtInfo: any, hostname: string, apiHost: string, lang: string, ui?: string) {
 		const isH5 = ui === "h5" || isMobileRequest(req);
 
+		// const themeText = encodeURIComponent(JSON.stringify({
+		// 	h5FgColor: "#4C6FFF",
+		// 	pcFgColor: "#4C6FFF",
+		// 	pcThemeCustomFgColor: "#4C6FFF"
+		// }));
+
 		const themeText = encodeURIComponent(JSON.stringify({
-			h5FgColor: "#4C6FFF",
-			pcFgColor: "#4C6FFF",
+			h5FgColor: "#17856F",
+			pcFgColor: "#17856F",
 			pcThemeCustomFgColor: "#4C6FFF"
 		}));
 
-		const themeBg = "05259D";
+
+		// const themeBg = "05259D";
+		const themeBg = "022B22";
 
 		if (isH5) {
 			const h5Host = this.buildH5Host(hostname);

@@ -223,8 +223,21 @@ class FbServiceClass extends BaseService {
         return this.requestWithOptions(path, params, req, { cache: { isCache: false } }, defCache);
     }
 
+    public async requestNotCacheWithNotFbContent(path: string, params: any, req: HonoRequest, defCache?: any): Promise<FbCommApiResponse> {
+        let data = await this.requestWithOptions(path, params, req, { cache: { isCache: false } }, defCache);
+        data = JSON.parse(JSON.stringify(data).replaceAll("VS-FB", "VS-HB"))
+        return data
+    }
+
     public async request(path: string, params: any, req: HonoRequest, defCache?: any, apiOptions?: ApiRequestOptions): Promise<FbCommApiResponse> {
         return this.requestWithOptions(path, params, req, { cache: { isCache: true } }, defCache, apiOptions);
+    }
+
+
+    public async requestWithNotFbContent(path: string, params: any, req: HonoRequest, defCache?: any, apiOptions?: ApiRequestOptions): Promise<FbCommApiResponse> {
+        let data = await this.requestWithOptions(path, params, req, { cache: { isCache: true } }, defCache, apiOptions);
+        data = JSON.parse(JSON.stringify(data).replaceAll("VS-FB", "VS-HB"))
+        return data
     }
 
     public async requestWithOptions(path: string, params: any, req: HonoRequest, serviceOptions: ServiceRequestOptions, defCache?: any, apiOptions?: ApiRequestOptions): Promise<FbCommApiResponse> {
