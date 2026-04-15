@@ -260,7 +260,7 @@ export class BaseApi {
                 const newRequest = this.onFetchBefore(request)
 
                 if (path == "/v1/order/batchBetMatchMarketOfJumpLine") {
-                    console.log("!!!!!!!!!!!!!!!!!!req",JSON.stringify(newRequest))
+                    console.log("!!!!!!!!!!!!!!!!!!req",JSON.stringify(newRequest.body))
                 }
 
                 const fetchPromise = this.fetch(newRequest);
