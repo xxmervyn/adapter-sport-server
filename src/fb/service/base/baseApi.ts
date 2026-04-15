@@ -216,6 +216,7 @@ export class BaseApi {
         let attempt = 0;
         // let lastError: any;
 
+
         while (attempt < maxRetry) {
             attempt++;
             try {
@@ -257,6 +258,11 @@ export class BaseApi {
                 }
 
                 const newRequest = this.onFetchBefore(request)
+
+                if (path == "/v1/order/batchBetMatchMarketOfJumpLine") {
+                    console.log("!!!!!!!!!!!!!!!!!!req",JSON.stringify(newRequest))
+                }
+
                 const fetchPromise = this.fetch(newRequest);
                 const response = await this.withTimeout(fetchPromise, this.timeout);
 
