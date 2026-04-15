@@ -4,7 +4,7 @@ import { FbServiceEntry } from "../../entry/service/fbServiceEntry"
 export class V1OrderApi {
 
     public batchBetMatchMarketOfJumpLine(params: any, req: HonoRequest) {
-        return FbServiceEntry.request('/v1/order/batchBetMatchMarketOfJumpLine', params, req)
+        return FbServiceEntry.requestNotCache('/v1/order/batchBetMatchMarketOfJumpLine', params, req)
     }
 
     public getStakeOrderStatus(params: any, req: HonoRequest) {
