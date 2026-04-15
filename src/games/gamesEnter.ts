@@ -15,6 +15,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			query: z.object({
 				lang: z.string(),
 				id: z.string(),
+				token: z.string().optional(),
 				playerGameToken: z.string().optional(),
 				reqt: z.string(),
 				esign: z.string(),
@@ -33,7 +34,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		const hostname = urlObj.hostname;
 		const apiHost = hostname.replace(".", "-api.");
 
-		const token = data.query.playerGameToken ?? "guestMode";
+		const token = data.query.token ?? data.query.playerGameToken ?? "guestMode";
 		const jwtInfo = decodeJWT(token);
 
 		const lang = LANGUAGE_MAP[data.query.lang?.toLowerCase() || "en"] || "ENG";
