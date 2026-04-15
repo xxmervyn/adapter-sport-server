@@ -259,12 +259,6 @@ export class BaseApi {
 
                 const newRequest = this.onFetchBefore(request)
 
-                if (path == "/v1/order/batchBetMatchMarketOfJumpLine") {
-                    newRequest.clone().json().then(body => {
-                        console.log("@@@@@@@@@@@@@@@req", body)
-                    })
-                }
-
                 const fetchPromise = this.fetch(newRequest);
                 const response = await this.withTimeout(fetchPromise, this.timeout);
 
