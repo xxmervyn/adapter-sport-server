@@ -1,4 +1,4 @@
-### 体育API域名
+﻿### 体育API域名
 
 黑豹体育不需要区分地区域名，全部使用 api.bpapiglobal.com 请求。
 
@@ -93,7 +93,6 @@ GET https://${host}/analyze/order/index.html#content=xxx
 ## host 说明
 
 host 为页面访问域名，例如：  
-id="9n2k4v"  
 hbsports.southasiabp.biz
 
 ---
@@ -108,7 +107,7 @@ hbsports.southasiabp.biz
 
 ### 基础使用
 
-将订单数据通过 #content 传入页面：  
+将订单数据通过 `#content` 传入页面：  
 https://${host}/analyze/order/index.html#content=xxx
 
 ---
@@ -116,45 +115,275 @@ https://${host}/analyze/order/index.html#content=xxx
 ### content 生成方式
 
 数据需按以下步骤处理：  
-JSON → Base64 →（可选）URL编码
+JSON → Base64 →（可选）URL 编码
 
-示例：  
-js  
-const data = \[/\* 订单数据 \*/\]  
-const json = JSON.stringify(data)  
-const base64 = btoa(unescape(encodeURIComponent(json)))  
+示例：
+
+```js
+const data = [/* 订单数据 */]
+const json = JSON.stringify(data)
+const base64 = btoa(unescape(encodeURIComponent(json)))
 const content = encodeURIComponent(base64)
+```
 
-示例订单数据：  
-json  
-\[{"allUp":1,"allUpAlive":0,"betList":\[{"betOdds":"3.82","betScore":"S: 1-0","extraInfo":"","id":"1692783442032329535","isInplay":true,"leaguePhase":0,"marketId":"9650507","marketName":"独赢","marketType":1005,"matchId":"1410217","matchName":"Sassuolo Calcio vs Juventus Turin","matchTime":"1767987900000","matchType":2,"odds":"3.82","oddsFormat":1,"optionName":"Sassuolo Calcio","optionType":1,"orderId":"1692783442032329279","period":1001,"settleResult":4,"settleStatus":1,"sportId":1,"sportName":"足球","tournamentId":"11018","tournamentName":"Italy Serie A"}\],"betNum":1,"betType":"1x1\*1","createTime":"1774873929612","currency":"PHP","device":"h5","ep":0,"exchangeRate":"0.11384","id":"1692783442032329279","ip":"172.71.211.53","itemCount":1,"liabilityStake":"20","loseAmount":"76.4","maxStake":"770000","maxWinAmount":"56.4","modifyTime":"1774873930192","oddsChange":1,"operatorID":2543652,"orderStatus":5,"payStatus":4,"playerId":2774873908258660186,"rollBackCount":0,"seriesType":0,"seriesValue":1,"settleAmount":"76.4","settleTime":"1775009152845","stakeAmount":"20","tranType":1,"unitStake":"20","userId":"2885951","userName":"test_123321113","validSettleAmount":"76.4","validSettleStakeAmount":"20","version":5,"walletType":2}\]
+示例订单数据：
 
-最终生成URL：  
+```json
+[{"allUp":1,"allUpAlive":0,"betList":[{"betOdds":"3.82","betScore":"S: 1-0","extraInfo":"","id":"1692783442032329535","isInplay":true,"leaguePhase":0,"marketId":"9650507","marketName":"独赢","marketType":1005,"matchId":"1410217","matchName":"Sassuolo Calcio vs Juventus Turin","matchTime":"1767987900000","matchType":2,"odds":"3.82","oddsFormat":1,"optionName":"Sassuolo Calcio","optionType":1,"orderId":"1692783442032329279","period":1001,"settleResult":4,"settleStatus":1,"sportId":1,"sportName":"足球","tournamentId":"11018","tournamentName":"Italy Serie A"}],"betNum":1,"betType":"1x1*1","createTime":"1774873929612","currency":"PHP","device":"h5","ep":0,"exchangeRate":"0.11384","id":"1692783442032329279","ip":"172.71.211.53","itemCount":1,"liabilityStake":"20","loseAmount":"76.4","maxStake":"770000","maxWinAmount":"56.4","modifyTime":"1774873930192","oddsChange":1,"operatorID":2543652,"orderStatus":5,"payStatus":4,"playerId":2774873908258660186,"rollBackCount":0,"seriesType":0,"seriesValue":1,"settleAmount":"76.4","settleTime":"1775009152845","stakeAmount":"20","tranType":1,"unitStake":"20","userId":"2885951","userName":"test_123321113","validSettleAmount":"76.4","validSettleStakeAmount":"20","version":5,"walletType":2}]
+```
+
+最终生成 URL：  
 [https://hbsports.southasiabp.biz/analyze/order/index.html#content=W3siYWxsVXAiOjEsImFsbFVwQWxpdmUiOjAsImJldExpc3QiOlt7ImJldE9kZHMiOiIzLjgyIiwiYmV0U2NvcmUiOiJTOiAxLTAiLCJleHRyYUluZm8iOiIiLCJpZCI6IjE2OTI3ODM0NDIwMzIzMjk1MzUiLCJpc0lucGxheSI6dHJ1ZSwibGVhZ3VlUGhhc2UiOjAsIm1hcmtldElkIjoiOTY1MDUwNyIsIm1hcmtldE5hbWUiOiLni6zotaIiLCJtYXJrZXRUeXBlIjoxMDA1LCJtYXRjaElkIjoiMTQxMDIxNyIsIm1hdGNoTmFtZSI6IlNhc3N1b2xvIENhbGNpbyB2cyBKdXZlbnR1cyBUdXJpbiIsIm1hdGNoVGltZSI6IjE3Njc5ODc5MDAwMDAiLCJtYXRjaFR5cGUiOjIsIm9kZHMiOiIzLjgyIiwib2Rkc0Zvcm1hdCI6MSwib3B0aW9uTmFtZSI6IlNhc3N1b2xvIENhbGNpbyIsIm9wdGlvblR5cGUiOjEsIm9yZGVySWQiOiIxNjkyNzgzNDQyMDMyMzI5Mjc5IiwicGVyaW9kIjoxMDAxLCJzZXR0bGVSZXN1bHQiOjQsInNldHRsZVN0YXR1cyI6MSwic3BvcnRJZCI6MSwic3BvcnROYW1lIjoi6Laz55CDIiwidG91cm5hbWVudElkIjoiMTEwMTgiLCJ0b3VybmFtZW50TmFtZSI6Ikl0YWx5IFNlcmllIEEifV0sImJldE51bSI6MSwiYmV0VHlwZSI6IjF4MSoxIiwiY3JlYXRlVGltZSI6IjE3NzQ4NzM5Mjk2MTIiLCJjdXJyZW5jeSI6IlBIUCIsImRldmljZSI6Img1IiwiZXAiOjAsImV4Y2hhbmdlUmF0ZSI6IjAuMTEzODQiLCJpZCI6IjE2OTI3ODM0NDIwMzIzMjkyNzkiLCJpcCI6IjE3Mi43MS4yMTEuNTMiLCJpdGVtQ291bnQiOjEsImxpYWJpbGl0eVN0YWtlIjoiMjAiLCJsb3NlQW1vdW50IjoiNzYuNCIsIm1heFN0YWtlIjoiNzcwMDAwIiwibWF4V2luQW1vdW50IjoiNTYuNCIsIm1vZGlmeVRpbWUiOiIxNzc0ODczOTMwMTkyIiwib2Rkc0NoYW5nZSI6MSwib3BlcmF0b3JJRCI6MjU0MzY1Miwib3JkZXJTdGF0dXMiOjUsInBheVN0YXR1cyI6NCwicGxheWVySWQiOjI3NzQ4NzM5MDgyNTg2NjA0MDAsInJvbGxCYWNrQ291bnQiOjAsInNlcmllc1R5cGUiOjAsInNlcmllc1ZhbHVlIjoxLCJzZXR0bGVBbW91bnQiOiI3Ni40Iiwic2V0dGxlVGltZSI6IjE3NzUwMDkxNTI4NDUiLCJzdGFrZUFtb3VudCI6IjIwIiwidHJhblR5cGUiOjEsInVuaXRTdGFrZSI6IjIwIiwidXNlcklkIjoiMjg4NTk1MSIsInVzZXJOYW1lIjoidGVzdF8xMjMzMjExMTMiLCJ2YWxpZFNldHRsZUFtb3VudCI6Ijc2LjQiLCJ2YWxpZFNldHRsZVN0YWtlQW1vdW50IjoiMjAiLCJ2ZXJzaW9uIjo1LCJ3YWxsZXRUeXBlIjoyfV0=](https://fbsports.southasiabp.biz/analyze/order/index.html#content=W3siYWxsVXAiOjEsImFsbFVwQWxpdmUiOjAsImJldExpc3QiOlt7ImJldE9kZHMiOiIzLjgyIiwiYmV0U2NvcmUiOiJTOiAxLTAiLCJleHRyYUluZm8iOiIiLCJpZCI6IjE2OTI3ODM0NDIwMzIzMjk1MzUiLCJpc0lucGxheSI6dHJ1ZSwibGVhZ3VlUGhhc2UiOjAsIm1hcmtldElkIjoiOTY1MDUwNyIsIm1hcmtldE5hbWUiOiLni6zotaIiLCJtYXJrZXRUeXBlIjoxMDA1LCJtYXRjaElkIjoiMTQxMDIxNyIsIm1hdGNoTmFtZSI6IlNhc3N1b2xvIENhbGNpbyB2cyBKdXZlbnR1cyBUdXJpbiIsIm1hdGNoVGltZSI6IjE3Njc5ODc5MDAwMDAiLCJtYXRjaFR5cGUiOjIsIm9kZHMiOiIzLjgyIiwib2Rkc0Zvcm1hdCI6MSwib3B0aW9uTmFtZSI6IlNhc3N1b2xvIENhbGNpbyIsIm9wdGlvblR5cGUiOjEsIm9yZGVySWQiOiIxNjkyNzgzNDQyMDMyMzI5Mjc5IiwicGVyaW9kIjoxMDAxLCJzZXR0bGVSZXN1bHQiOjQsInNldHRsZVN0YXR1cyI6MSwic3BvcnRJZCI6MSwic3BvcnROYW1lIjoi6Laz55CDIiwidG91cm5hbWVudElkIjoiMTEwMTgiLCJ0b3VybmFtZW50TmFtZSI6Ikl0YWx5IFNlcmllIEEifV0sImJldE51bSI6MSwiYmV0VHlwZSI6IjF4MSoxIiwiY3JlYXRlVGltZSI6IjE3NzQ4NzM5Mjk2MTIiLCJjdXJyZW5jeSI6IlBIUCIsImRldmljZSI6Img1IiwiZXAiOjAsImV4Y2hhbmdlUmF0ZSI6IjAuMTEzODQiLCJpZCI6IjE2OTI3ODM0NDIwMzIzMjkyNzkiLCJpcCI6IjE3Mi43MS4yMTEuNTMiLCJpdGVtQ291bnQiOjEsImxpYWJpbGl0eVN0YWtlIjoiMjAiLCJsb3NlQW1vdW50IjoiNzYuNCIsIm1heFN0YWtlIjoiNzcwMDAwIiwibWF4V2luQW1vdW50IjoiNTYuNCIsIm1vZGlmeVRpbWUiOiIxNzc0ODczOTMwMTkyIiwib2Rkc0NoYW5nZSI6MSwib3BlcmF0b3JJRCI6MjU0MzY1Miwib3JkZXJTdGF0dXMiOjUsInBheVN0YXR1cyI6NCwicGxheWVySWQiOjI3NzQ4NzM5MDgyNTg2NjA0MDAsInJvbGxCYWNrQ291bnQiOjAsInNlcmllc1R5cGUiOjAsInNlcmllc1ZhbHVlIjoxLCJzZXR0bGVBbW91bnQiOiI3Ni40Iiwic2V0dGxlVGltZSI6IjE3NzUwMDkxNTI4NDUiLCJzdGFrZUFtb3VudCI6IjIwIiwidHJhblR5cGUiOjEsInVuaXRTdGFrZSI6IjIwIiwidXNlcklkIjoiMjg4NTk1MSIsInVzZXJOYW1lIjoidGVzdF8xMjMzMjExMTMiLCJ2YWxpZFNldHRsZUFtb3VudCI6Ijc2LjQiLCJ2YWxpZFNldHRsZVN0YWtlQW1vdW50IjoiMjAiLCJ2ZXJzaW9uIjo1LCJ3YWxsZXRUeXBlIjoyfV0%3D)
 
 ---
 
 ## 页面行为
 
-页面加载后自动读取 #content  
-解析 Base64 数据并转换为 JSON  
-渲染订单表格展示
+页面加载后自动读取 `#content`参数，并按以下流程解析：
+
+1. 读取 URL 中的 `content` 参数。
+2. 对 `content` 执行 `decodeURIComponent`。
+3. 校验内容是否为合法 Base64 字符串。
+4. 使用 `atob` 解码，再通过 `TextDecoder` 转为 UTF-8 字符串。
+5. 对字符串执行 `JSON.parse`，得到订单数组。
+6. 遍历订单数组生成表格。
+7. 每条订单默认只取 `betList[0]` 作为投注详情展示对象。
+
+## 表头字段映射
+
+页面表头与数据字段的映射关系如下：
+
+| 页面字段 | 来源字段 | 展示规则 |
+| --- | --- | --- |
+| 订单号 | `o.id` | 原样展示 |
+| 用户名 | `o.userName` | 原样展示 |
+| 投注时间/状态 | `o.createTime`、`o.orderStatus`、`o.remark` | `createTime` 转本地时间，`orderStatus` 转状态文案，若有 `remark` 则追加显示 |
+| 投注类型 | `o.seriesType`、`o.betType` | `seriesType == 0` 时固定显示“单关/Single”，否则显示 `betType` |
+| 赛事 | `b.sportName`、`b.matchTime`、`b.tournamentId`、`b.matchName`、`b.tournamentName`、`b.matchId` | 组合展示赛事基础信息 |
+| 投注详情 | `b.isInplay`、`b.marketName`、`b.optionName`、`b.betScore` | 展示滚球/赛前、盘口名、投注项、下注时比分 |
+| 投注结果 | `b.settleResult`、`b.matchResult` | `settleResult` 转结果文案；若 `matchResult` 有值则追加展示赛果 |
+| 赔率 | `b.odds`、`b.oddsFormat` | 展示赔率值和赔率格式 |
+| 名义投注额 | `o.stakeAmount` | 原样展示 |
+| 扣款额 | `o.stakeAmount` | 当前页面与名义投注额一致 |
+| 正常结算本金 | `o.stakeAmount`、`o.orderStatus` | 仅 `orderStatus == 5` 时显示投注本金，否则显示 `0` |
+| 正常结算返还 | `o.validSettleAmount` | 无值时显示 `0` |
+| 实际提前结算本金 | `o.cashOutCount` | 无值时显示 `0` |
+| 名义提前结算本金 | `o.liabilityCashoutStake` | 无值时显示 `0` |
+| 提前结算返还 | `o.cashOutPayoutStake` | 无值时显示 `0` |
+| 结算时间 | `o.settleTime`、`o.orderStatus` | 仅 `orderStatus == 5` 时展示结算时间 |
+| 公司 输/赢 | `o.stakeAmount`、`o.settleAmount` | 仅 `orderStatus == 5` 时展示，计算方式为 `stakeAmount - settleAmount` |
+| 注单币种 | `o.currency` | 优先走币种映射表，取不到则原样展示 |
+| IP地址 | `o.ip` | 原样展示 |
+| 设备 | `o.device` | 原样展示 |
+| 第三方备注 | `o.extraInfo` | 原样展示 |
+
+说明：
+
+- `o` 表示订单对象。
+- `b` 表示投注对象，取值方式为 `const b = (o.betList && o.betList[0]) || {}`。
+
+## 投注详情字段说明
+
+订单详情区域主要使用 `betList[0]` 中的以下字段：
+
+| 字段名 | 说明 |
+| --- | --- |
+| `sportName` | 体育类型名称，如足球、篮球 |
+| `matchTime` | 开赛时间，页面会转换为本地时间展示 |
+| `tournamentId` | 联赛 ID |
+| `matchName` | 对阵名称 |
+| `tournamentName` | 联赛名称 |
+| `matchId` | 比赛 ID |
+| `isInplay` | 是否滚球 |
+| `marketName` | 盘口名称 |
+| `optionName` | 投注项名称 |
+| `betScore` | 投注时比分 |
+| `settleResult` | 投注结算结果 |
+| `matchResult` | 赛果展示文本 |
+| `odds` | 赔率值 |
+| `oddsFormat` | 赔率格式 |
+
+## 枚举定义
+
+### 订单状态 `orderStatusMap`
+
+| 值 | 中文 | 英文 |
+| --- | --- | --- |
+| `0` | 已创建 | Created |
+| `1` | 确认中 | Confirming |
+| `2` | 拒绝 | Rejected |
+| `3` | 取消 | Canceled |
+| `4` | 已确认 | Confirmed |
+| `5` | 已结算 | Settled |
+
+### 赔率格式 `oddsTypeMap`
+
+| 值 | 中文 | 英文 |
+| --- | --- | --- |
+| `1` | 欧盘 | EUROPE |
+| `2` | 香港盘 | HONGKONG |
+| `3` | 马来盘 | MALAY |
+| `4` | 印尼盘 | INDONESIA |
+| `5` | 美盘 | AMERICAN |
+
+### 结算结果 `resultMap`
+
+| 值 | 中文 | 英文 |
+| --- | --- | --- |
+| `0` | 无结果 | NoResult |
+| `2` | 平 | Push |
+| `3` | 负 | Lost |
+| `4` | 胜 | Won |
+| `5` | 赢半 | HalfWon |
+| `6` | 输半 | HalfLost |
+| `7` | 取消 | Canceled |
+
+### 是否滚球 `inplayMap`
+
+| 值 | 中文 | 英文 |
+| --- | --- | --- |
+| `true` | 滚球 | Live |
+| `false` | 赛前 | PreMatch |
+
+### 赛果提示 `resultTipMap`
+
+| 语言 | 文案 |
+| --- | --- |
+| `zh` | 赛果 |
+| `en` | matchResult |
+
+### 币种映射 `currencyMap`
+
+常用币种如下，页面实际支持更多枚举：
+
+| 值 | 币种 |
+| --- | --- |
+| `1` | CNY |
+| `2` | USD |
+| `3` | EUR |
+| `4` | GBP |
+| `5` | HKD |
+| `6` | TWD |
+| `7` | MYR |
+| `8` | SGD |
+| `9` | THB |
+| `10` | VND |
+| `11` | KRW |
+| `12` | JPY |
+| `13` | PHP |
+| `14` | IDR |
+| `15` | INR |
+| `16` | AUD |
+| `17` | MMK |
+| `18` | COP |
+| `19` | TZS |
+| `20` | NGN |
+| `21` | ZMW |
+| `22` | BRL |
+| `23` | MXN |
+| `24` | RUB |
+| `25` | EGP |
+| `26` | PEN |
+| `27` | BOB |
+| `28` | PKR |
+| `29` | BDT |
+| `30` | UGX |
+| `31` | ETB |
+| `32` | ZAR |
+| `33` | HNL |
+| `34` | CDF |
+| `35` | TRY |
+| `36` | IRR |
+| `37` | GHS |
+| `38` | KES |
+| `39` | ILS |
+| `40` | CLP |
+| `41` | KZT |
+| `42` | KGS |
+| `43` | TJS |
+| `44` | TMT |
+| `45` | UZS |
+| `46` | LAK |
+| `47` | BND |
+| `48` | CAD |
+| `49` | NZD |
+| `59` | PLN |
+| `60` | ARS |
+| `61` | KHR |
+| `62` | NIO |
+| `63` | ZWL |
+| `64` | IMP |
+| `65` | LKR |
+| `66` | XOF |
+| `67` | NPR |
+| `68` | PGK |
+| `69` | SAR |
+| `70` | AED |
+| `71` | KWD |
+| `72` | QAR |
+| `73` | XAF |
+| `200` | USDT |
+| `201` | BTC |
+| `202` | ETH |
+| `203` | LTC |
+| `204` | DOGE |
+| `205` | BCH |
+| `206` | DASH |
+| `207` | ETC |
+| `209` | USDC |
+| `210` | XRP |
+| `1000` | VNDK |
+| `1001` | IDRK |
+| `1003` | IRRK |
+| `1004` | UZSK |
+| `1005` | LAKK |
+| `1007` | KRWK |
+| `1008` | KHRK |
+| `1009` | %TWD |
+| `1010` | ÷TWD |
+| `1011` | USD20 |
+| `1200` | mBTC |
+| `1201` | mETH |
+| `1202` | mBCH |
+| `1203` | mDASH |
+| `1204` | mETC |
+| `1205` | mLTC |
+
+## 衍生字段计算规则
+
+### 投注类型
+
+- `seriesType == 0` 时显示“单关（Single）”。
+- 其他情况下显示 `betType` 原始值。
+
+### 投注结果
+
+- 仅当 `b.settleResult` 有值时显示结果文案。
+- 若 `b.matchResult` 有值，则追加显示“赛果/ matchResult”。
+
+### 公司 输/赢
+
+- 仅当 `o.orderStatus == 5` 时显示。
+- 计算公式：`stakeAmount - settleAmount`。
+- 结果大于 `0` 时显示红色，小于 `0` 时显示绿色，等于 `0` 时显示灰色。
 
 ## 注意事项
 
-content 必须为合法 Base64 字符串  
-数据需为 JSON 格式，否则无法解析  
-建议进行 URL 编码以避免特殊字符问题  
-页面仅解析 #content 参数  
-数据过大可能导致浏览器无法正常打开
+- `content` 必须为合法 Base64 字符串。
+- `content` 解码后必须为合法 JSON 数组，否则页面无法解析。
+- 建议对 Base64 结果做 URL 编码，避免 `+`、`=` 等特殊字符影响 URL 传参。
+- 页面仅解析 URL 中的 `#content` 或查询参数中的 `content`。
+- 页面默认使用 `lang=zh`，传 `lang=en` 可切换英文文案。
+- 页面当前只展示 `betList[0]`，若 `betList` 中存在多条投注项，不会在页面中全部展开。
+- `settleResult = 0` 虽然在枚举中定义为“无结果”，但由于页面渲染判断使用的是 `if (b.settleResult)`，实际不会显示该结果文案。
+- `注单币种` 同时兼容数值枚举和字符串直传，渲染逻辑为 `currencyMap[o.currency] || o.currency`。
 
 ## 说明
 
-所有数据仅在前端解析，不经过服务端  
-适用于订单展示、调试、对账等场景
+所有数据仅在前端解析，不经过服务端。  
+适用于订单展示、调试、对账等场景。
 
 ---
-
 # 常见问题说明
 
 ## 页面数据不一致
