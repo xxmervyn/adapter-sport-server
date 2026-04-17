@@ -176,6 +176,11 @@ const content = encodeURIComponent(base64)
 | IP地址 | `o.ip` | 原样展示 |
 | 设备 | `o.device` | 原样展示 |
 | 第三方备注 | `o.extraInfo` | 原样展示 |
+| 存活关数 | `o.allUpAlive` | 表示串关订单中当前仍然有效的关数 |
+| 付款状态 | `o.payStatus` | 付款状态字段，接口文档中标注为“弃用”，通常不建议作为主判断字段 |
+| 数据版本 | `o.version` | 数据变更标记，按升序递增。若同一订单在多个文件中重复出现，应以 `version` 更大的那条数据为最新数据 |
+| 投注项结算状态 | `b.settleStatus` | 用于判断该投注项是否已经完成结算 |
+| 投注项结算结果 | `b.settleResult` | 用于表示该投注项最终赛果，例如胜、负、平、取消等 |
 
 说明：
 
