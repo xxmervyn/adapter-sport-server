@@ -147,7 +147,7 @@ const content = encodeURIComponent(base64)
 4. 使用 `atob` 解码，再通过 `TextDecoder` 转为 UTF-8 字符串。
 5. 对字符串执行 `JSON.parse`，得到订单数组。
 6. 遍历订单数组生成表格。
-7. 每条订单默认只取 `betList[0]` 作为投注详情展示对象。
+7. 每条订单会读取完整 `betList`，并在同一订单行中展开展示多条投注项；单关通常只有 1 条，串关会展示多条。
 
 ## 表头字段映射
 
@@ -159,10 +159,10 @@ const content = encodeURIComponent(base64)
 | 用户名 | `o.userName` | 原样展示 |
 | 投注时间/状态 | `o.createTime`、`o.orderStatus`、`o.remark` | `createTime` 转本地时间，`orderStatus` 转状态文案，若有 `remark` 则追加显示 |
 | 投注类型 | `o.seriesType`、`o.betType` | `seriesType == 0` 时固定显示“单关/Single”，否则显示 `betType` |
-| 赛事 | `b.sportName`、`b.matchTime`、`b.tournamentId`、`b.matchName`、`b.tournamentName`、`b.matchId` | 组合展示赛事基础信息 |
-| 投注详情 | `b.isInplay`、`b.marketName`、`b.optionName`、`b.betScore` | 展示滚球/赛前、盘口名、投注项、下注时比分 |
-| 投注结果 | `b.settleResult`、`b.matchResult` | `settleResult` 转结果文案；若 `matchResult` 有值则追加展示赛果 |
-| 赔率 | `b.odds`、`b.oddsFormat` | 展示赔率值和赔率格式 |
+| 赛事 | `b.sportName`、`b.matchTime`、`b.tournamentId`、`b.matchName`、`b.tournamentName`、`b.matchId` | 遍历 `o.betList`，逐条组合展示赛事基础信息 |
+| 投注详情 | `b.isInplay`、`b.marketName`、`b.optionName`、`b.betScore`、`b.betOdds`、`b.odds` | 遍历 `o.betList`，逐条展示滚球/赛前、盘口名、投注项、单项赔率、下注时比分 |
+| 投注结果 | `b.settleResult`、`b.matchResult`、`b.extraInfo` | 遍历 `o.betList`，有 `settleResult` 的投注项会转为结果文案；若有 `matchResult` 或 `extraInfo` 则追加展示赛果 |
+| 赔率 | `o.maxWinAmount`、`o.stakeAmount`、`b.betOdds`、`b.odds`、`b.oddsFormat` | 单关直接展示投注项赔率；串关优先按订单最大可赢金额反推倍率，无法反推时使用投注项赔率连乘；赔率格式取首个投注项的 `oddsFormat` |
 | 名义投注额 | `o.stakeAmount` | 原样展示 |
 | 扣款额 | `o.stakeAmount` | 当前页面与名义投注额一致 |
 | 正常结算本金 | `o.stakeAmount`、`o.orderStatus` | 仅 `orderStatus == 5` 时显示投注本金，否则显示 `0` |
@@ -171,7 +171,7 @@ const content = encodeURIComponent(base64)
 | 名义提前结算本金 | `o.liabilityCashoutStake` | 无值时显示 `0` |
 | 提前结算返还 | `o.cashOutPayoutStake` | 无值时显示 `0` |
 | 结算时间 | `o.settleTime`、`o.orderStatus` | 仅 `orderStatus == 5` 时展示结算时间 |
-| 公司 输/赢 | `o.stakeAmount`、`o.settleAmount` | 仅 `orderStatus == 5` 时展示，计算方式为 `stakeAmount - settleAmount` |
+| 公司 输/赢 | `o.stakeAmount`、`o.settleAmount`、`o.orderStatus` | 仅 `orderStatus == 5` 时展示，计算方式为 `stakeAmount - settleAmount` |
 | 注单币种 | `o.currency` | 优先走币种映射表，取不到则原样展示 |
 | IP地址 | `o.ip` | 原样展示 |
 | 设备 | `o.device` | 原样展示 |
@@ -185,11 +185,11 @@ const content = encodeURIComponent(base64)
 说明：
 
 - `o` 表示订单对象。
-- `b` 表示投注对象，取值方式为 `const b = (o.betList && o.betList[0]) || {}`。
+- `b` 表示投注对象，当前版本会遍历 `o.betList` 中的每一个投注对象。部分订单级字段（如赔率格式）会取 `betList[0]` 作为代表值。
 
 ## 投注详情字段说明
 
-订单详情区域主要使用 `betList[0]` 中的以下字段：
+订单详情区域主要使用 `betList` 中每一条投注项的以下字段：
 
 | 字段名 | 说明 |
 | --- | --- |
@@ -296,14 +296,89 @@ const content = encodeURIComponent(base64)
 
 ### 投注结果
 
-- 仅当 `b.settleResult` 有值时显示结果文案。
-- 若 `b.matchResult` 有值，则追加显示“赛果/ matchResult”。
+- 遍历 `o.betList`，仅当某条投注项的 `b.settleResult` 有值时显示结果文案。
+- 若 `b.matchResult` 或 `b.extraInfo` 有值，则追加显示“赛果/ matchResult”。
+
+### 赔率 / 倍率
+
+页面展示的“赔率”需要区分单关和串关：
+
+当前版本计算优先级如下：
+
+1. 单关或只有一条投注项时，直接使用该投注项赔率：
+
+```txt
+展示赔率 = betList[0].betOdds || betList[0].odds
+```
+
+2. 串关或 `betList` 有多条投注项时，若 `o.maxWinAmount` 和 `o.stakeAmount` 都是有效数字，且 `stakeAmount > 0`，优先使用订单最大可赢金额反推倍率：
+
+```txt
+倍率 = (maxWinAmount + stakeAmount) / stakeAmount
+```
+
+3. 串关倍率展示时向下截断两位小数：
+
+```txt
+展示倍率 = floor(倍率 * 100) / 100
+```
+
+4. 若串关订单缺少 `maxWinAmount` 或 `stakeAmount`，则退回使用 `betList` 中每条投注项的 `betOdds || odds` 连乘，并同样向下截断两位：
+
+```txt
+倍率 = betList[0].odds * betList[1].odds * ... * betList[n].odds
+```
+
+示例：
+
+```txt
+maxWinAmount = 373.66
+stakeAmount = 10
+
+倍率 = (373.66 + 10) / 10 = 38.366
+展示倍率 = 38.36
+```
+
+说明：
+
+- 只有串关才需要订单级倍率计算。
+- 单关不使用 `maxWinAmount + stakeAmount` 反推倍率，直接展示投注项自身赔率。
+- 串关直接将单项赔率 `1.94 * 1.86 * 3.09 * 1.85 * 1.86` 相乘会得到约 `38.3701`，四舍五入后是 `38.37`。
+- 当前页面为了与订单实际可赢金额一致，串关优先使用 `maxWinAmount + stakeAmount` 反推订单倍率，因此示例会展示 `@38.36`。
 
 ### 公司 输/赢
 
+- 不区分单关或串关，统一使用原本逻辑。
 - 仅当 `o.orderStatus == 5` 时显示。
-- 计算公式：`stakeAmount - settleAmount`。
-- 结果大于 `0` 时显示红色，小于 `0` 时显示绿色，等于 `0` 时显示灰色。
+- 涉及字段如下：
+
+```txt
+o.stakeAmount
+o.settleAmount
+o.orderStatus
+```
+
+- 计算方式如下：
+
+```txt
+公司输赢 = stakeAmount - settleAmount
+```
+
+颜色规则：
+
+- 结果大于 `0` 时显示红色。
+- 结果小于 `0` 时显示绿色。
+- 结果等于 `0` 时显示灰色。
+
+示例：
+
+```txt
+orderStatus = 5
+stakeAmount = 20
+settleAmount = 76.4
+
+公司 输/赢 = 20 - 76.4 = -56.4
+```
 
 ## 注意事项
 
@@ -312,8 +387,8 @@ const content = encodeURIComponent(base64)
 - 建议对 Base64 结果做 URL 编码，避免 `+`、`=` 等特殊字符影响 URL 传参。
 - 页面仅解析 URL 中的 `#content` 或查询参数中的 `content`。
 - 页面默认使用 `lang=zh`，传 `lang=en` 可切换英文文案。
-- 页面当前只展示 `betList[0]`，若 `betList` 中存在多条投注项，不会在页面中全部展开。
-- `settleResult = 0` 虽然在枚举中定义为“无结果”，但由于页面渲染判断使用的是 `if (b.settleResult)`，实际不会显示该结果文案。
+- 页面当前会遍历并展示完整 `betList`，串关订单会在同一订单行中展开多条投注项。
+- `settleResult = 0` 在枚举中定义为“无结果”，当前版本只判断字段是否为 `undefined/null`，因此该值可以正常展示为“无结果”。
 - `注单币种` 同时兼容数值枚举和字符串直传，渲染逻辑为 `currencyMap[o.currency] || o.currency`。
 
 ## 说明
