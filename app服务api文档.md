@@ -29,6 +29,7 @@ https://${host}/games/enter?id=200101&lang=zh&playerGameToken=abc123&reqt=xxx&es
 | reqt | string | 是 | 请求唯一标识 |
 | esign | string | 是 | 请求签名 |
 | ui | string | 否 | UI版本（h5 / pcOld / pcNew） |
+| color | string | 否 | 主题颜色，可选值：daily / dark |
 
 ---
 
@@ -46,11 +47,20 @@ pcNew → PC国际版
 示例：  
 https://${host}/games/enter?id=200101&playerGameToken&lang=zh&ui=h5&reqt=xxx&esign=xxx
 
+### 指定主题颜色
+
+daily → 浅色主题（日间版）  
+dark → 深色主题（夜间版）
+
+示例：  
+https://${host}/games/enter?id=200101&playerGameToken=abc123&lang=zh&ui=h5&color=dark&reqt=xxx&esign=xxx
+
 ## 说明
 
 playerGameToken 决定登录或游客模式  
 lang 必须为小写，不合法值默认使用英语  
 ui 可覆盖默认设备判断，若不传，系统将根据设备自动选择  
+color 可指定页面主题颜色，仅支持 daily / dark，不传或非法值时默认使用 dark  
 reqt 和 esign 必须传递以保证安全性
 
 # 结算流程
