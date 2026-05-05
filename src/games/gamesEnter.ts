@@ -19,6 +19,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 				reqt: z.string(),
 				esign: z.string(),
 				ui: z.string().optional(),
+				theme: z.string().optional(),
 				apihost: z.string().optional(),
 			}),
 			body: contentJson(z.object({ name: z.string() })),
@@ -38,6 +39,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 
 		const lang = LANGUAGE_MAP[data.query.lang?.toLowerCase() || "en"] || "ENG";
 		const ui = data.query.ui;
+		const theme = data.query.theme;
 
 		let url = this.buildGameUrl(req, token, jwtInfo, hostname, apiHost, lang, ui);
 		url = genGameUrlSignWithKeys(data.query, url, ["token"], true);
@@ -64,6 +66,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		}
 
 		if (ui) url += `&ui=${ui}`;
+		if (theme) url += `&color=${theme}`;
 
 		return c.redirect(url);
 	}
