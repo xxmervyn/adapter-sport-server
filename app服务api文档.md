@@ -1,4 +1,6 @@
-﻿### 体育API域名
+﻿#  
+
+### 体育API域名
 
 黑豹体育不需要区分地区域名，全部使用 api.bpapiglobal.com 请求。
 
@@ -29,6 +31,7 @@ https://${host}/games/enter?id=200101&lang=zh&playerGameToken=abc123&reqt=xxx&es
 | reqt | string | 是 | 请求唯一标识 |
 | esign | string | 是 | 请求签名 |
 | ui | string | 否 | UI版本（h5 / pcOld / pcNew） |
+| color | string | 否 | 主题颜色，可选值：daily / dark |
 
 ---
 
@@ -46,12 +49,211 @@ pcNew → PC国际版
 示例：  
 https://${host}/games/enter?id=200101&playerGameToken&lang=zh&ui=h5&reqt=xxx&esign=xxx
 
+### 指定主题颜色
+
+daily → 浅色主题（日间版）  
+dark → 深色主题（夜间版）
+
+示例：  
+https://${host}/games/enter?id=200101&playerGameToken=abc123&lang=zh&ui=h5&color=dark&reqt=xxx&esign=xxx
+
 ## 说明
 
 playerGameToken 决定登录或游客模式  
 lang 必须为小写，不合法值默认使用英语  
 ui 可覆盖默认设备判断，若不传，系统将根据设备自动选择  
+color 可指定页面主题颜色，仅支持 daily / dark，不传或非法值时默认使用 dark  
 reqt 和 esign 必须传递以保证安全性
+
+
+
+# 直播接入
+
+根据所需的 H5 / PC 终端，在项目内直接嵌入即可使用。推荐使用 `iframe` 方式接入视频直播或动画直播。
+
+## 接入方式
+
+### 使用 Iframe 嵌入
+
+可在页面任意 DOM 节点内插入如下代码：
+
+```html
+<iframe
+  name="iframe"
+  allowfullscreen="allowfullscreen"
+  webkitallowfullscreen="true"
+  mozallowfullscreen="true"
+  allowtransparency="true"
+  auto="autoplay"
+  muted="muted"
+  frameborder="0"
+  src="{URL_SRC}"
+></iframe>
+```
+
+说明：
+
+- 以上 `iframe` 属性仅为参考，可根据项目实际样式、自适应方案和权限策略自行调整。
+- `src` 中的 `{URL_SRC}` 为最终拼接好的直播地址或动画地址。
+
+## 视频直播
+
+### 数据来源
+
+以下接口均会返回直播地址及播放器相关信息：
+
+- `/v1/match/getList`
+- `/v1/match/getMatchDetail`
+- `/v1/match/getBannerMatchList`
+
+当接口返回 `data.vs.hava = true` 时，表示该场比赛有视频直播。  
+当 `data.vs.hava = false` 时，表示没有视频直播，同时不会返回下述直播播放相关字段。
+
+### `vs` 字段说明
+
+`data.vs` 中常用字段如下：
+
+| 字段     | 说明                                                    |
+| -------- | ------------------------------------------------------- |
+| `hava`   | 是否有视频直播，`true` 表示有，`false` 表示无           |
+| `web`    | HB 提供的播放器页面地址。该地址可能变动，接入时不要写死 |
+| `flvSD`  | FLV 标清播放地址，通常用于 PC                           |
+| `flvHD`  | FLV 高清播放地址，不一定返回                            |
+| `m3u8SD` | M3U8 标清播放地址，通常用于 H5                          |
+| `m3u8HD` | M3U8 高清播放地址，不一定返回                           |
+
+示例：
+
+```js
+const liveUrl = {
+  flvSD: "http://fsports.com/live/L5284720.flv?definition=SD&txSecret=e4dd5116a6f69e0d7557b391e8e777eb&txTime=629F3E72",
+  flvHD: "http://fsports.com/live/H514966.flv?definition=HD&txSecret=4b6612be747a3768ad8c94fd00af7875&txTime=629F3E72",
+  m3u8SD: "http://fsports.com/live/L5284720.m3u8?definition=SD&txSecret=659c216470d416bed70aa2ea29831001&txTime=629F3E72",
+  m3u8HD: "http://fsports.com/live/H514966.m3u8?definition=HD&txSecret=a9a20d89455d2c742752c72cc3696a49&txTime=629F3E72",
+  web: "https://video.fsports.com/live/index.html"
+}
+```
+
+### 播放器参数
+
+其中 `liveUrl` 和 `isMobile` 为必传参数，其余参数按需传入。
+
+| 参数                     | 必填 | 说明                                                 |
+| ------------------------ | ---- | ---------------------------------------------------- |
+| `liveUrl`                | 是   | 实际播放线路地址，取自接口返回的 `vs` 字段           |
+| `isMobile`               | 是   | 是否为 H5，H5 传 `true`，PC 传 `false`               |
+| `hotkey`                 | 否   | 是否显示视频暂停键，显示传 `true`，不显示传 `false`  |
+| `fullscreen`             | 否   | 是否显示播放器内部全屏按钮，显示传 `1`，不显示传 `0` |
+| `fullscreen_text`        | 否   | 全屏按钮文案                                         |
+| `cancel_fullscreen_text` | 否   | 取消全屏按钮文案                                     |
+| `mute`                   | 否   | 静音按钮文案                                         |
+| `cancel_mute`            | 否   | 取消静音按钮文案                                     |
+| `open_pip`               | 否   | 画中画按钮文案                                       |
+| `refreshText`            | 否   | 刷新按钮文案                                         |
+
+注意事项：
+
+- `liveUrl` 中通常包含 `&` 等特殊字符，拼接到播放器地址时必须先做 URL 编码。
+- `data.vs.web` 为播放器壳地址，`liveUrl` 为实际播放线路地址，两者都需要参与拼接。
+- 推荐 H5 优先使用 `m3u8SD / m3u8HD`，PC 优先使用 `flvSD / flvHD`。
+- 高清地址 `flvHD`、`m3u8HD` 不一定有返回，使用前需先判断字段是否存在。
+
+### H5 接入示例
+
+```js
+const URL_SRC = `${liveUrl.web}?liveUrl=${encodeURIComponent(liveUrl.m3u8SD)}&isMobile=true&hotkey=true`
+```
+
+### PC 接入示例
+
+```js
+const URL_SRC = `${liveUrl.web}?liveUrl=${encodeURIComponent(liveUrl.flvSD)}&isMobile=false&hotkey=false`
+```
+
+### PC 标清完整示例
+
+```txt
+https://video.fsports.com/live/index.html?liveUrl=http%3A%2F%2Ffsports.com%2Flive%2FL5284720.flv%3Fdefinition%3DSD%26txSecret%3De4dd5116a6f69e0d7557b391e8e777eb%26txTime%3D629F3E72&isMobile=false&refreshText=刷新&mute=静音&open_pip=画中画&fullscreen=0
+```
+
+将最终得到的 `URL_SRC` 放入 `iframe src` 中即可播放。
+
+## 动画直播
+
+### 数据来源
+
+动画直播地址取自接口返回的 `as` 字段。
+
+示例：
+
+```js
+const as = [
+  "https://animation.fb6pro.com/animation/index.html?matchId=33848973"
+]
+```
+
+通常取 `as[0]` 作为动画直播基础地址，即：
+
+```js
+const matchId = as[0]
+```
+
+### 参数说明
+
+| 参数       | 必填 | 说明                                     |
+| ---------- | ---- | ---------------------------------------- |
+| `language` | 否   | 语言，默认可传 `zh`                      |
+| `tabs`     | 否   | tab 栏位置，`bottom` / `top` / `disable` |
+
+语言参数支持如下值：
+
+| 值    | 说明                                |
+| ----- | ----------------------------------- |
+| `zh`  | 中文                                |
+| `en`  | 英文                                |
+| `zht` | 繁体中文                            |
+| `vi`  | 越南语                              |
+| `ja`  | 日语                                |
+| `tha` | 泰语                                |
+| `ko`  | 韩语                                |
+| `aa`  | 阿拉伯语                            |
+| `de`  | 德语                                |
+| `es`  | 西班牙语                            |
+| `fr`  | 法语                                |
+| `br`  | 葡萄牙语                            |
+| `ru`  | 俄语                                |
+| `hi`  | 印地语                              |
+| `en`  | 马来语 / 印度尼西亚语当前可复用英文 |
+
+`tabs` 参数说明：
+
+- `bottom`：tab 栏显示在底部
+- `top`：tab 栏显示在顶部
+- `disable`：不显示 tab 栏
+
+### 动画直播示例
+
+```js
+const URL_SRC = `${matchId}&language=zh&tabs=bottom`
+```
+
+完整示例：
+
+```txt
+https://animation.fb6pro.com/animation/index.html?matchId=33848973&language=zh&tabs=bottom
+```
+
+将最终得到的 `URL_SRC` 放入 `iframe src` 中即可展示动画直播。
+
+## 接入建议
+
+- H5 和 PC 建议分别按终端选择不同播放线路，不要混用。
+- 播放器地址 `data.vs.web` 可能变更，必须以接口实时返回为准，不要在前端写死域名。
+- 对于视频直播，建议优先判断 `data.vs.hava`，无直播时可降级展示动画直播或普通比赛详情。
+- 对于动画直播，建议先判断 `as` 数组是否存在且长度大于 `0`。
+- **画中画功能需要浏览器支持**，不只是前端传个参数就一定能用，控制“是否显示画中画按钮/文案”的参数，不等于保证最终一定能使用画中画
+
+
 
 # 结算流程
 
@@ -62,19 +264,19 @@ reqt 和 esign 必须传递以保证安全性
 
 **rde 字段说明：** 回调参数的 rde，说明这一次余额变动的类型，具体说明如下。  
 
-| 类型 | 说明 |  
-| -- | -- |  
-| BET | 押注 |  
-| WIN | 派彩 |  
-| REFUND | 退款 |  
-| CASHOUT | 提前结算 |  
-| CANCEL_DEDUCT | 订单取消补扣 |  
-| CANCEL_RETURN | 订单取消返还 |  
-| SETTLEMENT_ROLLBACK_DEDUCT | 结算回滚补扣 |  
-| SETTLEMENT_ROLLBACK_RETURN | 结算回滚返還 |  
-| CASHOUT_CANCEL_DEDUCT | 提前结算订单取消补扣 |  
-| CASHOUT_CANCEL_RETURN | 提前结算订单取消返还 |  
-| CASHOUT_CANCEL_ROLLBACK_DEDUCT | 提前结算取消回滚补扣 |  
+| 类型 | 说明 |
+| -- | -- |
+| BET | 押注 |
+| WIN | 派彩 |
+| REFUND | 退款 |
+| CASHOUT | 提前结算 |
+| CANCEL_DEDUCT | 订单取消补扣 |
+| CANCEL_RETURN | 订单取消返还 |
+| SETTLEMENT_ROLLBACK_DEDUCT | 结算回滚补扣 |
+| SETTLEMENT_ROLLBACK_RETURN | 结算回滚返還 |
+| CASHOUT_CANCEL_DEDUCT | 提前结算订单取消补扣 |
+| CASHOUT_CANCEL_RETURN | 提前结算订单取消返还 |
+| CASHOUT_CANCEL_ROLLBACK_DEDUCT | 提前结算取消回滚补扣 |
 | CASHOUT_CANCEL_ROLLBACK_RETURN | 提前结算取消回滚返还 |
 
 
