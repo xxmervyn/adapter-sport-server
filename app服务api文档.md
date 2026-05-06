@@ -77,6 +77,15 @@ reqt 和 esign 必须传递以保证安全性
 | CASHOUT_CANCEL_ROLLBACK_DEDUCT | 提前结算取消回滚补扣 |  
 | CASHOUT_CANCEL_ROLLBACK_RETURN | 提前结算取消回滚返还 |
 
+
+**扣减余额需要下次充值冲正的状态**
+CANCEL_DEDUCT  订单结算后赢了钱，取消结算订单，补扣差价。
+SETTLEMENT_ROLLBACK_DEDUCT 是订单结算赢了后，订单回滚成未结算时，扣除差价。
+CASHOUT_CANCEL_DEDUCT 订单提前结算后赢了钱，取消提前结算订单，补扣差价。
+CASHOUT_CANCEL_ROLLBACK_DEDUCT   提前结算取消回滚补扣  就是订单取消回滚对应要扣的钱。
+※如余额不足钱包会变成负数哦，需要用户下次充值后进行冲正。
+
+
 ## 转账钱包
 
 **黑豹体育在转账钱包模式也需要在后台填写回调地址**，如果扣款遇到转账钱包余额不足，系统会通过回调地址通知第三方进行转入，需要转入的余额为 co 字段。
