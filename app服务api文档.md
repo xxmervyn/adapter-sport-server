@@ -373,7 +373,7 @@ const content = encodeURIComponent(base64)
 | 投注类型 | `o.seriesType`、`o.betType` | `seriesType == 0` 时固定显示“单关/Single”，否则显示 `betType` |
 | 赛事 | `b.sportName`、`b.matchTime`、`b.tournamentId`、`b.matchName`、`b.tournamentName`、`b.matchId` | 遍历 `o.betList`，逐条组合展示赛事基础信息 |
 | 投注详情 | `b.isInplay`、`b.marketName`、`b.optionName`、`b.betScore`、`b.betOdds`、`b.odds` | 遍历 `o.betList`，逐条展示滚球/赛前、盘口名、投注项、单项赔率、下注时比分 |
-| 投注结果 | `b.settleResult`、`b.matchResult`、`b.extraInfo`、`b.matchId` | 遍历 `o.betList`，每个投注项都会保留一行位置；有 `settleResult` 的投注项会转为结果文案；若有 `matchResult` 或 `extraInfo` 则追加展示赛果；部分调试样例会按 `matchId` 兜底展示赛果 |
+| 投注结果 | `b.settleResult`、`b.resultScore`、`b.extraInfo` | 遍历 `o.betList`，每个投注项都会保留一行位置；有 `settleResult` 的投注项会转为结果文案；若有 `resultScore` 或 `extraInfo` 则追加展示赛果 |
 | 赔率 | `o.maxWinAmount`、`o.stakeAmount`、`b.betOdds`、`b.odds`、`b.oddsFormat` | 单关直接展示投注项赔率；串关优先按订单最大可赢金额反推倍率，无法反推时使用投注项赔率连乘；赔率格式取首个投注项的 `oddsFormat` |
 | 名义投注额 | `o.stakeAmount` | 原样展示 |
 | 扣款额 | `o.liabilityStake`、`o.stakeAmount` | 优先展示 `liabilityStake`，无值时展示 `stakeAmount` |
@@ -416,7 +416,8 @@ const content = encodeURIComponent(base64)
 | `optionName` | 投注项名称 |
 | `betScore` | 投注时比分 |
 | `settleResult` | 投注结算结果 |
-| `matchResult` | 赛果展示文本 |
+| `resultScore` | 赛果展示文本 |
+| `extraInfo` | 赛果展示文本兜底字段；当 `resultScore` 无值时用于投注结果列追加展示 |
 | `odds` | 赔率值 |
 | `oddsFormat` | 赔率格式 |
 
@@ -510,8 +511,7 @@ const content = encodeURIComponent(base64)
 
 - 遍历 `o.betList`，每个投注项都会在“投注结果”列保留对应行位，以便与“赛事”和“投注详情”逐条对齐。
 - 当某条投注项的 `b.settleResult` 有值时，显示结果文案，如“赢”“输”“输半”等。
-- 若 `b.matchResult` 或 `b.extraInfo` 有值，则追加显示“赛果/ matchResult”。
-- 部分用于调试的历史样例缺少赛果字段，但页面为了复现示例截图，会按已知 `matchId` 兜底展示赛果；正式数据建议直接传 `matchResult` 或 `extraInfo`。
+- 若 `b.resultScore` 或 `b.extraInfo` 有值，则追加显示“赛果/ matchResult”；页面优先读取 `resultScore`，无值时读取 `extraInfo`。
 - 若 `betList` 中任一投注项存在 `settleResult`，页面状态展示会按“已结算”处理，即使订单级 `orderStatus` 仍为 `4`。
 
 ### 赔率 / 倍率
