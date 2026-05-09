@@ -644,6 +644,55 @@ settleAmount = 76.4
 
 ## 注意事项
 
+## 嵌入网页高度 message 接入方式
+
+订单详情解析页面支持通过 `postMessage` 将页面实际内容高度通知给父页面，适用于第三方系统通过 `iframe` 嵌入订单详情解析页时，自动调整 `iframe` 高度，避免页面内部出现不必要的纵向滚动条。
+
+页面在表格渲染完成后会向父窗口发送如下消息：
+
+```js
+window.parent.postMessage({
+  event: "hbSportOrderListDetailHeight",
+  height
+}, "*")
+```
+
+父页面可通过监听 `message` 事件接收高度，并将对应 `iframe` 的高度设置为消息中的 `height`：
+
+```html
+<iframe
+  id="hbSportOrderAnalyzeIframe"
+  src="https://${host}/analyze/order/index.html#content=xxx"
+  frameborder="0"
+  style="width: 100%; border: 0;"
+></iframe>
+
+<script>
+  window.addEventListener("message", function (event) {
+    const data = event.data || {}
+    if (data.event !== "hbSportOrderListDetailHeight") return
+
+    const iframe = document.getElementById("hbSportOrderAnalyzeIframe")
+    if (!iframe) return
+
+    iframe.style.height = `${Number(data.height) || 0}px`
+  })
+</script>
+```
+
+消息字段说明：
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `event` | string | 固定值：`hbSportOrderListDetailHeight`，用于识别订单详情解析页高度消息 |
+| `height` | number | 订单详情解析页当前内容高度，单位为 px |
+
+接入建议：
+
+- 父页面应通过 `event` 字段判断消息类型，避免与其他 `postMessage` 消息混淆。
+- 若同一页面嵌入多个订单详情 `iframe`，建议在父页面自行维护当前订单详情 `iframe` 引用，或按业务场景绑定对应 DOM。
+- 出于安全考虑，正式环境可按实际部署域名校验 `event.origin`。
+
 - `content` 必须为合法 Base64 字符串。
 - `content` 解码后必须为合法 JSON 数组，否则页面无法解析。
 - 建议对 Base64 结果做 URL 编码，避免 `+`、`=` 等特殊字符影响 URL 传参。
