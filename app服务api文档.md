@@ -373,7 +373,7 @@ const content = encodeURIComponent(base64)
 | 投注类型 | `o.seriesType`、`o.betType` | `seriesType == 0` 时固定显示“单关/Single”，否则显示 `betType` |
 | 赛事 | `b.sportName`、`b.matchTime`、`b.tournamentId`、`b.matchName`、`b.tournamentName`、`b.matchId` | 遍历 `o.betList`，逐条组合展示赛事基础信息 |
 | 投注详情 | `b.isInplay`、`b.marketName`、`b.optionName`、`b.betScore`、`b.betOdds`、`b.odds` | 遍历 `o.betList`，逐条展示滚球/赛前、盘口名、投注项、单项赔率、下注时比分 |
-| 投注结果 | `b.settleResult`、`b.resultScore`、`b.extraInfo` | 遍历 `o.betList`，每个投注项都会保留一行位置；有 `settleResult` 的投注项会转为结果文案；若有 `resultScore` 或 `extraInfo` 则追加展示赛果 |
+| 投注结果 | `b.settleResult`、`b.resultScore`、`b.extraInfo` | 遍历 `o.betList`；当 `settleResult !== undefined && settleResult !== null` 时显示结果文案（包括 `0 = 无结果`）；赛果部分优先展示 `resultScore`，仅当 `resultScore` 为空时才展示 `extraInfo`；两者不会同时展示 |
 | 赔率 | `o.maxWinAmount`、`o.stakeAmount`、`b.betOdds`、`b.odds`、`b.oddsFormat` | 单关直接展示投注项赔率；串关优先按订单最大可赢金额反推倍率，无法反推时使用投注项赔率连乘；赔率格式取首个投注项的 `oddsFormat` |
 | 名义投注额 | `o.stakeAmount` | 原样展示 |
 | 扣款额 | `o.liabilityStake`、`o.stakeAmount` | 优先展示 `liabilityStake`，无值时展示 `stakeAmount` |
@@ -387,7 +387,7 @@ const content = encodeURIComponent(base64)
 | 注单币种 | `o.currency` | 优先走币种映射表，取不到则原样展示 |
 | IP地址 | `o.ip` | 原样展示 |
 | 设备 | `o.device` | 原样展示 |
-| 第三方备注 | `o.extraInfo` | 原样展示 |
+| 第三方备注 | `o.thirdRemark` | 原样展示 |
 | 存活关数 | `o.allUpAlive` | 表示串关订单中当前仍然有效的关数 |
 | 付款状态 | `o.payStatus` | 付款状态字段，接口文档中标注为“弃用”，通常不建议作为主判断字段 |
 | 数据版本 | `o.version` | 数据变更标记，按升序递增。若同一订单在多个文件中重复出现，应以 `version` 更大的那条数据为最新数据 |
@@ -417,7 +417,7 @@ const content = encodeURIComponent(base64)
 | `betScore` | 投注时比分 |
 | `settleResult` | 投注结算结果 |
 | `resultScore` | 赛果展示文本 |
-| `extraInfo` | 赛果展示文本兜底字段；当 `resultScore` 无值时用于投注结果列追加展示 |
+| `extraInfo` | 赛果展示兜底字段；当 `resultScore` 无值时用于替代展示 |
 | `odds` | 赔率值 |
 | `oddsFormat` | 赔率格式 |
 
@@ -510,8 +510,10 @@ const content = encodeURIComponent(base64)
 ### 投注结果
 
 - 遍历 `o.betList`，每个投注项都会在“投注结果”列保留对应行位，以便与“赛事”和“投注详情”逐条对齐。
-- 当某条投注项的 `b.settleResult` 有值时，显示结果文案，如“赢”“输”“输半”等。
-- 若 `b.resultScore` 或 `b.extraInfo` 有值，则追加显示“赛果/ matchResult”；页面优先读取 `resultScore`，无值时读取 `extraInfo`。
+- 当某条投注项的 `b.settleResult !== undefined && b.settleResult !== null` 时，显示结果文案，如“赢”“输”“输半”“无结果”等。
+- 页面会优先读取 `b.resultScore` 作为赛果展示；只有当 `resultScore` 无值时，才会读取 `b.extraInfo` 作为兜底赛果（当前赛果）展示。
+- `resultScore` 与 `extraInfo` 不会同时展示。
+- `settleResult = 0` 时会正常展示“无结果”，只有字段为 `undefined/null` 时才不会展示结果文案。
 - 若 `betList` 中任一投注项存在 `settleResult`，页面状态展示会按“已结算”处理，即使订单级 `orderStatus` 仍为 `4`。
 
 ### 赔率 / 倍率
