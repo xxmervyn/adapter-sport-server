@@ -196,7 +196,7 @@ const content = encodeURIComponent(base64)
 | 投注类型 | `o.seriesType`、`o.betType` | `seriesType == 0` 时固定显示“单关/Single”，否则显示 `betType` |
 | 赛事 | `b.sportName`、`b.matchTime`、`b.tournamentId`、`b.matchName`、`b.tournamentName`、`b.matchId` | 遍历 `o.betList`，逐条组合展示赛事基础信息 |
 | 投注详情 | `b.isInplay`、`b.marketName`、`b.optionName`、`b.betScore`、`b.betOdds`、`b.odds` | 遍历 `o.betList`，逐条展示滚球/赛前、盘口名、投注项、单项赔率、下注时比分 |
-| 投注结果 | `b.settleResult`、`b.matchResult`、`b.extraInfo`、`b.matchId` | 遍历 `o.betList`，每个投注项都会保留一行位置；有 `settleResult` 的投注项会转为结果文案；若有 `matchResult` 或 `extraInfo` 则追加展示赛果；部分调试样例会按 `matchId` 兜底展示赛果 |
+| 投注结果 | `b.settleResult`、`b.resultScore` | 遍历 `o.betList`；当 `settleResult !== undefined && settleResult !== null` 时显示结果文案（包括 `0 = 无结果`）；赛果展示 `resultScore` |
 | 赔率 | `o.maxWinAmount`、`o.stakeAmount`、`b.betOdds`、`b.odds`、`b.oddsFormat` | 单关直接展示投注项赔率；串关优先按订单最大可赢金额反推倍率，无法反推时使用投注项赔率连乘；赔率格式取首个投注项的 `oddsFormat` |
 | 名义投注额 | `o.stakeAmount` | 原样展示 |
 | 扣款额 | `o.liabilityStake`、`o.stakeAmount` | 优先展示 `liabilityStake`，无值时展示 `stakeAmount` |
@@ -210,7 +210,7 @@ const content = encodeURIComponent(base64)
 | 注单币种 | `o.currency` | 优先走币种映射表，取不到则原样展示 |
 | IP地址 | `o.ip` | 原样展示 |
 | 设备 | `o.device` | 原样展示 |
-| 第三方备注 | `o.extraInfo` | 原样展示 |
+| 第三方备注 | `o.thirdRemark` | 原样展示 |
 | 存活关数 | `o.allUpAlive` | 表示串关订单中当前仍然有效的关数 |
 | 付款状态 | `o.payStatus` | 付款状态字段，接口文档中标注为“弃用”，通常不建议作为主判断字段 |
 | 数据版本 | `o.version` | 数据变更标记，按升序递增。若同一订单在多个文件中重复出现，应以 `version` 更大的那条数据为最新数据 |
@@ -239,7 +239,8 @@ const content = encodeURIComponent(base64)
 | `optionName` | 投注项名称 |
 | `betScore` | 投注时比分 |
 | `settleResult` | 投注结算结果 |
-| `matchResult` | 赛果展示文本 |
+| `resultScore` | 赛果展示文本 |
+| `extraInfo` | 当前赛果展示 |
 | `odds` | 赔率值 |
 | `oddsFormat` | 赔率格式 |
 
@@ -332,9 +333,9 @@ const content = encodeURIComponent(base64)
 ### 投注结果
 
 - 遍历 `o.betList`，每个投注项都会在“投注结果”列保留对应行位，以便与“赛事”和“投注详情”逐条对齐。
-- 当某条投注项的 `b.settleResult` 有值时，显示结果文案，如“赢”“输”“输半”等。
-- 若 `b.matchResult` 或 `b.extraInfo` 有值，则追加显示“赛果/ matchResult”。
-- 部分用于调试的历史样例缺少赛果字段，但页面为了复现示例截图，会按已知 `matchId` 兜底展示赛果；正式数据建议直接传 `matchResult` 或 `extraInfo`。
+- 当某条投注项的 `b.settleResult !== undefined && b.settleResult !== null` 时，显示结果文案，如“赢”“输”“输半”“无结果”等。
+- 页面会优先读取 `b.resultScore` 作为赛果展示；
+- `settleResult = 0` 时会正常展示“无结果”，只有字段为 `undefined/null` 时才不会展示结果文案。
 - 若 `betList` 中任一投注项存在 `settleResult`，页面状态展示会按“已结算”处理，即使订单级 `orderStatus` 仍为 `4`。
 
 ### 赔率 / 倍率
@@ -475,6 +476,55 @@ settleAmount = 76.4
 - `结算时间` 优先读取 `cashOutTime/cashoutTime/cashOutSettleTime/cashoutSettleTime/cashOutCreateTime/cashoutCreateTime`，无提前结算时间时再按普通结算读取 `settleTime`。
 
 ## 注意事项
+
+## 嵌入网页高度 message 接入方式
+
+订单详情解析页面支持通过 `postMessage` 将页面实际内容高度通知给父页面，适用于第三方系统通过 `iframe` 嵌入订单详情解析页时，自动调整 `iframe` 高度，避免页面内部出现不必要的纵向滚动条。
+
+页面在表格渲染完成后会向父窗口发送如下消息：
+
+```js
+window.parent.postMessage({
+  event: "hbSportOrderListDetailHeight",
+  height
+}, "*")
+```
+
+父页面可通过监听 `message` 事件接收高度，并将对应 `iframe` 的高度设置为消息中的 `height`：
+
+```html
+<iframe
+  id="hbSportOrderAnalyzeIframe"
+  src="https://${host}/analyze/order/index.html#content=xxx"
+  frameborder="0"
+  style="width: 100%; border: 0;"
+></iframe>
+
+<script>
+  window.addEventListener("message", function (event) {
+    const data = event.data || {}
+    if (data.event !== "hbSportOrderListDetailHeight") return
+
+    const iframe = document.getElementById("hbSportOrderAnalyzeIframe")
+    if (!iframe) return
+
+    iframe.style.height = `${Number(data.height) || 0}px`
+  })
+</script>
+```
+
+消息字段说明：
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `event` | string | 固定值：`hbSportOrderListDetailHeight`，用于识别订单详情解析页高度消息 |
+| `height` | number | 订单详情解析页当前内容高度，单位为 px |
+
+接入建议：
+
+- 父页面应通过 `event` 字段判断消息类型，避免与其他 `postMessage` 消息混淆。
+- 若同一页面嵌入多个订单详情 `iframe`，建议在父页面自行维护当前订单详情 `iframe` 引用，或按业务场景绑定对应 DOM。
+- 出于安全考虑，正式环境可按实际部署域名校验 `event.origin`。
 
 - `content` 必须为合法 Base64 字符串。
 - `content` 解码后必须为合法 JSON 数组，否则页面无法解析。
