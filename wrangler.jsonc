@@ -4,6 +4,6 @@
 	"name": "adapter-sport-server",
 	"upload_source_maps": true,
 	"observability": {
-		"enabled": true
+		"enabled": false
 	}
 }
