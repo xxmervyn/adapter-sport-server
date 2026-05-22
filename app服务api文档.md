@@ -1,71 +1,117 @@
-﻿#  
+﻿# APP 服务 API 文档
 
-### 体育API域名
+## 基础接入
 
-黑豹体育不需要区分地区域名，全部使用 api.bpapiglobal.com 请求。
+### 体育 API 域名
 
-### 登录模式
+黑豹体育不需要区分地区域名，统一使用：
 
-当使用API获取游戏登陆链接成功后，可以得到如下链接:  
+```txt
+api.bpapiglobal.com
+```
+
+### 游戏登录地址
+
+当使用 API 获取游戏登录链接成功后，可得到如下地址：
+
+```txt
 https://${host}/games/enter?id=200101&lang=zh&playerGameToken=abc123&reqt=xxx&esign=xxx
+```
 
-### HB SPORT 场次gameField （胜率）定义，字段类型为整数，目前HB Sport生效
-
-| **GameFeild** | 说明 |
-| --- | --- |
-| 20001 | A级别：不进行赔率调整 |
-| 20002 | B级别：浮动范围 ±0.01（总幅度 0.02，默认等级） |
-| 20003 | C级别：浮动范围 ±0.02（总幅度 0.04） |
-| 20004 | D级别：浮动范围 ±0.03（总幅度 0.06） |
-| 20005 | E级别：浮动范围 ±0.05（总幅度 0.10） |
-| 20006 | F级别：浮动范围 ±0.10（总幅度 0.20） |
-| 20007 | G级别：浮动范围 ±0.15（总幅度 0.30） |
-
-## Query 参数
+### 游戏登录 Query 参数
 
 | 参数名 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| id | string | 是 | 游戏ID，固定：200101 |
-| lang | string | 是 | 语言（小写：en / zh / pt） |
-| playerGameToken | string | 否 | 玩家Token，不传则为游客模式 |
-| reqt | string | 是 | 请求唯一标识 |
-| esign | string | 是 | 请求签名 |
-| ui | string | 否 | UI版本（h5 / pcOld / pcNew） |
-| color | string | 否 | 主题颜色，可选值：daily / dark |
-
----
+| `id` | string | 是 | 游戏 ID，固定为 `200101` |
+| `lang` | string | 是 | 语言，小写：`en` / `zh` / `pt` |
+| `playerGameToken` | string | 否 | 玩家 Token，不传则为游客模式 |
+| `reqt` | string | 是 | 请求唯一标识 |
+| `esign` | string | 是 | 请求签名 |
+| `ui` | string | 否 | UI 版本：`h5` / `pcOld` / `pcNew` |
+| `color` | string | 否 | 主题颜色：`daily` / `dark` |
 
 ### 游客模式
 
-不传 playerGameToken 时，将以游客身份进入游戏。  
+不传 `playerGameToken` 时，将以游客身份进入游戏。
+
+```txt
 https://${host}/games/enter?id=200101&lang=en&reqt=xxx&esign=xxx
+```
 
-### 登录模式并指定 UI 版本
+### 指定 UI 版本
 
-h5 → 手机端（移动端版）  
-pcOld → PC经典版  
-pcNew → PC国际版
+| ui | 说明 |
+| --- | --- |
+| `h5` | 手机端（移动端版） |
+| `pcOld` | PC 经典版 |
+| `pcNew` | PC 国际版 |
 
-示例：  
-https://${host}/games/enter?id=200101&playerGameToken&lang=zh&ui=h5&reqt=xxx&esign=xxx
+示例：
+
+```txt
+https://${host}/games/enter?id=200101&playerGameToken=abc123&lang=zh&ui=h5&reqt=xxx&esign=xxx
+```
 
 ### 指定主题颜色
 
-daily → 浅色主题（日间版）  
-dark → 深色主题（夜间版）
+| color | 说明 |
+| --- | --- |
+| `daily` | 浅色主题（日间版） |
+| `dark` | 深色主题（夜间版） |
 
-示例：  
+示例：
+
+```txt
 https://${host}/games/enter?id=200101&playerGameToken=abc123&lang=zh&ui=h5&color=dark&reqt=xxx&esign=xxx
+```
 
-## 说明
+### 接入说明
 
-playerGameToken 决定登录或游客模式  
-lang 必须为小写，不合法值默认使用英语  
-ui 可覆盖默认设备判断，若不传，系统将根据设备自动选择  
-color 可指定页面主题颜色，仅支持 daily / dark，不传或非法值时默认使用 dark  
-reqt 和 esign 必须传递以保证安全性
+- `playerGameToken` 决定登录模式或游客模式。
+- `lang` 必须为小写，不合法值默认使用英语。
+- `ui` 可覆盖默认设备判断；若不传，系统将根据设备自动选择。
+- `color` 仅支持 `daily` / `dark`；不传或非法值时默认使用 `dark`。
+- `reqt` 和 `esign` 必须传递，用于保证请求安全性。
 
+## 赔率等级配置
 
+### HB SPORT 场次 gameField 定义
+
+`gameField` 字段类型为整数，目前仅 HB Sport 生效。
+
+| gameField | 等级 | 说明 |
+| --- | --- | --- |
+| `20001` | A | 不进行赔率调整 |
+| `20002` | B | 上下盘双边各扣减 `0.01`，总扣减 `0.02`，默认等级 |
+| `20003` | C | 上下盘双边各扣减 `0.02`，总扣减 `0.04` |
+| `20004` | D | 上下盘双边各扣减 `0.03`，总扣减 `0.06` |
+| `20005` | E | 上下盘双边各扣减 `0.05`，总扣减 `0.10` |
+| `20006` | F | 上下盘双边各扣减 `0.10`，总扣减 `0.20` |
+| `20007` | G | 上下盘双边各扣减 `0.15`，总扣减 `0.30` |
+
+### 体育彩票上下盘赔率等级说明
+
+“上下盘”指同一盘口中两个相互对立的投注选项，也就是只有两个选项的盘口。系统只对这类双选盘口进行赔率/水位调整；三选及以上盘口不做调整，赔率保持不变。
+
+该规则为固定向下扣减，不是浮动调整。系统会按对应等级直接扣减赔率，上盘和下盘同步下调，且扣减幅度相同。
+
+| 级别 | 档位 | 总扣减 | 上盘扣减 | 下盘扣减 | 说明 |
+| --- | --- | --- | --- | --- | --- |
+| A | - | `0.00` | `0.00` | `0.00` | 不对此水位进行调整 |
+| B | 2 | `0.02` | `0.01` | `0.01` | 默认等级 |
+| C | 4 | `0.04` | `0.02` | `0.02` | 向下调整 |
+| D | 6 | `0.06` | `0.03` | `0.03` | 向下调整 |
+| E | 10 | `0.10` | `0.05` | `0.05` | 向下调整 |
+| F | 20 | `0.20` | `0.10` | `0.10` | 向下调整 |
+| G | 30 | `0.30` | `0.15` | `0.15` | 向下调整 |
+
+规则要点：
+
+- A 级别不调整。
+- B 级别为默认等级，双边各扣 `0.01`。
+- C ~ G 级别按对应档位逐级加大扣减幅度。
+- 调整方式始终为向下扣减，不做上下浮动。
+- 仅适用于双选盘口；三选及以上盘口不受影响。
 
 # 直播接入
 
@@ -377,7 +423,7 @@ const content = encodeURIComponent(base64)
 | 赔率 | `o.maxWinAmount`、`o.stakeAmount`、`b.betOdds`、`b.odds`、`b.oddsFormat` | 单关直接展示投注项赔率；串关优先按订单最大可赢金额反推倍率，无法反推时使用投注项赔率连乘；赔率格式取首个投注项的 `oddsFormat` |
 | 名义投注额 | `o.stakeAmount` | 原样展示 |
 | 扣款额 | `o.liabilityStake`、`o.stakeAmount` | 优先展示 `liabilityStake`，无值时展示 `stakeAmount` |
-| 正常结算本金 | `o.stakeAmount`、`o.orderStatus`、提前结算字段 | 提前结算态显示 `0`；否则仅 `orderStatus == 5` 时显示投注本金 |
+| 正常结算本金 | `o.validSettleStakeAmount`、`o.stakeAmount`、`o.orderStatus`、提前结算字段 | 提前结算态显示 `0`；否则仅 `orderStatus == 5` 时优先展示 `validSettleStakeAmount`，无值时展示投注本金 |
 | 正常结算返还 | `o.validSettleAmount`、提前结算字段 | 提前结算态显示 `0`；否则展示 `validSettleAmount`，无值显示 `0` |
 | 实际提前结算本金 | `o.cashOutStake`、`o.cashoutStake`、`o.cashOutStakeAmount`、`o.actualCashoutStake`、`o.actualCashoutPrincipal`、`o.cashOutPrincipal`、`o.liabilityCashoutStake` | 优先读取提前结算本金字段；部分调试样例缺字段时按扣款额兜底 |
 | 名义提前结算本金 | `o.liabilityCashoutStake`、`o.liabilityCashOutStake`、`o.nominalCashoutStake`、`o.nominalCashoutPrincipal`、`o.cashOutStake`、`o.cashoutStake` | 优先读取名义提前结算本金字段；部分调试样例缺字段时按扣款额兜底 |
@@ -641,6 +687,15 @@ settleAmount = 76.4
 公司 输/赢 = 20 - 76.4 = -56.4
 ```
 
+### 有效结算字段
+
+订单解析支持以下订单级有效结算字段：
+
+| 字段名 | 类型 | 说明 | 必填 |
+| --- | --- | --- | --- |
+| `validSettleStakeAmount` | string | 有效已结算投注额。当订单结算结果为赢半、输半时，有效已结算投注额 = `(投注额 - 提前结算总本金) / 2 + 提前结算总本金 - 提前结算取消总额`；当订单结算结果为全赢、全输时，有效已结算投注额 = `投注额 - 提前结算取消总额`；其余订单结算结果有效已结算投注额均为 `0`。 | false |
+| `validSettleAmount` | string | 有效返还额。当订单结算结果为赢半、输半时，有效返还额 = `结算派奖金额 - (投注额 - 提前结算总本金) / 2 + 提前结算派奖额 - 提前结算取消总额`；当订单结算结果为全赢、全输时，有效返还额 = `结算派奖金额 + 提前结算派奖额 - 提前结算取消总额`；其余订单结算结果有效返还额均为 `0`。 | false |
+
 ### 提前结算列
 
 当页面识别为提前结算态时：
@@ -732,12 +787,13 @@ window.parent.postMessage({
 
 ## 赔率浮动不一致
 
-**问：为什么不同用户看到的赔率浮动不一样？**
+**问：为什么不同用户看到的上下盘赔率不一样？**
 
 答：  
-系统会根据用户等级对赔率进行差异化调整，不同等级对应不同的浮动范围。
+系统会根据用户等级对双选盘口的上下盘赔率进行差异化向下扣减，不同等级对应不同的扣减幅度。
 
 **说明：**  
-浮动范围为在基础赔率上的上下调整区间  
-用户等级越高，赔率浮动范围越大  
+该规则只适用于只有两个投注选项的上下盘盘口  
+调整方式为固定向下扣减，不做上下浮动  
+用户等级越高，扣减幅度越大  
 默认用户等级为 B级别
