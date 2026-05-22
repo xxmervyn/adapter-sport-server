@@ -142,6 +142,21 @@ https://${host}/games/enter?id=200101&playerGameToken=abc123&lang=zh&ui=h5&color
 - 以上 `iframe` 属性仅为参考，可根据项目实际样式、自适应方案和权限策略自行调整。
 - `src` 中的 `{URL_SRC}` 为最终拼接好的直播地址或动画地址。
 
+Iframe 完整属性示例：
+
+```html
+<iframe name="iframe"
+allowfullscreen="allowfullscreen"
+webkitallowfullscreen="true"
+mozallowfullscreen="true"
+allowtransparency="true"
+auto="autoplay"
+muted="muted"
+frameborder="0" src="{上一个步骤存储的URL_SRC}" />
+```
+
+注意：`iframe` 属性建议保留完整，否则视频点击全屏可能失效。
+
 ## 视频直播
 
 ### 数据来源
