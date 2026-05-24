@@ -234,6 +234,130 @@ const content = encodeURIComponent(base64)
 6. 遍历订单数组生成表格。
 7. 每条订单会读取完整 `betList`，并在同一订单行中展开展示多条投注项；单关通常只有 1 条，串关会展示多条。
 
+## 订单数据字段说明
+
+订单解析页面接收的是订单数组；若直接使用接口返回结果，可先取返回体中的 `data` 作为订单数组传入 `content`。
+
+### 返回体字段
+
+| 字段名 | 类型 | 说明 |
+| --- | --- | --- |
+| `success` | boolean | 是否成功 |
+| `message` | string | 描述信息 |
+| `data` | object[] | 业务数据，订单数组 |
+| `code` | integer | 返回码 |
+
+### 订单对象字段
+
+| 字段名 | 类型 | 说明 |
+| --- | --- | --- |
+| `id` | string | 订单号 |
+| `rejectReason` | integer | 拒单原因码，见枚举 `order_reject_type` |
+| `rejectReasonStr` | string | 拒单原因 |
+| `userId` | string | FB 平台用户 ID |
+| `merchantId` | string | 渠道 ID |
+| `merchantUserId` | string | 渠道用户 ID |
+| `currency` | integer | 币种，见枚举 `currency` |
+| `exchangeRate` | string | 汇率快照 |
+| `seriesType` | integer | 关次类型，`0` 单关、`1` 串关，见枚举 `series_type` |
+| `betType` | string | 投注类型 |
+| `allUp` | integer | 总关数 |
+| `allUpAlive` | integer | 存活关数 |
+| `stakeAmount` | string | 投注额（本金） |
+| `liabilityStake` | string | 名义投注额（名义本金） |
+| `settleAmount` | string | 结算派奖金额 |
+| `orderStatus` | integer | 订单状态，见枚举 `order_status` |
+| `payStatus` | integer | 付款状态（弃用） |
+| `oddsChange` | integer | 是否接受赔率变更设置：`0` 不接受、`1` 接受更好赔率、`2` 接受任意赔率，见枚举 `odds_change_enum` |
+| `device` | string | 设备类型：`pc`、`h5`、`mobile`，见枚举 `plat_form_enum` |
+| `ip` | string | 投注 IP 地址 |
+| `settleTime` | string | 订单结算时间 |
+| `createTime` | string | 订单创建时间 |
+| `modifyTime` | string | 订单确认时间 |
+| `cancelTime` | string | 订单取消时间 |
+| `thirdRemark` | string | 第三方备注 |
+| `relatedId` | string | 三方关联 ID |
+| `maxWinAmount` | string | 最大可赢金额 |
+| `loseAmount` | string | 最大赔付金额 |
+| `rollBackCount` | integer | 回滚次数 |
+| `itemCount` | integer | 选项数 |
+| `seriesValue` | integer | 串几关 |
+| `betNum` | integer | 子单数 |
+| `cashOutTotalStake` | string | 提前结算总本金 |
+| `liabilityCashoutStake` | string | 提前结算名义总本金 |
+| `cashOutPayoutStake` | string | 提前结算总派奖额 |
+| `reserveId` | string | 预约订单单号 |
+| `cashOutCount` | integer | 提前结算次数 |
+| `unitStake` | string | 每单金额，混合串关时使用 |
+| `reserveVersion` | integer | 预约订单版本号 |
+| `betList` | object[] | 注单集合 |
+| `maxStake` | string | 最大投注额 |
+| `validSettleStakeAmount` | string | 有效已结算投注额 |
+| `validSettleAmount` | string | 有效返还额 |
+| `cashOutCancelStake` | string | 提前结算取消总额 |
+| `walletType` | integer | 钱包类型，见枚举 `wallet_type` |
+| `version` | integer | 数据变更标记，升序，根据大小可判断是否是最新数据 |
+| `cashOuts` | object[] | 提前结算记录集合，仅 `/fb/data/api/v2/order/listByIds` 接口返回 |
+| `ep` | integer | 是否支持提前派彩，见枚举 `common_status_enum` |
+| `paa` | number | 提前派彩优惠调整额 |
+
+### 投注项字段
+
+`betList` 中每一项为投注项对象，字段说明如下：
+
+| 字段名 | 类型 | 说明 |
+| --- | --- | --- |
+| `id` | string | ID |
+| `orderId` | string | 订单 ID |
+| `sportId` | integer | 运动 ID，见枚举 `sports` |
+| `sportName` | string | 运动名称 |
+| `matchId` | string | 比赛 ID |
+| `matchName` | string | 比赛名称 |
+| `period` | integer | 阶段 ID，见枚举 `period` |
+| `marketId` | string | 玩法 ID |
+| `marketType` | integer | 玩法类型，见枚举 `market_type` |
+| `optionType` | integer | 投注项类型，见枚举 `selection_type` |
+| `optionName` | string | 选项名称 |
+| `marketName` | string | 玩法名称 |
+| `tournamentId` | string | 联赛 ID |
+| `tournamentName` | string | 联赛名称 |
+| `odds` | string | 欧式赔率 |
+| `oddsFormat` | integer | 投注时赔率类型，见枚举 `odds_format_type_enum` |
+| `betOdds` | string | 投注时赔率 |
+| `settleStatus` | integer | 结算状态，见枚举 `settle_status` |
+| `settleResult` | integer | 结算结果，见枚举 `outcome` |
+| `isInplay` | boolean | 是否滚球，`false` 非滚球，`true` 滚球 |
+| `remark` | string | 备注 |
+| `p1` | number | 变量 1，例如让几个球 |
+| `p2` | number | 变量 2 |
+| `p3` | number | 变量 3 |
+| `extendedParameter` | string | 亚洲让球线 |
+| `extraInfo` | string | 当前比分 |
+| `pendingTime` | string | 延迟等待时间 |
+| `betScore` | string | 下注当时比分 |
+| `resultScore` | string | 结算时比分 |
+| `cancelReason` | integer | 取消原因，见枚举 `order_cancel_reason` |
+| `cancelReasonName` | string | 取消原因文本 |
+| `matchType` | integer | 赛事类型，见枚举 `match_type` |
+| `matchTime` | string | 开赛时间 |
+| `virtualMatchDay` | integer | 轮次 |
+| `virtualChampId` | integer | 赛季 |
+| `virtualLegOrder` | integer | 淘汰赛回合 |
+| `virtualWeekDay` | integer | 小组赛比赛日 |
+| `virtualBlockId` | integer | 期 |
+| `leaguePhase` | integer | 联赛阶段，见枚举 `phase` |
+| `promotionResult` | integer | 优惠结果，见枚举 `promotion_bet_result_enum` |
+
+### 提前结算记录字段
+
+`cashOuts` 中每一项为提前结算记录对象，仅 `/fb/data/api/v2/order/listByIds` 接口返回。
+
+| 字段名 | 类型 | 说明 |
+| --- | --- | --- |
+| `id` | string | ID |
+| `stake` | string | 提前结算本金 |
+| `payout` | string | 提前结算派彩金额 |
+
 ## 表头字段映射
 
 页面表头与数据字段的映射关系如下：
