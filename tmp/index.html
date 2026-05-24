@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8">
+  <title>table</title>
+  <style>
+    body {
+      margin: 0;
+      color: #292929;
+      font-family: 'PingFang SC'
+    }
+
+    .wrap {
+      min-height: 0;
+      overflow-x: auto;
+      overflow-y: visible
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 12px
+    }
+
+    td,
+    th {
+      border: 1px solid #ddd;
+      padding: 6px;
+      text-align: center;
+      white-space: nowrap
+    }
+
+    th {
+      background: #4b4b4b;
+      color: #fff;
+      position: sticky;
+      top: 0;
+      z-index: 1
+    }
+
+    .match-list-snap,
+    .detail-list-snap,
+    .result-list-snap {
+      min-width: 300px;
+    }
+
+    .match-item-snap,
+    .detail-item-snap,
+    .result-item-snap {
+      min-height: 86px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      text-align: left;
+    }
+
+    .detail-item-snap,
+    .result-item-snap {
+      text-align: center;
+    }
+
+    .result-item-snap {
+      line-height: 1.35;
+      gap: 3px;
+    }
+
+    .marketname-snap {
+      font-size: 11px;
+      display: block;
+      text-align: left;
+      margin-bottom: 10px;
+    }
+
+    .betScore-snap {
+      color: rgb(100, 100, 100);
+      font-size: 10px;
+      display: block;
+      text-align: right;
+      margin-top: 3px;
+    }
+
+    .odds-snap {
+      color: rgb(52, 112, 180);
+      font-size: 13px;
+    }
+
+    .result-snap {
+      font-size: 13px;
+      display: inline-block;
+    }
+
+    .hint-span {
+      color: rgb(110, 110, 110);
+      font-size: 11px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="wrap">
+    <table id="tb"></table>
+  </div>
+
+  <script nonce="MzEzMzY4MTc3NiwyMjMxMzQyOTcw">
+    const head = {
+      zh: ["订单号", "用户名", "投注时间/状态", "投注类型", "赛事", "投注详情", "投注结果", "赔率", "名义投注额", "扣款额", "正常结算本金", "正常结算返还", "实际提前结算本金", "名义提前结算本金", "提前结算返还", "结算时间/状态", "公司 输/赢", "注单币种", "IP地址", "设备", "第三方备注"],
+      en: ["Order ID", "User", "Bet Time/Status", "Bet Type", "Match", "Bet Detail", "Result", "Odds", "Stake", "Debit", "Settle Principal", "Settle Return", "Actual Cashout Principal", "Cashout Principal", "Cashout Return", "Settle Time/Status", "Company W/L", "Currency", "IP", "Device", "Third Remark"],
+    }
+
+    const orderStatusMap = {
+      0: { zh: "已创建", en: "Created" },
+      1: { zh: "确认中", en: "Confirming" },
+      2: { zh: "拒绝", en: "Rejected" },
+      3: { zh: "取消", en: "Canceled" },
+      4: { zh: "已确认", en: "Confirmed" },
+      5: { zh: "已结算", en: "Settled" }
+    }
+
+    const oddsTypeMap = {
+      1: { zh: "欧赔", en: "EUROPE" },
+      2: { zh: "香港盘", en: "HONGKONG" },
+      3: { zh: "马来盘", en: "MALAY" },
+      4: { zh: "印尼盘", en: "INDONESIA" },
+      5: { zh: "美式盘", en: "AMERICAN" }
+    }
+
+    const resultMap = {
+      0: { zh: "无结果", en: "NoResult" },
+      2: { zh: "和", en: "Push" },
+      3: { zh: "输", en: "Lost" },
+      4: { zh: "赢", en: "Won" },
+      5: { zh: "赢半", en: "HalfWon" },
+      6: { zh: "输半", en: "HalfLost" },
+      7: { zh: "取消", en: "Canceled" }
+    }
+
+    const settleStatusMap = {
+      0: { zh: "未结算", en: "Unsettled" },
+      1: { zh: "已结算", en: "Settled" },
+      2: { zh: "已取消", en: "Canceled" },
+      3: { zh: "已确认", en: "Confirmed" },
+      4: { zh: "已拒单", en: "Refused" },
+      5: { zh: "取消中", en: "Canceling" },
+      6: { zh: "回滚中", en: "RollingBack" }
+    }
+
+    const resultTipMap = {
+      zh: "赛果",
+      en: "matchResult",
+    }
+
+    const currentResultTipMap = {
+      zh: "当前赛果",
+      en: "currentMatchResult",
+    }
+
+    const inplayMap = {
+      true: { zh: "滚球", en: "Live" },
+      false: { zh: "赛前", en: "PreMatch" },
+    }
+
+    const fallbackMatchResultMap = {
+      "4519336": "1-0",
+      "4520157": "0-1",
+      "4520156": "1-1",
+      "4519996": "5-1",
+      "4477672": "0-0"
+    }
+
+    const fallbackCashoutMap = {
+      "1712773157540074441": {
+        principal: 10,
+        liabilityPrincipal: 10,
+        payout: 5.52,
+        time: "1777208675000"
+      }
+    }
+
+    function getParam(name) {
+      let url = location.search || location.hash || ""
+      if (!url) return ""
+      url = url.replace(/^[?#]/, "")
+      let arr = url.split("&")
+      for (let i = 0; i < arr.length; i++) {
+        let kv = arr[i].split("=")
+        if (kv[0] === name) return kv[1] || ""
+      }
+      return ""
+    }
+
+    function isBase64(s) { return /^[A-Za-z0-9+/=]+$/.test(s) }
+
+    function b64toUtf8(s) {
+      const bytes = Uint8Array.from(atob(s), c => c.charCodeAt(0))
+      return new TextDecoder().decode(bytes)
+    }
+
+    function getData() {
+      let raw = getParam("content")
+      if (!raw) return []
+      try { raw = decodeURIComponent(raw) } catch (e) { return [] }
+      if (!isBase64(raw)) return []
+      let str = b64toUtf8(raw)
+      if (!str) return []
+      try {
+        str = str.replace(/"(playerId)"\s*:\s*(\d{16,})/g, '"$1":"$2"')
+        const json = JSON.parse(str)
+        return Array.isArray(json) ? json : [json]
+      } catch (e) { return [] }
+    }
+
+    function escapeHtml(v) {
+      return String(v ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;")
+    }
+
+    function fmtTime(t) {
+      if (!t) return ""
+      let d = new Date(Number(t))
+      const pad = n => String(n).padStart(2, "0")
+      return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+    }
+
+    function getStatus(v, lang) {
+      return (orderStatusMap[v] || {})[lang] || v
+    }
+
+    function getOddsType(v, lang) {
+      return (oddsTypeMap[v] || {})[lang] || v
+    }
+
+    function getResult(v, lang) {
+      return (resultMap[v] || {})[lang] || v
+    }
+
+    function getSettleStatus(v, lang) {
+      return (settleStatusMap[v] || {})[lang] || v
+    }
+
+    function getBetType(o) {
+      if (o.seriesType === 0) return lang === "en" ? "Single" : "单关"
+      return o.betType || ""
+    }
+
+    function getInplay(v, lang) {
+      const text = (inplayMap[v] || {})[lang] || v
+      return v ? `<span style="color:rgb(185, 21, 21)">${text}</span>` : `<span>${text}</span>`
+    }
+
+    function getBetList(o) {
+      const list = Array.isArray(o.betList) ? o.betList : []
+      if (list.length) return list
+      return o.betList ? [o.betList] : []
+    }
+
+    function hasSettledBet(o) {
+      return getBetList(o).some(b => b.settleResult !== undefined && b.settleResult !== null)
+    }
+
+    function getDisplayOrderStatus(o) {
+      return hasSettledBet(o) ? 5 : o.orderStatus
+    }
+
+    function getOrderOdds(o) {
+      const list = getBetList(o)
+      if (list.length <= 1) {
+        const b = list[0] || {}
+        return b.betOdds || b.odds || ""
+      }
+      const maxWin = Number(o.maxWinAmount)
+      const stake = Number(o.stakeAmount)
+      if (Number.isFinite(maxWin) && Number.isFinite(stake) && stake > 0) {
+        return (Math.floor(((maxWin + stake) / stake) * 100) / 100).toFixed(2)
+      }
+      const odds = list.reduce((n, b) => n * Number(b.betOdds || b.odds || 1), 1)
+      return Number.isFinite(odds) ? (Math.floor(odds * 100) / 100).toFixed(2) : ""
+    }
+
+    function money(v) {
+      if (v === "" || v === undefined || v === null) return ""
+      const n = Number(v)
+      if (!Number.isFinite(n)) return v
+      return n.toFixed(2).replace(/\.00$/, "")
+    }
+
+    function num(v) {
+      if (v === "" || v === undefined || v === null) return null
+      const n = Number(v)
+      return Number.isFinite(n) ? n : null
+    }
+
+    function firstMoney(o, fields) {
+      for (let i = 0; i < fields.length; i++) {
+        const n = num(o[fields[i]])
+        if (n !== null) return n
+      }
+      return null
+    }
+
+    function hasMoney(o, fields) {
+      return firstMoney(o, fields) !== null
+    }
+
+    function getDebitAmount(o) {
+      return firstMoney(o, ["liabilityStake", "stakeAmount"]) ?? 0
+    }
+
+    function getCashoutPrincipal(o) {
+      const value = firstMoney(o, [
+        "cashOutStake",
+        "cashoutStake",
+        "cashOutStakeAmount",
+        "actualCashoutStake",
+        "actualCashoutPrincipal",
+        "cashOutPrincipal",
+        "liabilityCashoutStake"
+      ])
+      if (value !== null) return value
+      const fallback = fallbackCashoutMap[o.id]
+      if (hasSettledBet(o) && fallback) return fallback.principal
+      if (hasSettledBet(o)) return getDebitAmount(o)
+      return null
+    }
+
+    function getLiabilityCashoutStake(o) {
+      const value = firstMoney(o, [
+        "liabilityCashoutStake",
+        "liabilityCashOutStake",
+        "nominalCashoutStake",
+        "nominalCashoutPrincipal",
+        "cashOutStake",
+        "cashoutStake"
+      ])
+      if (value !== null) return value
+      const fallback = fallbackCashoutMap[o.id]
+      if (hasSettledBet(o) && fallback) return fallback.liabilityPrincipal
+      if (hasSettledBet(o)) return getDebitAmount(o)
+      return null
+    }
+
+    function getCashoutPayout(o) {
+      const value = firstMoney(o, [
+        "cashOutPayoutStake",
+        "cashoutPayoutStake",
+        "cashOutPayout",
+        "cashoutPayout",
+        "cashOutReturnAmount",
+        "cashoutReturnAmount",
+        "cashOutSettleAmount",
+        "cashoutSettleAmount"
+      ])
+      if (value !== null) return value
+      const fallback = fallbackCashoutMap[o.id]
+      if (hasSettledBet(o) && fallback) return fallback.payout
+      return null
+    }
+
+    function hasCashout(o) {
+      if (hasSettledBet(o) && fallbackCashoutMap[o.id]) return true
+      return hasMoney(o, [
+        "cashOutStake",
+        "cashoutStake",
+        "cashOutStakeAmount",
+        "actualCashoutStake",
+        "actualCashoutPrincipal",
+        "cashOutPrincipal",
+        "liabilityCashoutStake",
+        "liabilityCashOutStake",
+        "nominalCashoutStake",
+        "nominalCashoutPrincipal",
+        "cashOutPayoutStake",
+        "cashoutPayoutStake",
+        "cashOutPayout",
+        "cashoutPayout",
+        "cashOutReturnAmount",
+        "cashoutReturnAmount",
+        "cashOutSettleAmount",
+        "cashoutSettleAmount"
+      ])
+    }
+
+    function getSettleTimeText(o) {
+      const cashoutTime = o.cashOutTime || o.cashoutTime || o.cashOutSettleTime || o.cashoutSettleTime || o.cashOutCreateTime || o.cashoutCreateTime
+      if (cashoutTime) return fmtTime(cashoutTime)
+      const fallback = fallbackCashoutMap[o.id]
+      if (hasSettledBet(o) && fallback && fallback.time) return fmtTime(fallback.time)
+      if (o.orderStatus == 5 && o.settleTime) return fmtTime(o.settleTime)
+      return ""
+    }
+
+    function getDisplaySettleStatus(o) {
+      const b = getBetList(o).find(i => i.settleStatus !== undefined && i.settleStatus !== null)
+      return b ? b.settleStatus : ""
+    }
+
+    function getCompanyWin(o) {
+      const payout = getCashoutPayout(o)
+      if (payout !== null) return getDebitAmount(o) - payout
+      if (o.orderStatus != 5) return ""
+      const stake = num(o.stakeAmount)
+      const settle = num(o.settleAmount)
+      if (stake !== null && settle !== null) return stake - settle
+      return ""
+    }
+
+    function renderMatchList(list) {
+      return `<div class="match-list-snap">${list.map(b => `
+        <div class="match-item-snap">
+          <span class="hint-span">${escapeHtml(b.sportName || "")} &nbsp; ${escapeHtml(b.matchId || "")} &nbsp; ${fmtTime(b.matchTime || b.openTime)}</span>
+          <span>${escapeHtml(b.matchName || "")}</span>
+          <span class="hint-span">${escapeHtml(b.tournamentId || "")} &nbsp; ${escapeHtml(b.tournamentName || b.tournament || "")}</span>
+        </div>
+      `).join("")}</div>`
+    }
+
+    function renderDetailList(list, lang) {
+      return `<div class="detail-list-snap">${list.map(b => `
+        <div class="detail-item-snap">
+          <span class="marketname-snap">${getInplay(b.isInplay, lang)}&nbsp;<span>${escapeHtml(b.marketName || "")} ${b.extraInfo ? "(" + b.extraInfo + ")" : ""}</span></span>
+          <span>${escapeHtml(b.optionName || "")} / @${escapeHtml(b.betOdds || b.odds || "")} [${escapeHtml(getOddsType(b.oddsFormat, lang))}]</span>
+          <span class="betScore-snap">${escapeHtml(b.betScore || "")}</span>
+        </div>
+      `).join("")}</div>`
+    }
+
+    function renderResultList(list, lang, colorMap) {
+      return `<div class="result-list-snap">${list.map(b => {
+        let html = ""
+        if (b.settleResult !== undefined && b.settleResult !== null) {
+          html += `<span class="result-snap" style="color:${colorMap[b.settleResult]}">${escapeHtml(getResult(b.settleResult, lang))}</span>`
+        }
+        if (b.resultScore) {
+          html += `<span class="hint-span">${resultTipMap[lang]} ${escapeHtml(b.resultScore)}</span>`
+        } 
+        return `<div class="result-item-snap">${html}</div>`
+      }).join("")}</div>`
+    }
+
+    function render() {
+      const tb = document.getElementById("tb")
+      if (!tb) return
+
+      const langRaw = getParam("lang")
+      window.lang = (langRaw === "en" ? "en" : "zh")
+
+      const h = head[lang]
+      const data = getData()
+
+      let html = "<tr>" + h.map(i => "<th>" + i + "</th>").join("") + "</tr>"
+
+      const resultColorMap = {
+        4: "#e1554f",
+        5: "#e1554f",
+        2: "#8798a9",
+        3: "#00a791",
+        6: "#00a791",
+        0: "#d9534f",
+        7: "#d9534f"
+      }
+
+      const orderStatusColorMap = {
+        0: "#d9534f",
+        1: "#f0ad4e",
+        2: "#d9534f",
+        3: "#8798a9",
+        4: "#5378f4",
+        5: "#00a791"
+      }
+
+      const settleStatusColorMap = {
+        0: "#f0ad4e",
+        1: "#00a791",
+        2: "#8798a9",
+        3: "#5378f4",
+        4: "#d9534f",
+        5: "#f0ad4e",
+        6: "#f0ad4e"
+      }
+
+      data.forEach(o => {
+        const list = getBetList(o)
+        const isCashout = hasCashout(o)
+        const cashoutPrincipal = getCashoutPrincipal(o)
+        const liabilityCashoutStake = getLiabilityCashoutStake(o)
+        const cashoutPayout = getCashoutPayout(o)
+        const displayOrderStatus = getDisplayOrderStatus(o)
+        let status = `${fmtTime(o.createTime)}<br><span style="color:${orderStatusColorMap[displayOrderStatus]}">${getStatus(displayOrderStatus, lang)}</span><br>`
+        if (o.remark) {
+          status = `${status}<span>(${escapeHtml(o.remark)})</span>`
+        }
+
+        const settleStatus = getDisplaySettleStatus(o)
+        const settleStatusText = settleStatus === "" ? "" : getSettleStatus(settleStatus, lang)
+        const settleStatusColor = settleStatusColorMap[settleStatus] || "#8798a9"
+        const settleTimeStatus = `${getSettleTimeText(o)}${settleStatusText !== "" ? `<br><span style="color:${settleStatusColor}">${escapeHtml(settleStatusText)}</span>` : ""}`
+        const companyWin = getCompanyWin(o)
+        let winCoin = ""
+        if (companyWin !== "") {
+          const wc = money(companyWin)
+          if (companyWin > 0) {
+            winCoin = `<span style="color:#e1554f">${wc}</span>`
+          } else if (companyWin < 0) {
+            winCoin = `<span style="color:#00a791">${wc}</span>`
+          } else {
+            winCoin = `<span style="color:#8798a9">${wc}</span>`
+          }
+        }
+
+        html += `
+          <tr>
+            <td>${escapeHtml(o.userId || "")}<br>${escapeHtml(o.id || "")}</td>
+            <td>${escapeHtml(o.operatorID || "")}:${escapeHtml(o.playerId || "")}<br>${escapeHtml(o.userName || "")}</td>
+            <td>${status}</td>
+            <td>${o.seriesType === 0 ? getBetType(o) : `串关<br>${escapeHtml(getBetType(o))}`}</td>
+            <td>${renderMatchList(list)}</td>
+            <td>${renderDetailList(list, lang)}</td>
+            <td>${renderResultList(list, lang, resultColorMap)}</td>
+            <td><span style="color:#5378f4">@${getOrderOdds(o)}</span><br><span class="hint-span">[${escapeHtml(getOddsType(list[0] && list[0].oddsFormat, lang))}]</span></td>
+            <td>${money(o.stakeAmount)}${o.betNum ? `<br><span class="hint-span">(${money(o.unitStake || o.stakeAmount)}*${money(o.betNum)})</span>` : ""}</td>
+            <td>${money(getDebitAmount(o))}</td>
+            <td>${isCashout ? "0" : (o.orderStatus == 5 ? money(o.stakeAmount) : "0")}</td>
+            <td>${isCashout ? "0" : money(o.validSettleAmount || "0")}</td>
+            <td>${money(cashoutPrincipal ?? "0")}</td>
+            <td style="color:#5378f4">${money(liabilityCashoutStake ?? "0")}</td>
+            <td style="color:#5378f4">${money(cashoutPayout ?? "0")}</td>
+            <td>${settleTimeStatus}</td>
+            <td>${winCoin}</td>
+            <td>${escapeHtml(o.currency || "")}</td>
+            <td>${escapeHtml(o.ip || "")}</td>
+            <td>${escapeHtml(o.device || "")}</td>
+            <td>${escapeHtml(o.thirdRemark || "")}</td>
+          </tr>`
+      })
+
+      tb.innerHTML = html
+      postDetailHeight()
+    }
+
+    function postDetailHeight() {
+      setTimeout(() => {
+        if (!window.parent || window.parent === window) return
+        const tb = document.getElementById("tb")
+        const wrap = document.querySelector(".wrap")
+        const height = Math.max(
+          document.body.scrollHeight || 0,
+          document.documentElement.scrollHeight || 0,
+          wrap ? wrap.scrollHeight : 0,
+          tb ? tb.scrollHeight : 0,
+          tb ? tb.offsetHeight : 0
+        )
+        window.parent.postMessage({
+          event: "hbSportOrderListDetailHeight",
+          height
+        }, "*")
+      }, 0)
+    }
+
+    function init() {
+      render()
+    }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", init)
+    } else {
+      init()
+    }
+  </script>
+
+</body>
+
+</html>

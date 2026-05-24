@@ -360,67 +360,59 @@ const content = encodeURIComponent(base64)
 
 ## 表头字段映射
 
-页面表头与数据字段的映射关系如下：
+页面表头按代码中的 `head` 数组顺序展示，共 21 项：
 
-| 页面字段 | 来源字段 | 展示规则 |
+| 序号 | 中文表头 | 英文表头 |
 | --- | --- | --- |
-| 订单号 | `o.id` | 原样展示 |
-| 用户名 | `o.userName` | 原样展示 |
-| 投注时间/状态 | `o.createTime`、`o.orderStatus`、`o.remark`、`b.settleResult` | `createTime` 转本地时间；若任一投注项已有 `settleResult`，状态按“已结算”展示，否则按 `orderStatus` 转状态文案；若有 `remark` 则追加显示 |
-| 投注类型 | `o.seriesType`、`o.betType` | `seriesType == 0` 时固定显示“单关/Single”，否则显示 `betType` |
-| 赛事 | `b.sportName`、`b.matchTime`、`b.tournamentId`、`b.matchName`、`b.tournamentName`、`b.matchId` | 遍历 `o.betList`，逐条组合展示赛事基础信息 |
-| 投注详情 | `b.isInplay`、`b.marketName`、`b.optionName`、`b.betScore`、`b.betOdds`、`b.odds` | 遍历 `o.betList`，逐条展示滚球/赛前、盘口名、投注项、单项赔率、下注时比分 |
-| 投注结果 | `b.settleResult`、`b.resultScore` | 遍历 `o.betList`；当 `settleResult !== undefined && settleResult !== null` 时显示结果文案（包括 `0 = 无结果`）；赛果展示 `resultScore` |
-| 赔率 | `o.maxWinAmount`、`o.stakeAmount`、`b.betOdds`、`b.odds`、`b.oddsFormat` | 单关直接展示投注项赔率；串关优先按订单最大可赢金额反推倍率，无法反推时使用投注项赔率连乘；赔率格式取首个投注项的 `oddsFormat` |
-| 名义投注额 | `o.stakeAmount` | 原样展示 |
-| 扣款额 | `o.liabilityStake`、`o.stakeAmount` | 优先展示 `liabilityStake`，无值时展示 `stakeAmount` |
-| 正常结算本金 | `o.validSettleStakeAmount`、`o.stakeAmount`、`o.orderStatus`、提前结算字段 | 提前结算态显示 `0`；否则仅 `orderStatus == 5` 时优先展示 `validSettleStakeAmount`，无值时展示投注本金 |
-| 正常结算返还 | `o.validSettleAmount`、提前结算字段 | 提前结算态显示 `0`；否则展示 `validSettleAmount`，无值显示 `0` |
-| 实际提前结算本金 | `o.cashOutStake`、`o.cashoutStake`、`o.cashOutStakeAmount`、`o.actualCashoutStake`、`o.actualCashoutPrincipal`、`o.cashOutPrincipal`、`o.liabilityCashoutStake` | 优先读取提前结算本金字段；部分调试样例缺字段时按扣款额兜底 |
-| 名义提前结算本金 | `o.liabilityCashoutStake`、`o.liabilityCashOutStake`、`o.nominalCashoutStake`、`o.nominalCashoutPrincipal`、`o.cashOutStake`、`o.cashoutStake` | 优先读取名义提前结算本金字段；部分调试样例缺字段时按扣款额兜底 |
-| 提前结算返还 | `o.cashOutPayoutStake`、`o.cashoutPayoutStake`、`o.cashOutPayout`、`o.cashoutPayout`、`o.cashOutReturnAmount`、`o.cashoutReturnAmount`、`o.cashOutSettleAmount`、`o.cashoutSettleAmount` | 优先读取提前结算返还字段；部分调试样例缺字段时按内置调试兜底展示 |
-| 结算时间 | `o.cashOutTime`、`o.cashoutTime`、`o.cashOutSettleTime`、`o.cashoutSettleTime`、`o.cashOutCreateTime`、`o.cashoutCreateTime`、`o.settleTime` | 优先展示提前结算时间；无提前结算时间且 `orderStatus == 5` 时展示 `settleTime`；部分调试样例缺字段时按内置调试兜底展示 |
-| 公司 输/赢 | 扣款额、提前结算返还、`o.stakeAmount`、`o.settleAmount`、`o.orderStatus` | 有提前结算返还时按“扣款额 - 提前结算返还”计算；否则仅 `orderStatus == 5` 时按 `stakeAmount - settleAmount` 计算 |
-| 注单币种 | `o.currency` | 优先走币种映射表，取不到则原样展示 |
-| IP地址 | `o.ip` | 原样展示 |
-| 设备 | `o.device` | 原样展示 |
-| 第三方备注 | `o.thirdRemark` | 原样展示 |
-| 存活关数 | `o.allUpAlive` | 表示串关订单中当前仍然有效的关数 |
-| 付款状态 | `o.payStatus` | 付款状态字段，接口文档中标注为“弃用”，通常不建议作为主判断字段 |
-| 数据版本 | `o.version` | 数据变更标记，按升序递增。若同一订单在多个文件中重复出现，应以 `version` 更大的那条数据为最新数据 |
-| 投注项结算状态 | `b.settleStatus` | 用于判断该投注项是否已经完成结算 |
-| 投注项结算结果 | `b.settleResult` | 用于表示该投注项最终赛果，例如胜、负、平、取消等 |
+| 1 | 订单号 | Order ID |
+| 2 | 用户名 | User |
+| 3 | 投注时间/状态 | Bet Time/Status |
+| 4 | 投注类型 | Bet Type |
+| 5 | 赛事 | Match |
+| 6 | 投注详情 | Bet Detail |
+| 7 | 投注结果 | Result |
+| 8 | 赔率 | Odds |
+| 9 | 名义投注额 | Stake |
+| 10 | 扣款额 | Debit |
+| 11 | 正常结算本金 | Settle Principal |
+| 12 | 正常结算返还 | Settle Return |
+| 13 | 实际提前结算本金 | Actual Cashout Principal |
+| 14 | 名义提前结算本金 | Cashout Principal |
+| 15 | 提前结算返还 | Cashout Return |
+| 16 | 结算时间/状态 | Settle Time/Status |
+| 17 | 公司 输/赢 | Company W/L |
+| 18 | 注单币种 | Currency |
+| 19 | IP地址 | IP |
+| 20 | 设备 | Device |
+| 21 | 第三方备注 | Third Remark |
 
-说明：
+逐项显示规则如下：
 
-- `o` 表示订单对象。
-- `b` 表示投注对象，当前版本会遍历 `o.betList` 中的每一个投注对象。部分订单级字段（如赔率格式）会取 `betList[0]` 作为代表值。
-
-## 投注详情字段说明
-
-订单详情区域主要使用 `betList` 中每一条投注项的以下字段：
-
-| 字段名 | 说明 |
-| --- | --- |
-| `sportName` | 体育类型名称，如足球、篮球 |
-| `matchTime` | 开赛时间，页面会转换为本地时间展示 |
-| `tournamentId` | 联赛 ID |
-| `matchName` | 对阵名称 |
-| `tournamentName` | 联赛名称 |
-| `matchId` | 比赛 ID |
-| `isInplay` | 是否滚球 |
-| `marketName` | 盘口名称 |
-| `optionName` | 投注项名称 |
-| `betScore` | 投注时比分 |
-| `settleResult` | 投注结算结果 |
-| `resultScore` | 赛果展示文本 |
-| `extraInfo` | 当前赛果展示 |
-| `odds` | 赔率值 |
-| `oddsFormat` | 赔率格式 |
+1. `订单号`：使用 `o.userId` 和 `o.id`，第一行显示用户 ID，第二行显示订单号。
+2. `用户名`：使用 `o.operatorID`、`o.playerId`、`o.userName`，第一行显示 `operatorID:playerId`，第二行显示用户名。
+3. `投注时间/状态`：使用 `o.createTime`、`o.orderStatus`、`o.remark` 和 `betList[].settleResult`。第一行显示投注时间；第二行显示订单状态。如果任一投注项存在 `settleResult`，状态按“已结算”显示；否则按 `orderStatus` 映射显示。存在 `remark` 时追加备注。
+4. `投注类型`：使用 `o.seriesType` 和 `o.betType`。`seriesType === 0` 显示“单关/Single”；否则显示“串关”并换行显示 `betType`。
+5. `赛事`：遍历 `o.betList`，每个投注项使用 `sportName`、`matchId`、`matchTime/openTime`、`matchName`、`tournamentId`、`tournamentName/tournament`，展示运动名称、比赛 ID、比赛时间、比赛名称和联赛信息。
+6. `投注详情`：遍历 `o.betList`，每个投注项使用 `isInplay`、`marketName`、`extraInfo`、`optionName`、`betOdds/odds`、`oddsFormat`、`betScore`，展示滚球/赛前、玩法、当前赛果、投注选项、投注赔率、赔率格式和下注比分。
+7. `投注结果`：遍历 `o.betList`，每个投注项使用 `settleResult` 和 `resultScore`。有 `settleResult` 时显示结算结果文案；有 `resultScore` 时显示结算比分。
+8. `赔率`：单关使用首个投注项的 `betOdds/odds`；串关优先使用 `o.maxWinAmount` 和 `o.stakeAmount` 反推倍率，无法反推时使用投注项赔率连乘。赔率格式使用首个投注项的 `oddsFormat`。
+9. `名义投注额`：使用 `o.stakeAmount`、`o.unitStake`、`o.betNum`。主值显示 `stakeAmount`；存在 `betNum` 时追加显示 `unitStake * betNum`。
+10. `扣款额`：优先使用 `o.liabilityStake`，无有效值时使用 `o.stakeAmount`。
+11. `正常结算本金`：如果识别为提前结算态，显示 `0`；否则 `o.orderStatus == 5` 时显示 `o.stakeAmount`，其他状态显示 `0`。
+12. `正常结算返还`：如果识别为提前结算态，显示 `0`；否则显示 `o.validSettleAmount`，无值显示 `0`。
+13. `实际提前结算本金`：优先读取 `cashOutStake/cashoutStake/cashOutStakeAmount/actualCashoutStake/actualCashoutPrincipal/cashOutPrincipal/liabilityCashoutStake`；命中内置兜底订单时显示兜底本金；已结算但无字段时按扣款额兜底；否则显示 `0`。
+14. `名义提前结算本金`：优先读取 `liabilityCashoutStake/liabilityCashOutStake/nominalCashoutStake/nominalCashoutPrincipal/cashOutStake/cashoutStake`；命中内置兜底订单时显示兜底名义本金；已结算但无字段时按扣款额兜底；否则显示 `0`。
+15. `提前结算返还`：优先读取 `cashOutPayoutStake/cashoutPayoutStake/cashOutPayout/cashoutPayout/cashOutReturnAmount/cashoutReturnAmount/cashOutSettleAmount/cashoutSettleAmount`；命中内置兜底订单时显示兜底返还；否则显示 `0`。
+16. `结算时间/状态`：第一行显示结算时间，优先读取 `cashOutTime/cashoutTime/cashOutSettleTime/cashoutSettleTime/cashOutCreateTime/cashoutCreateTime`，命中内置兜底订单时显示兜底时间，普通已结算订单显示 `o.settleTime`；第二行显示 `betList` 中第一个存在的 `settleStatus` 对应文案。
+17. `公司 输/赢`：有提前结算返还时，按 `扣款额 - 提前结算返还` 计算；否则 `o.orderStatus == 5` 时按 `o.stakeAmount - o.settleAmount` 计算。结果大于 `0` 显示红色，小于 `0` 显示绿色，等于 `0` 显示灰色。
+18. `注单币种`：使用 `o.currency` 原样显示。
+19. `IP地址`：使用 `o.ip` 原样显示。
+20. `设备`：使用 `o.device` 原样显示。
+21. `第三方备注`：使用 `o.thirdRemark` 原样显示。
 
 ## 枚举定义
 
-### 订单状态 `orderStatusMap`
+### 订单状态 `order_status`
 
 | 值 | 中文 | 英文 |
 | --- | --- | --- |
@@ -431,7 +423,7 @@ const content = encodeURIComponent(base64)
 | `4` | 已确认 | Confirmed |
 | `5` | 已结算 | Settled |
 
-### 赔率格式 `oddsTypeMap`
+### 赔率格式 `odds_format_type_enum`
 
 | 值 | 中文 | 英文 |
 | --- | --- | --- |
@@ -441,7 +433,7 @@ const content = encodeURIComponent(base64)
 | `4` | 印尼盘 | INDONESIA |
 | `5` | 美盘 | AMERICAN |
 
-### 结算结果 `resultMap`
+### 结算结果 `outcome`
 
 | 值 | 中文 | 英文 |
 | --- | --- | --- |
@@ -452,6 +444,18 @@ const content = encodeURIComponent(base64)
 | `5` | 赢半 | HalfWon |
 | `6` | 输半 | HalfLost |
 | `7` | 取消 | Canceled |
+
+### 结算状态 `settle_status`
+
+| 值 | 中文 | 英文 |
+| --- | --- | --- |
+| `0` | 未结算 | Unsettled |
+| `1` | 已结算 | Settled |
+| `2` | 已取消 | Canceled |
+| `3` | 已确认 | Confirmed |
+| `4` | 已拒单 | Refused |
+| `5` | 取消中 | Canceling |
+| `6` | 回滚中 | RollingBack |
 
 结果说明：
 
@@ -482,14 +486,14 @@ const content = encodeURIComponent(base64)
 - `输半` 示例：投注阿森纳 `-1/1.5`，赔率 `2.05`，本金 `$100`，比赛结果阿森纳 `1-0`。此盘口拆分为 `$50` 投 `-1`，`$50` 投 `-1.5`。其中 `-1` 这半走水，返还 `$50 x 1 = $50`；`-1.5` 这半全输，返还 `$0`；最终总返还 `$50`。
 - 串关中若某一关为 `赢半`，该关可按折算系数 `1 + 0.5 x (赔率 - 1)` 继续滚动；若某一关为 `输半`，该关可按折算系数 `0.5` 继续滚动。
 
-### 是否滚球 `inplayMap`
+### 是否滚球 `inplay_status`
 
 | 值 | 中文 | 英文 |
 | --- | --- | --- |
 | `true` | 滚球 | Live |
 | `false` | 赛前 | PreMatch |
 
-### 赛果提示 `resultTipMap`
+### 赛果提示 `result_tip`
 
 | 语言 | 文案 |
 | --- | --- |
@@ -497,148 +501,7 @@ const content = encodeURIComponent(base64)
 | `en` | matchResult |
 
 
-## 衍生字段计算规则
-
-### 投注类型
-
-- `seriesType == 0` 时显示“单关（Single）”。
-- 其他情况下显示 `betType` 原始值。
-
-### 投注结果
-
-- 遍历 `o.betList`，每个投注项都会在“投注结果”列保留对应行位，以便与“赛事”和“投注详情”逐条对齐。
-- 当某条投注项的 `b.settleResult !== undefined && b.settleResult !== null` 时，显示结果文案，如“赢”“输”“输半”“无结果”等。
-- 页面会优先读取 `b.resultScore` 作为赛果展示；
-- `settleResult = 0` 时会正常展示“无结果”，只有字段为 `undefined/null` 时才不会展示结果文案。
-- 若 `betList` 中任一投注项存在 `settleResult`，页面状态展示会按“已结算”处理，即使订单级 `orderStatus` 仍为 `4`。
-
-### 赔率 / 倍率
-
-页面展示的“赔率”需要区分单关和串关：
-
-当前版本计算优先级如下：
-
-1. 单关或只有一条投注项时，直接使用该投注项赔率：
-
-```txt
-展示赔率 = betList[0].betOdds || betList[0].odds
-```
-
-2. 串关或 `betList` 有多条投注项时，若 `o.maxWinAmount` 和 `o.stakeAmount` 都是有效数字，且 `stakeAmount > 0`，优先使用订单最大可赢金额反推倍率：
-
-```txt
-倍率 = (maxWinAmount + stakeAmount) / stakeAmount
-```
-
-3. 串关倍率展示时向下截断两位小数：
-
-```txt
-展示倍率 = floor(倍率 * 100) / 100
-```
-
-4. 若串关订单缺少 `maxWinAmount` 或 `stakeAmount`，则退回使用 `betList` 中每条投注项的 `betOdds || odds` 连乘，并同样向下截断两位：
-
-```txt
-倍率 = betList[0].odds * betList[1].odds * ... * betList[n].odds
-```
-
-示例：
-
-```txt
-maxWinAmount = 373.66
-stakeAmount = 10
-
-倍率 = (373.66 + 10) / 10 = 38.366
-展示倍率 = 38.36
-```
-
-说明：
-
-- 只有串关才需要订单级倍率计算。
-- 单关不使用 `maxWinAmount + stakeAmount` 反推倍率，直接展示投注项自身赔率。
-- 串关直接将单项赔率 `1.94 * 1.86 * 3.09 * 1.85 * 1.86` 相乘会得到约 `38.3701`，四舍五入后是 `38.37`。
-- 当前页面为了与订单实际可赢金额一致，串关优先使用 `maxWinAmount + stakeAmount` 反推订单倍率，因此示例会展示 `@38.36`。
-
-### 公司 输/赢
-
-- 当前页面同时兼容普通结算和提前结算展示。
-- 涉及字段如下：
-
-```txt
-o.liabilityStake
-o.stakeAmount
-o.settleAmount
-o.orderStatus
-o.cashOutPayoutStake
-o.cashoutPayoutStake
-o.cashOutPayout
-o.cashoutPayout
-o.cashOutReturnAmount
-o.cashoutReturnAmount
-o.cashOutSettleAmount
-o.cashoutSettleAmount
-```
-
-普通结算和提前结算的区别：
-
-- 普通结算：比赛或投注项全部按照最终赛果完成结算后，由系统返回最终派彩金额。页面使用投注本金和最终结算返还计算公司输赢。
-- 提前结算：比赛或订单尚未完全按最终赛果结算前，用户主动或系统支持提前结束订单，页面使用提前结算返还计算公司输赢。
-- 同一张订单如果存在提前结算返还字段，页面优先按提前结算展示；否则才按普通结算展示。
-
-页面计算过程如下：
-
-1. 先确定扣款额。页面优先使用 `liabilityStake`；如果没有有效值，再使用 `stakeAmount`；如果两者都没有有效值，则扣款额按 `0` 处理。
-
-有效值指字段不是空字符串、`undefined`、`null`，并且可以转成数字。
-
-2. 再读取提前结算返还。页面会按以下字段顺序取第一个有效值：
-
-`cashOutPayoutStake`、`cashoutPayoutStake`、`cashOutPayout`、`cashoutPayout`、`cashOutReturnAmount`、`cashoutReturnAmount`、`cashOutSettleAmount`、`cashoutSettleAmount`。
-
-3. 如果读取到了提前结算返还，页面按提前结算计算公司输赢：
-
-公司输赢 = 扣款额 - 提前结算返还
-
-例如扣款额为 `10`，提前结算返还为 `5.52`，则公司输赢为 `10 - 5.52 = 4.48`。
-
-4. 如果没有提前结算返还，页面再按普通结算处理。普通结算必须满足 `orderStatus == 5`，否则公司输赢显示为空。
-
-5. 普通结算时，`stakeAmount` 和 `settleAmount` 都必须是有效值，才计算公司输赢：
-
-公司输赢 = stakeAmount - settleAmount
-
-例如投注本金为 `20`，普通结算返还为 `76.4`，则公司输赢为 `20 - 76.4 = -56.4`。
-
-6. 如果普通结算下 `stakeAmount` 或 `settleAmount` 不是有效值，则公司输赢显示为空。
-
-部分调试样例若缺失提前结算字段，页面会使用内置兜底值复现示例截图；正式数据建议传入明确的提前结算返还字段。
-
-颜色规则：
-
-- 结果大于 `0` 时显示红色。
-- 结果小于 `0` 时显示绿色。
-- 结果等于 `0` 时显示灰色。
-
-示例：
-
-```txt
-提前结算返还 = 5.52
-扣款额 = 10
-
-公司 输/赢 = 10 - 5.52 = 4.48
-```
-
-普通结算示例：
-
-```txt
-orderStatus = 5
-stakeAmount = 20
-settleAmount = 76.4
-
-公司 输/赢 = 20 - 76.4 = -56.4
-```
-
-### 有效结算字段
+## 有效结算字段
 
 订单解析支持以下订单级有效结算字段：
 
@@ -647,20 +510,9 @@ settleAmount = 76.4
 | `validSettleStakeAmount` | string | 有效已结算投注额。当订单结算结果为赢半、输半时，有效已结算投注额 = `(投注额 - 提前结算总本金) / 2 + 提前结算总本金 - 提前结算取消总额`；当订单结算结果为全赢、全输时，有效已结算投注额 = `投注额 - 提前结算取消总额`；其余订单结算结果有效已结算投注额均为 `0`。 | false |
 | `validSettleAmount` | string | 有效返还额。当订单结算结果为赢半、输半时，有效返还额 = `结算派奖金额 - (投注额 - 提前结算总本金) / 2 + 提前结算派奖额 - 提前结算取消总额`；当订单结算结果为全赢、全输时，有效返还额 = `结算派奖金额 + 提前结算派奖额 - 提前结算取消总额`；其余订单结算结果有效返还额均为 `0`。 | false |
 
-### 提前结算列
-
-当页面识别为提前结算态时：
-
-- `正常结算本金` 显示 `0`。
-- `正常结算返还` 显示 `0`。
-- `实际提前结算本金` 优先读取 `cashOutStake/cashoutStake/cashOutStakeAmount/actualCashoutStake/actualCashoutPrincipal/cashOutPrincipal/liabilityCashoutStake`，无值时部分调试样例按扣款额兜底。
-- `名义提前结算本金` 优先读取 `liabilityCashoutStake/liabilityCashOutStake/nominalCashoutStake/nominalCashoutPrincipal/cashOutStake/cashoutStake`，无值时部分调试样例按扣款额兜底。
-- `提前结算返还` 优先读取 `cashOutPayoutStake/cashoutPayoutStake/cashOutPayout/cashoutPayout/cashOutReturnAmount/cashoutReturnAmount/cashOutSettleAmount/cashoutSettleAmount`。
-- `结算时间` 优先读取 `cashOutTime/cashoutTime/cashOutSettleTime/cashoutSettleTime/cashOutCreateTime/cashoutCreateTime`，无提前结算时间时再按普通结算读取 `settleTime`。
-
 ## 注意事项
 
-## 嵌入网页高度 message 接入方式
+### 嵌入网页高度 message 接入方式
 
 订单详情解析页面支持通过 `postMessage` 将页面实际内容高度通知给父页面，适用于第三方系统通过 `iframe` 嵌入订单详情解析页时，自动调整 `iframe` 高度，避免页面内部出现不必要的纵向滚动条。
 
@@ -709,6 +561,8 @@ window.parent.postMessage({
 - 若同一页面嵌入多个订单详情 `iframe`，建议在父页面自行维护当前订单详情 `iframe` 引用，或按业务场景绑定对应 DOM。
 - 出于安全考虑，正式环境可按实际部署域名校验 `event.origin`。
 
+### 解析注意事项
+
 - `content` 必须为合法 Base64 字符串。
 - `content` 解码后必须为合法 JSON 数组，否则页面无法解析。
 - 建议对 Base64 结果做 URL 编码，避免 `+`、`=` 等特殊字符影响 URL 传参。
@@ -716,12 +570,11 @@ window.parent.postMessage({
 - 页面默认使用 `lang=zh`，传 `lang=en` 可切换英文文案。
 - 页面当前会遍历并展示完整 `betList`，串关订单会在同一订单行中展开多条投注项。
 - `settleResult = 0` 在枚举中定义为“无结果”，当前版本只判断字段是否为 `undefined/null`，因此该值可以正常展示为“无结果”。
-- `注单币种` 同时兼容数值枚举和字符串直传，渲染逻辑为 `currencyMap[o.currency] || o.currency`。
 
 ## 说明
 
-所有数据仅在前端解析，不经过服务端。  
-适用于订单展示、调试、对账等场景。
+- 所有数据仅在前端解析，不经过服务端。
+- 适用于订单展示、调试、对账等场景。
 
 ---
 # 常见问题说明
