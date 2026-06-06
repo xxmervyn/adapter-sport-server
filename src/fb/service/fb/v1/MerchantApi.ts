@@ -1,5 +1,5 @@
 import { HonoRequest } from "hono"
-import { FbServiceEntry } from "../../entry/service/fbServiceEntry
+import { FbServiceEntry } from "../../entry/service/fbServiceEntry"
 
 
 export class V1MerchantApi {
