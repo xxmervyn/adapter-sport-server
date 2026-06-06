@@ -21,6 +21,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 				ui: z.string().optional(),
 				color: z.string().optional(),
 				apihost: z.string().optional(),
+				offvr: z.string().optional(),
 			}),
 			body: contentJson(z.object({ name: z.string() })),
 		}
@@ -40,8 +41,14 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		const lang = LANGUAGE_MAP[data.query.lang?.toLowerCase() || "en"] || "ENG";
 		const ui = data.query.ui;
 		const color = data.query.color;
+		const offvr = data.query.offvr;
+		const xfpKeys = this.buildXfpKeys(data.query);
+		const xfpKeysParam = this.buildXfpKeysParam(xfpKeys);
 
 		let url = this.buildGameUrl(req, token, jwtInfo, hostname, apiHost, lang, ui);
+		if (offvr !== undefined) {
+			url += `&offvr=${encodeURIComponent(offvr)}`;
+		}
 		url = genGameUrlSignWithKeys(data.query, url, ["token"], true);
 
 		if (token === "guestMode") {
@@ -50,7 +57,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		} else {
 			const extraParam = data.query.apihost ? `&hbinnerapihost=${encodeURIComponent(data.query.apihost)}` : "";
 			const signUrl = `https://${hostname}?token=${token}`;
-			const xFrontPage = genGameUrlSignWithKeys(data.query, signUrl, ["token"], true) + extraParam;
+			const xFrontPage = genGameUrlSignWithKeys(data.query, signUrl, ["token"], true) + extraParam + xfpKeysParam;
 
 			const tokenInfo = await UserService.V1User.token(req, xFrontPage, token);
 			if (!tokenInfo.token) {
@@ -118,6 +125,24 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 			`&one=1&platformName=HBSPORTS` +
 			`&tk=${tokenInfo.token}` +
 			(extra || "");
+	}
+
+	private buildXfpKeys(query: Record<string, any>) {
+		const keys = new Set(["hbr", "hbgf"]);
+		if (query.apihost) {
+			keys.add("hbinnerapihost");
+		}
+		if (query.offvr) {
+			keys.add("offvr");
+		}
+		return Array.from(keys);
+	}
+
+	private buildXfpKeysParam(keys: string[]) {
+		if (keys.length === 0) {
+			return "";
+		}
+		return `&xfpKeys=${encodeURIComponent(keys.join(","))}`;
 	}
 }
 
