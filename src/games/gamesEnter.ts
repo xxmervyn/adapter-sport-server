@@ -57,7 +57,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		} else {
 			const extraParam = data.query.apihost ? `&hbinnerapihost=${encodeURIComponent(data.query.apihost)}` : "";
 			const signUrl = `https://${hostname}?token=${token}`;
-			const xFrontPage = genGameUrlSignWithKeys(data.query, signUrl, ["token"], true) + extraParam + xfpKeysParam;
+			const xFrontPage = genGameUrlSignWithKeys(data.query, signUrl, ["token"], true) + extraParam;
 
 			const tokenInfo = await UserService.V1User.token(req, xFrontPage, token);
 			if (!tokenInfo.token) {
@@ -69,7 +69,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 				return { code: 14010, message: "賬號已登出，請重新登錄2", success: false };
 			}
 
-			url = this.appendPlatformParams(url, tokenInfo, `&hbr=${userInfo.data?.region}&hbgf=${jwtInfo?.GameField}${extraParam}`);
+			url = this.appendPlatformParams(url, tokenInfo, `&hbr=${userInfo.data?.region}&hbgf=${jwtInfo?.GameField}${extraParam}${xfpKeysParam}`);
 		}
 
 		if (ui) url += `&ui=${ui}`;
