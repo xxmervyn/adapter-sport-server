@@ -29,6 +29,7 @@ https://${host}/games/enter?id=200101&lang=zh&playerGameToken=abc123&reqt=xxx&es
 | `esign` | string | 是 | 请求签名 |
 | `ui` | string | 否 | UI 版本：`h5` / `pcOld` / `pcNew` |
 | `color` | string | 否 | 主题颜色：`daily` / `dark` |
+| `offvr` | string | 否 | 是否显示VR，`offvr=1` 不显示，不带这个参数就是显示 |
 
 ### 游客模式
 
@@ -36,6 +37,14 @@ https://${host}/games/enter?id=200101&lang=zh&playerGameToken=abc123&reqt=xxx&es
 
 ```txt
 https://${host}/games/enter?id=200101&lang=en&reqt=xxx&esign=xxx
+```
+
+### 不显示 VR 版本
+
+不传 `playerGameToken` 时，将以游客身份进入游戏。
+
+```txt
+https://${host}/games/enter?id=200101&lang=en&reqt=xxx&esign=xxx&offvr=1
 ```
 
 ### 指定 UI 版本
