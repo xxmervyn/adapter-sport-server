@@ -21,7 +21,7 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 				ui: z.string().optional(),
 				color: z.string().optional(),
 				apihost: z.string().optional(),
-				offvr: z.string().optional(),
+				showVRContent: z.string().optional(),
 			}),
 			body: contentJson(z.object({ name: z.string() })),
 		}
@@ -41,13 +41,13 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		const lang = LANGUAGE_MAP[data.query.lang?.toLowerCase() || "en"] || "ENG";
 		const ui = data.query.ui;
 		const color = data.query.color;
-		const offvr = data.query.offvr;
+		const showVRContent = data.query.showVRContent;
 		const xfpKeys = this.buildXfpKeys(data.query);
 		const xfpKeysParam = this.buildXfpKeysParam(xfpKeys);
 
 		let url = this.buildGameUrl(req, token, jwtInfo, hostname, apiHost, lang, ui);
-		if (offvr && offvr == "0") {
-			url += `&offvr=0`;
+		if (showVRContent && showVRContent == "1") {
+			url += `&showVRContent=1`;
 		}
 		url = genGameUrlSignWithKeys(data.query, url, ["token"], true);
 
@@ -132,8 +132,8 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		if (query.apihost) {
 			keys.add("hbinnerapihost");
 		}
-		if (query.offvr) {
-			keys.add("offvr");
+		if (query.showVRContent) {
+			keys.add("showVRContent");
 		}
 		return Array.from(keys);
 	}

@@ -9,10 +9,10 @@ export class VirtualV1MatchApi {
 
     public statistical(params: any, req: HonoRequest) {
         const xFrontPageParams = XFrontPageUtil.getParamsFromReq(req)
-        if (!xFrontPageParams?.hasOwnProperty("offvr") || xFrontPageParams["offvr"] !== "0") {
-            return { success: true, message: null, data: {}, code: 0 };
+        if (xFrontPageParams.hasOwnProperty("showVRContent") && xFrontPageParams["showVRContent"] == "1") {
+            return FbServiceEntry.request('/virtual/v1/match/statistical', params, req, null, { retry: 2, retryDelay: 1000 })
         }
-        return FbServiceEntry.request('/virtual/v1/match/statistical', params, req, null, { retry: 2, retryDelay: 1000 })
+        return { success: true, message: null, data: {}, code: 0 };
     }
 
     public getList(params: any, req: HonoRequest) {
