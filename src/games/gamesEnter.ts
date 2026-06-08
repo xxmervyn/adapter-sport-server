@@ -46,8 +46,8 @@ export class GamesEnterEndpoint extends OpenAPIRoute {
 		const xfpKeysParam = this.buildXfpKeysParam(xfpKeys);
 
 		let url = this.buildGameUrl(req, token, jwtInfo, hostname, apiHost, lang, ui);
-		if (offvr !== undefined) {
-			url += `&offvr=${encodeURIComponent(offvr)}`;
+		if (offvr == undefined || offvr != "0") {
+			url += `&offvr=0`;
 		}
 		url = genGameUrlSignWithKeys(data.query, url, ["token"], true);
 

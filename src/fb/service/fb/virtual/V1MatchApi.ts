@@ -9,8 +9,8 @@ export class VirtualV1MatchApi {
 
     public statistical(params: any, req: HonoRequest) {
         const xFrontPageParams = XFrontPageUtil.getParamsFromReq(req)
-        if (Object.prototype.hasOwnProperty.call(xFrontPageParams, "offvr")) {
-            return { "success": true, "message": null, "data": {}, "code": 0 }
+        if (!xFrontPageParams?.hasOwnProperty("offvr") || xFrontPageParams["offvr"] !== "0") {
+            return { success: true, message: null, data: {}, code: 0 };
         }
         return FbServiceEntry.request('/virtual/v1/match/statistical', params, req, null, { retry: 2, retryDelay: 1000 })
     }
